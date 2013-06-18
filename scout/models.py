@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
@@ -13,16 +14,15 @@ class TileLayer(models.Model):
     max_zoom = models.IntegerField(default=18)
     attribution = models.CharField(max_length=300)
 
-    @property
-    def json(self):
-        return dict((field.name, getattr(self, field.name)) for field in self._meta.fields)
-
     @classmethod
     def get_default(cls):
         """
         Returns the default tile layer (used for a map when no layer is set).
         """
         return cls.objects.order_by('pk')[0]  # FIXME, make it administrable
+    
+    def __unicode__(self):
+        return self.name or "Unnamed layer"
 
 
 class Map(models.Model):
@@ -38,18 +38,34 @@ class Map(models.Model):
     zoom = models.IntegerField(default=7, verbose_name=_("zoom"))
     locate = models.BooleanField(default=False, verbose_name=_("locate"), help_text=_("Locate user on load?"))
     modified_at = models.DateTimeField(auto_now=True)
-    tilelayers = models.ManyToManyField(TileLayer, through="MapToTileLayer")
+    tilelayers = models.ManyToManyField(TileLayer, related_name='maps')
 
     objects = models.GeoManager()
 
     def get_absolute_url(self):
         return reverse("map", kwargs={'slug': self.slug, 'username': self.owner.username})
 
-class MapToTileLayer(models.Model):
-    tilelayer = models.ForeignKey(TileLayer)
-    map = models.ForeignKey(Map)
-    rank = models.IntegerField(null=True, blank=True)
+    def __unicode__(self):
+        return self.name or "Unnamed map"
+        
+import os
+def marker_upload(instance, filename):
+    return os.path.join(instance.id)
+        
+class Marker(models.Model):
+    """
+    Point of interest.
+    """
+    position = models.PointField(geography=True)
+    tile_layer = models.ForeignKey(TileLayer, related_name='markers')
 
-    class Meta:
-        ordering = ['rank', 'tilelayer__name']
+    created_by = models.ForeignKey(User)
+    created_on = models.DateTimeField(auto_now_add=True)
 
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+
+    picture = models.ImageField(upload_to=marker_upload,
+                                null=True, blank=True)
+    
+    objects = models.GeoManager()
