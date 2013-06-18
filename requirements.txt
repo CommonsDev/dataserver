@@ -1,0 +1,12 @@
+Django==1.5.1
+Pillow==2.0.0
+South==0.7.6
+django-compressor==1.3
+django-cors-headers==0.10
+django-extensions==1.1.1
+django-tastypie==0.9.15
+django-userena==1.2.0
+djangular==0.2.2
+psycopg2==2.5
+python-dateutil==2.1
+
