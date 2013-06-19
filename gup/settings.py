@@ -144,6 +144,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     
     'accounts',
+    'guardian',
     'userena',
     'django_extensions',
     'easy_thumbnails',
@@ -209,3 +210,5 @@ COMPRESS_PRECOMPILERS = (
 
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+TASTYPIE_FULL_DEBUG = True

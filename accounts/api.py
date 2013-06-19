@@ -6,8 +6,8 @@ from django.db import models
 from tastypie.http import HttpUnauthorized, HttpForbidden
 
 from tastypie import fields
-from tastypie.authentication import BasicAuthentication
-from tastypie.authorization import DjangoAuthorization
+from tastypie.authentication import BasicAuthentication, ApiKeyAuthentication
+from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
@@ -19,6 +19,7 @@ class ProfileResource(ModelResource):
     class Meta:
         queryset = GUPProfile.objects.all()
         resource_name = 'profile'
+        authorization = DjangoAuthorization()
 
         fields = ['mugshot']
 
@@ -36,7 +37,7 @@ class UserResource(ModelResource):
         resource_name = 'user'
         fields = ['username']
         authentication = BasicAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
 
     def override_urls(self):
         return [

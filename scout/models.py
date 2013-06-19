@@ -70,3 +70,6 @@ class Marker(models.Model):
                                 null=True, blank=True)
     
     objects = models.GeoManager()
+
+    def __unicode__(self):
+        return u"%s" % (self.title or 'marker')
