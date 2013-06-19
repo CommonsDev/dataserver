@@ -2,9 +2,9 @@ from tastypie import fields
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
 
-from accounts.api import UserResource
-
 from .models import Map, TileLayer, Marker
+
+from accounts.api import ProfileResource
 
 class MapResource(GeoModelResource):
     class Meta:
@@ -28,7 +28,8 @@ class MarkerResource(GeoModelResource):
         resource_name = 'marker'
     
     tile_layer = fields.ToOneField(TileLayerResource, 'tile_layer')
-    created_by = fields.ToOneField(UserResource, 'created_by', full=True) 
+    created_by = fields.ToOneField(ProfileResource, 'created_by', full=True)
+        
     
     
     

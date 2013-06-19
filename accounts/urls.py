@@ -2,11 +2,11 @@ from django.conf.urls import patterns, include
 
 from tastypie.api import Api
 
-from .api import UserResource, ProfileResource
+from .api import ProfileResource
 
 # REST API
 account_api = Api(api_name='v0')
-account_api.register(UserResource())
+
 account_api.register(ProfileResource())
 
 urlpatterns = patterns('',

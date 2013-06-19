@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
+from accounts.models import GUPProfile
 
 class TileLayer(models.Model):
     """
@@ -59,7 +60,7 @@ class Marker(models.Model):
     position = models.PointField(geography=True)
     tile_layer = models.ForeignKey(TileLayer, related_name='markers')
 
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(GUPProfile)
     created_on = models.DateTimeField(auto_now_add=True)
 
     title = models.CharField(max_length=255, null=True, blank=True)

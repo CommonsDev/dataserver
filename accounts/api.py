@@ -5,17 +5,18 @@ from tastypie.resources import ModelResource
 
 from .models import GUPProfile
 
-class UserResource(ModelResource):
-    class Meta:
-        queryset = User.objects.all()
-        resource_name = 'user'
-    
 class ProfileResource(ModelResource):
     class Meta:
         queryset = GUPProfile.objects.all()
         resource_name = 'profile'
 
-    user = fields.ToOneField(UserResource, 'user', full=True, related_name='profile')
+        fields = ['mugshot']
+
+    def dehydrate(self, bundle):
+        bundle.data['username'] = bundle.obj.user.username
+        bundle.data['first_name'] = bundle.obj.user.first_name
+        bundle.data['last_name'] = bundle.obj.user.last_name
+        return bundle
 
 
 
