@@ -149,6 +149,7 @@ INSTALLED_APPS = (
     'easy_thumbnails',
 
     'scout',
+    'tastypie',
 
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
