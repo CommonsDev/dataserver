@@ -35,6 +35,10 @@ TIME_ZONE = 'Europe/Paris'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'fr-FR'
 
+LANGUAGES = [
+    ('fr', 'French'),
+]
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -76,7 +80,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    'static/',
+    os.path.join(PROJECT_DIR, '..', 'static/'),
 )
 
 # List of finder classes that know how to find static files in
@@ -85,7 +89,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'djangular.finders.NamespacedAngularAppDirectoriesFinder',
+    # 'djangular.finders.NamespacedAngularAppDirectoriesFinder',
     'compressor.finders.CompressorFinder',    
 )
 
@@ -105,9 +109,17 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.doc.XViewMiddleware',
+    
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    'corsheaders.middleware.CorsMiddleware',
+    
+    'cms.middleware.page.CurrentPageMiddleware',
+    'cms.middleware.user.CurrentUserMiddleware',
+    'cms.middleware.toolbar.ToolbarMiddleware',
+    'cms.middleware.language.LanguageCookieMiddleware',    
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -125,7 +137,17 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    'templates',
+    os.path.join(PROJECT_DIR, '..', 'templates'),
+)
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'cms.context_processors.media',
+    'sekizai.context_processors.sekizai',
 )
 
 INSTALLED_APPS = (
@@ -138,6 +160,7 @@ INSTALLED_APPS = (
 
     'south',
     'corsheaders',
+    'reversion',
     
     'compressor',
     'djangular',
@@ -156,6 +179,17 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+
+    'djangocms_text_ckeditor',
+    'cms',
+    'cms.stacks',
+    'mptt',
+    'menus',
+    'sekizai',
+    'filer',
+    'cmsplugin_filer_file',
+    'cms.plugins.video',
+    'cms.plugins.twitter',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -200,7 +234,7 @@ LOGOUT_URL = '/accounts/signout/'
 
 AUTH_PROFILE_MODULE = 'accounts.GUPProfile'
 
-TASTYPIE_ALLOW_MISSING_SLASH=True
+
 
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
@@ -208,7 +242,12 @@ COMPRESS_PRECOMPILERS = (
     ('text/coffeescript', 'coffee --compile --stdio'),
 )
 
-
+# TASTYPIE/API
 CORS_ORIGIN_ALLOW_ALL = True
+TASTYPIE_FULL_DEBUG = DEBUG
+TASTYPIE_ALLOW_MISSING_SLASH=True
 
-TASTYPIE_FULL_DEBUG = True
+# CMS
+CMS_TEMPLATES = (
+    ('cms_test.html', 'Test Template'),
+)

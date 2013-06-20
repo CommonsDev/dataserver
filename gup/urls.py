@@ -20,9 +20,11 @@ urlpatterns = patterns('',
     (r'^api/', include('accounts.urls')),                       
                        
     url(r'^djangular/', include('djangular.urls')),                       
-
+                       
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+
+    url(r'^', include('cms.urls')),                       
 )
 
 if settings.DEBUG:
