@@ -110,6 +110,7 @@ class MarkerResource(GeoModelResource):
         resource_name = 'marker'
         authentication = ApiKeyAuthentication()
         authorization = DjangoAuthorization()
+        always_return_data = True
     
     tile_layer = fields.ToOneField(TileLayerResource, 'tile_layer')
     created_by = fields.ToOneField(ProfileResource, 'created_by', full=True)
