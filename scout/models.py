@@ -52,7 +52,16 @@ class Map(models.Model):
 import os
 def marker_upload(instance, filename):
     return os.path.join(instance.id)
-        
+
+class MarkerCategory(models.Model):
+    """
+    A category for a marker
+    """
+    name = models.CharField(max_length=255)
+
+    def __unicode__(self):
+        return self.name
+    
 class Marker(models.Model):
     """
     Point of interest.

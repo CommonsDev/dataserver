@@ -6,7 +6,7 @@ from tastypie.resources import ModelResource
 
 from django.contrib.auth.models import User
 
-from .models import Map, TileLayer, Marker
+from .models import Map, TileLayer, Marker, MarkerCategory
 
 from accounts.api import ProfileResource
 
@@ -94,6 +94,11 @@ class MapResource(GeoModelResource):
 
     tile_layers = fields.ToManyField('scout.api.TileLayerResource', 'tilelayers', full=True)
 
+class MarkerCategoryResource(ModelResource):
+    class Meta:
+        queryset = MarkerCategory.objects.all()
+        resource_name = 'marker_category'
+    
 
 class TileLayerResource(GeoModelResource):
     class Meta:
