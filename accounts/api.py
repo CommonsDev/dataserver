@@ -6,7 +6,7 @@ from django.db import models
 from tastypie.http import HttpUnauthorized, HttpForbidden
 
 from tastypie import fields
-from tastypie.authentication import BasicAuthentication, ApiKeyAuthentication
+from tastypie.authentication import Authentication, BasicAuthentication, ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
@@ -36,7 +36,7 @@ class UserResource(ModelResource):
         allowed_methods = ['get', 'post']
         resource_name = 'user'
         fields = ['username']
-        authentication = BasicAuthentication()
+        authentication = Authentication()
         authorization = Authorization()
 
     def override_urls(self):
