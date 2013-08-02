@@ -17,9 +17,13 @@ urlpatterns = patterns('',
     (r'^accounts/', include('userena.urls')),
   
     (r'^api/', include('scout.urls')),
-    (r'^api/', include('accounts.urls')),                       
+    (r'^api/', include('accounts.urls')),
+    (r'^api/', include('alambic.urls')),
+    (r'^flipflop/', include('flipflop.urls')),
                        
-    url(r'^djangular/', include('djangular.urls')),                       
+    url(r'^djangular/', include('djangular.urls')),
+
+    (r'^bucket/', include('bucket.urls')),
                        
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

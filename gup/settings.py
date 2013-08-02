@@ -148,6 +148,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
+    'multiuploader.context_processors.booleans',
 )
 
 INSTALLED_APPS = (
@@ -190,6 +191,15 @@ INSTALLED_APPS = (
     'cmsplugin_filer_file',
     'cms.plugins.video',
     'cms.plugins.twitter',
+    'cms.plugins.picture',
+    'cms.plugins.googlemap',    
+
+    'taggit',
+    'flipflop',    
+    'alambic',
+    'bucket',
+    'multiuploader',
+    'sorl.thumbnail',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -251,3 +261,34 @@ TASTYPIE_ALLOW_MISSING_SLASH=True
 CMS_TEMPLATES = (
     ('cms_test.html', 'Test Template'),
 )
+
+## bucket
+BUCKET_FILES_FOLDER = 'bucket'
+
+## multiuploader
+
+MULTIUPLOADER_FILE_EXPIRATION_TIME = 3600
+
+MULTIUPLOADER_FORMS_SETTINGS = {
+    'default': {
+        'FILE_TYPES' : ["txt","zip","jpg","jpeg","flv","png"],
+        'CONTENT_TYPES' : [
+            'image/jpeg',
+            'image/png',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-powerpoint',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/vnd.oasis.opendocument.text',
+            'application/vnd.oasis.opendocument.spreadsheet',
+            'application/vnd.oasis.opendocument.presentation',
+            'text/plain',
+            'text/rtf',
+        ],
+        'MAX_FILE_SIZE': 10485760,
+        'MAX_FILE_NUMBER':5,
+        'AUTO_UPLOAD': True,
+    },
+}

@@ -6,6 +6,8 @@ from django.conf import settings
 from django.db import models
 from django.utils.text import get_valid_filename
 
+from userena.utils import get_profile_model
+
 from taggit.managers import TaggableManager
 
 class Bucket(models.Model):
@@ -14,13 +16,17 @@ class Bucket(models.Model):
     def __unicode__(self):
         return u"Bucket with %d objects" % len(self.files.all())
 
+
+        
 class BucketFile(models.Model):
     """
     A file contained in a bucket
     """
     bucket = models.ForeignKey(Bucket, related_name='files')
-    tags = TaggableManager()
+    tags = TaggableManager(blank=True)
     uploaded_on = models.DateTimeField(auto_now_add=True)
+    description = models.TextField(null=True, blank=True)
+    # uploaded_by = models.ForeignKey(get_profile_model())
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
@@ -37,3 +43,20 @@ class BucketFile(models.Model):
     
     file = models.FileField(upload_to=_upload_to, max_length=255)
     thumbnail_url = models.CharField(max_length=2048)
+
+
+class BucketFileComment(models.Model):
+    """
+    A comment on a file
+    """
+    bucket_file = models.ForeignKey(BucketFile, related_name='comments')
+    submitter = models.ForeignKey(get_profile_model())
+    submitted_on = models.DateTimeField(auto_now_add=True)
+    text = models.TextField()
+
+
+    def __unicode__(self):
+        return "%s on %s (%s)" % (self.text,
+                                  self.bucket_file,
+                                  self.submitter)
+    
