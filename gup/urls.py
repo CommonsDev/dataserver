@@ -4,7 +4,25 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 
+from tastypie.api import Api
+
+from scout.api import MapResource, TileLayerResource, MarkerResource, MarkerCategoryResource
+from accounts.api import ProfileResource, UserResource
+
 admin.autodiscover()
+
+# Build API
+api = Api(api_name='v0')
+
+# Scout
+api.register(MapResource())
+api.register(TileLayerResource())
+api.register(MarkerResource())
+api.register(MarkerCategoryResource())
+
+# User
+api.register(ProfileResource())
+api.register(UserResource())
 
 urlpatterns = patterns('',
     # Examples:
@@ -16,8 +34,7 @@ urlpatterns = patterns('',
 
     (r'^accounts/', include('userena.urls')),
   
-    (r'^api/', include('scout.urls')),
-    (r'^api/', include('accounts.urls')),
+    (r'^api/', include(api.urls)),
     (r'^api/', include('alambic.urls')),
     (r'^flipflop/', include('flipflop.urls')),
                        

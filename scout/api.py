@@ -88,7 +88,7 @@ class Base64FileField(fields.FileField):
 class MapResource(GeoModelResource):
     class Meta:
         queryset = Map.objects.all()
-        resource_name = 'map'
+        resource_name = 'scout/map'
         authorization = DjangoAuthorization()
         detail_uri_name = 'slug'        
 
@@ -97,13 +97,15 @@ class MapResource(GeoModelResource):
 class MarkerCategoryResource(ModelResource):
     class Meta:
         queryset = MarkerCategory.objects.all()
-        resource_name = 'marker_category'
+        resource_name = 'scout/marker_category'
+        authentication = ApiKeyAuthentication()        
+        authorization = DjangoAuthorization()        
     
 
 class TileLayerResource(GeoModelResource):
     class Meta:
         queryset = TileLayer.objects.all()
-        resource_name = 'tilelayer'
+        resource_name = 'scout/tilelayer'
         authorization = DjangoAuthorization()        
 
     maps = fields.ToManyField(MapResource, 'maps')
@@ -112,7 +114,7 @@ class TileLayerResource(GeoModelResource):
 class MarkerResource(GeoModelResource):
     class Meta:
         queryset = Marker.objects.all()
-        resource_name = 'marker'
+        resource_name = 'scout/marker'
         authentication = ApiKeyAuthentication()
         authorization = DjangoAuthorization()
         always_return_data = True

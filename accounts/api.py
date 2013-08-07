@@ -18,7 +18,7 @@ from .models import GUPProfile
 class ProfileResource(ModelResource):
     class Meta:
         queryset = GUPProfile.objects.all()
-        resource_name = 'profile'
+        resource_name = 'account/profile'
         authorization = DjangoAuthorization()
 
         fields = ['mugshot']
@@ -34,7 +34,7 @@ class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         allowed_methods = ['get', 'post']
-        resource_name = 'user'
+        resource_name = 'account/user'
         fields = ['username']
         authentication = Authentication()
         authorization = Authorization()
