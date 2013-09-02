@@ -89,7 +89,9 @@ class MapResource(GeoModelResource):
     class Meta:
         queryset = Map.objects.all()
         resource_name = 'scout/map'
+        authentication = ApiKeyAuthentication()        
         authorization = DjangoAuthorization()
+        always_return_data = True        
         detail_uri_name = 'slug'        
 
     tile_layers = fields.ToManyField('scout.api.TileLayerResource', 'tilelayers', full=True)
@@ -99,7 +101,8 @@ class MarkerCategoryResource(ModelResource):
         queryset = MarkerCategory.objects.all()
         resource_name = 'scout/marker_category'
         authentication = ApiKeyAuthentication()        
-        authorization = DjangoAuthorization()        
+        #authorization = DjangoAuthorization()
+        authorization = Authorization()        
     
 
 class TileLayerResource(GeoModelResource):
@@ -108,8 +111,8 @@ class TileLayerResource(GeoModelResource):
         resource_name = 'scout/tilelayer'
         authorization = DjangoAuthorization()        
 
-    maps = fields.ToManyField(MapResource, 'maps')
-    markers = fields.ToManyField('scout.api.MarkerResource', 'markers', full=True)
+    maps = fields.ToManyField(MapResource, 'maps', null=True)
+    markers = fields.ToManyField('scout.api.MarkerResource', 'markers', null=True, full=True)
 
 class MarkerResource(GeoModelResource):
     class Meta:
@@ -121,6 +124,7 @@ class MarkerResource(GeoModelResource):
     
     tile_layer = fields.ToOneField(TileLayerResource, 'tile_layer')
     created_by = fields.ToOneField(ProfileResource, 'created_by', full=True)
+    category = fields.ToOneField(MarkerCategoryResource, 'category', full=True)
 
     picture = Base64FileField(attribute="picture", null=True, blank=True)
 
@@ -129,14 +133,5 @@ class MarkerResource(GeoModelResource):
             user = User.objects.get(pk=bundle.request.user.id)
             bundle.data['created_by'] = {'pk': user.get_profile().pk}
             
-        return bundle     
-        
-    
-    
-    
-    
-    
-    
-        
-
+        return bundle
         

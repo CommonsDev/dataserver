@@ -3,6 +3,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
+from autoslug import AutoSlugField
+
 from accounts.models import GUPProfile
 
 class TileLayer(models.Model):
@@ -30,7 +32,7 @@ class Map(models.Model):
     """
     A map.
     """
-    slug = models.SlugField(db_index=True)
+    slug = AutoSlugField(db_index=True, populate_from='name', unique=True)
     name = models.CharField(max_length=200, verbose_name=_("name"))        
     description = models.TextField(blank=True, null=True, verbose_name=_("description"))
 
@@ -61,7 +63,7 @@ class MarkerCategory(models.Model):
 
     def __unicode__(self):
         return self.name
-    
+            
 class Marker(models.Model):
     """
     Point of interest.
@@ -71,6 +73,8 @@ class Marker(models.Model):
 
     created_by = models.ForeignKey(GUPProfile)
     created_on = models.DateTimeField(auto_now_add=True)
+
+    category = models.ForeignKey(MarkerCategory, related_name='markers')
 
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)

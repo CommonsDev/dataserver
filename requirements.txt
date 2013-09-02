@@ -7,6 +7,7 @@ django-extensions==1.1.1
 django-tastypie==0.9.15
 django-userena==1.2.0
 djangular==0.2.2
+django-autoslug==1.7.1
 psycopg2==2.5
 python-dateutil==2.1
 django-taggit==0.10a1

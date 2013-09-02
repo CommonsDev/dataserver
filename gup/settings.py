@@ -194,6 +194,7 @@ INSTALLED_APPS = (
     'cms.plugins.picture',
     'cms.plugins.googlemap',    
 
+    'autoslug',
     'taggit',
     'flipflop',    
     'alambic',
