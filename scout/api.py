@@ -1,3 +1,7 @@
+import base64
+import os
+import mimetypes
+
 from tastypie import fields
 from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.authentication import ApiKeyAuthentication
@@ -5,17 +9,11 @@ from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
 
 from django.contrib.auth.models import User
-
-from .models import Map, TileLayer, Marker, MarkerCategory
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from accounts.api import ProfileResource
 
-import base64
-import os
-import mimetypes
-
-from django.core.files.uploadedfile import SimpleUploadedFile
-from tastypie import fields
+from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
 
 class Base64FileField(fields.FileField):
     """
@@ -94,7 +92,8 @@ class MapResource(GeoModelResource):
         always_return_data = True        
         detail_uri_name = 'slug'        
 
-    tile_layers = fields.ToManyField('scout.api.TileLayerResource', 'tilelayers', full=True)
+    data_layers = fields.ToManyField('scout.api.DataLayerResource', 'datalayers', full=True, null=True)
+    tile_layer = fields.ForeignKey('scout.api.TileLayerResource', 'tilelayer', full=True)
 
 class MarkerCategoryResource(ModelResource):
     class Meta:
@@ -112,8 +111,16 @@ class TileLayerResource(GeoModelResource):
         authorization = DjangoAuthorization()        
 
     maps = fields.ToManyField(MapResource, 'maps', null=True)
-    markers = fields.ToManyField('scout.api.MarkerResource', 'markers', null=True, full=True)
 
+class DataLayerResource(ModelResource):
+    class Meta:
+        queryset = DataLayer.objects.all()
+        resource_name = 'scout/datalayer'
+        authorization = DjangoAuthorization()
+        
+    markers = fields.ToManyField('scout.api.MarkerResource', 'markers', null=True, full=True)
+    map = fields.ToOneField('scout.api.MapResource', 'map')
+    
 class MarkerResource(GeoModelResource):
     class Meta:
         queryset = Marker.objects.all()
@@ -122,7 +129,7 @@ class MarkerResource(GeoModelResource):
         authorization = DjangoAuthorization()
         always_return_data = True
     
-    tile_layer = fields.ToOneField(TileLayerResource, 'tile_layer')
+    data_layer = fields.ToOneField(DataLayerResource, 'datalayer')
     created_by = fields.ToOneField(ProfileResource, 'created_by', full=True)
     category = fields.ToOneField(MarkerCategoryResource, 'category', full=True)
 

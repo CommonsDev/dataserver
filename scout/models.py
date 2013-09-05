@@ -1,5 +1,6 @@
+import os
+
 from django.contrib.gis.db import models
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 
@@ -27,7 +28,7 @@ class TileLayer(models.Model):
     def __unicode__(self):
         return self.name or "Unnamed layer"
 
-
+        
 class Map(models.Model):
     """
     A map.
@@ -41,9 +42,20 @@ class Map(models.Model):
     zoom = models.IntegerField(default=7, verbose_name=_("zoom"))
     locate = models.BooleanField(default=False, verbose_name=_("locate"), help_text=_("Locate user on load?"))
     modified_at = models.DateTimeField(auto_now=True)
-    tilelayers = models.ManyToManyField(TileLayer, related_name='maps')
+    tilelayer = models.ForeignKey(TileLayer, related_name='maps')
 
     objects = models.GeoManager()
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.tilelayer = TileLayer.objects.all()[0]
+
+        result = super(Map, self).save(*args, **kwargs)
+
+        # Add a data layer once saved
+        DataLayer.objects.create(map=self)
+
+        return result 
 
     def get_absolute_url(self):
         return reverse("map", kwargs={'slug': self.slug, 'username': self.owner.username})
@@ -51,10 +63,14 @@ class Map(models.Model):
     def __unicode__(self):
         return self.name or "Unnamed map"
         
-import os
-def marker_upload(instance, filename):
-    return os.path.join(instance.id)
 
+class DataLayer(models.Model):
+    """
+    A layer containing features (markers, polylines and polygons)
+    """
+    map = models.ForeignKey(Map, related_name='datalayers')
+
+    
 class MarkerCategory(models.Model):
     """
     A category for a marker
@@ -69,7 +85,7 @@ class Marker(models.Model):
     Point of interest.
     """
     position = models.PointField(geography=True)
-    tile_layer = models.ForeignKey(TileLayer, related_name='markers')
+    datalayer = models.ForeignKey(DataLayer, related_name='markers')
 
     created_by = models.ForeignKey(GUPProfile)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -79,6 +95,9 @@ class Marker(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
 
+    def marker_upload(instance, filename):
+        return os.path.join(instance.id)
+    
     picture = models.ImageField(upload_to=marker_upload,
                                 null=True, blank=True)
     
