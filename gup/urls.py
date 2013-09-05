@@ -6,7 +6,7 @@ from django.views.generic import TemplateView
 
 from tastypie.api import Api
 
-from scout.api import MapResource, TileLayerResource, MarkerResource, MarkerCategoryResource
+from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
 from accounts.api import ProfileResource, UserResource
 
 admin.autodiscover()
@@ -18,6 +18,7 @@ api = Api(api_name='v0')
 api.register(MapResource())
 api.register(TileLayerResource())
 api.register(MarkerResource())
+api.register(DataLayerResource())
 api.register(MarkerCategoryResource())
 
 # User
