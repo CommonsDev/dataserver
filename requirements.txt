@@ -11,6 +11,8 @@ django-autoslug==1.7.1
 psycopg2==2.5
 python-dateutil==2.1
 django-taggit==0.10a1
+django-multiuploader==0.2.4
+
 
 # CMS 3.0beta -- buggy
 -e git+https://github.com/divio/django-cms.git@develop#egg=django-cms
