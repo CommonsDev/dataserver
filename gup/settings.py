@@ -192,7 +192,8 @@ INSTALLED_APPS = (
     'cms.plugins.video',
     'cms.plugins.twitter',
     'cms.plugins.picture',
-    'cms.plugins.googlemap',    
+    'cms.plugins.googlemap',
+#    'cmsplugin_news',
 
     'autoslug',
     'taggit',
@@ -261,7 +262,7 @@ TASTYPIE_ALLOW_MISSING_SLASH=True
 
 # CMS
 CMS_TEMPLATES = (
-    ('cms_test.html', 'Test Template'),
+    ('cms_project.html', 'Project Page'),
 )
 
 ## bucket

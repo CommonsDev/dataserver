@@ -44,11 +44,41 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/login%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('login'), name="api_login"),
+            url(r"^(?P<resource_name>%s)/login/google%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('login_google'), name="api_login_google"),
             url(r'^(?P<resource_name>%s)/logout%s$' %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('logout'), name='api_logout'),
         ]
 
+    def login_google(self, request, **kwargs):
+        """
+        Given an oauth2 google token, check it and if ok, return or
+        create a user.
+        """
+        import httplib, urllib
+        import simplejson
+        
+        self.method_check(request, allowed=['post'])        
+        data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+
+        oauth_token = data.get('access_token', '')
+        conn = httplib.HTTPSConnection("www.googleapis.com")
+        conn.request("GET", "/oauth2/v1/userinfo?access_token=%s" % oauth_token)
+        response = conn.getresponse()
+
+        user = None
+        if response.reason == "OK":
+            data = simplejson.loads(response.read())
+            if data['verified_email']:
+                user, created = User.objects.get_or_create(username=data['email'],
+                                                           email=data['email'],
+                                                           first_name=data['given_name'],
+                                                           last_name=data['family_name'])
+
+        return self.login_to_apikey(request, user)
+        
     def login(self, request, **kwargs):
         """
         Login a user against a username/password.
@@ -61,10 +91,14 @@ class UserResource(ModelResource):
         username = data.get('username', '')
         password = data.get('password', '')
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)        
+        return self.user_to_apikey(request, user)
+
+
+    def login_to_apikey(self, request, user):
         if user:
             if user.is_active:
-                login(request, user)
+                # login(request, user)
 
                 try:
                     key = ApiKey.objects.get(user=user)

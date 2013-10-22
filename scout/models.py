@@ -53,7 +53,8 @@ class Map(models.Model):
         result = super(Map, self).save(*args, **kwargs)
 
         # Add a data layer once saved
-        DataLayer.objects.create(map=self)
+        if self.pk is None:
+            DataLayer.objects.create(map=self)
 
         return result 
 
