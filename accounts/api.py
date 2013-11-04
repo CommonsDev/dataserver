@@ -92,7 +92,7 @@ class UserResource(ModelResource):
         password = data.get('password', '')
 
         user = authenticate(username=username, password=password)        
-        return self.user_to_apikey(request, user)
+        return self.login_to_apikey(request, user)
 
 
     def login_to_apikey(self, request, user):
