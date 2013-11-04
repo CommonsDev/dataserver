@@ -144,4 +144,4 @@ class UserResource(ModelResource):
         else:
             return self.create_response(request, {'success': False}, HttpUnauthorized)
 
-models.signals.post_save.connect(create_api_key, sender=User)        
+models.signals.post_save.connect(create_api_key, sender=User)
