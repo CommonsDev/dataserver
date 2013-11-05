@@ -22,31 +22,42 @@ class Migration(SchemaMigration):
         # Adding model 'Map'
         db.create_table(u'scout_map', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50)),
+            ('slug', self.gf('autoslug.fields.AutoSlugField')(unique=True, max_length=50, populate_from='name', unique_with=())),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('center', self.gf('django.contrib.gis.db.models.fields.PointField')(geography=True)),
             ('zoom', self.gf('django.db.models.fields.IntegerField')(default=7)),
             ('locate', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('modified_at', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('tilelayer', self.gf('django.db.models.fields.related.ForeignKey')(related_name='maps', to=orm['scout.TileLayer'])),
         ))
         db.send_create_signal(u'scout', ['Map'])
 
-        # Adding M2M table for field tilelayers on 'Map'
-        db.create_table(u'scout_map_tilelayers', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('map', models.ForeignKey(orm[u'scout.map'], null=False)),
-            ('tilelayer', models.ForeignKey(orm[u'scout.tilelayer'], null=False))
+        # Adding model 'DataLayer'
+        db.create_table(u'scout_datalayer', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('map', self.gf('django.db.models.fields.related.ForeignKey')(related_name='datalayers', to=orm['scout.Map'])),
         ))
-        db.create_unique(u'scout_map_tilelayers', ['map_id', 'tilelayer_id'])
+        db.send_create_signal(u'scout', ['DataLayer'])
+
+        # Adding model 'MarkerCategory'
+        db.create_table(u'scout_markercategory', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('icon_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('icon_color', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('marker_color', self.gf('django.db.models.fields.CharField')(max_length=30)),
+        ))
+        db.send_create_signal(u'scout', ['MarkerCategory'])
 
         # Adding model 'Marker'
         db.create_table(u'scout_marker', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('position', self.gf('django.contrib.gis.db.models.fields.PointField')(geography=True)),
-            ('tile_layer', self.gf('django.db.models.fields.related.ForeignKey')(related_name='markers', to=orm['scout.TileLayer'])),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('datalayer', self.gf('django.db.models.fields.related.ForeignKey')(related_name='markers', to=orm['scout.DataLayer'])),
+            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.GUPProfile'])),
             ('created_on', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='markers', to=orm['scout.MarkerCategory'])),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
             ('picture', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
@@ -61,14 +72,25 @@ class Migration(SchemaMigration):
         # Deleting model 'Map'
         db.delete_table(u'scout_map')
 
-        # Removing M2M table for field tilelayers on 'Map'
-        db.delete_table('scout_map_tilelayers')
+        # Deleting model 'DataLayer'
+        db.delete_table(u'scout_datalayer')
+
+        # Deleting model 'MarkerCategory'
+        db.delete_table(u'scout_markercategory')
 
         # Deleting model 'Marker'
         db.delete_table(u'scout_marker')
 
 
     models = {
+        u'accounts.gupprofile': {
+            'Meta': {'object_name': 'GUPProfile'},
+            'favourite_snack': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
+            'privacy': ('django.db.models.fields.CharField', [], {'default': "'registered'", 'max_length': '15'}),
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
+        },
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -105,6 +127,11 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
+        u'scout.datalayer': {
+            'Meta': {'object_name': 'DataLayer'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'map': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'datalayers'", 'to': u"orm['scout.Map']"})
+        },
         u'scout.map': {
             'Meta': {'object_name': 'Map'},
             'center': ('django.contrib.gis.db.models.fields.PointField', [], {'geography': 'True'}),
@@ -113,20 +140,29 @@ class Migration(SchemaMigration):
             'locate': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'modified_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50'}),
-            'tilelayers': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'maps'", 'symmetrical': 'False', 'to': u"orm['scout.TileLayer']"}),
+            'slug': ('autoslug.fields.AutoSlugField', [], {'unique': 'True', 'max_length': '50', 'populate_from': "'name'", 'unique_with': '()'}),
+            'tilelayer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'maps'", 'to': u"orm['scout.TileLayer']"}),
             'zoom': ('django.db.models.fields.IntegerField', [], {'default': '7'})
         },
         u'scout.marker': {
             'Meta': {'object_name': 'Marker'},
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.MarkerCategory']"}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']"}),
             'created_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'datalayer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.DataLayer']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'picture': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'position': ('django.contrib.gis.db.models.fields.PointField', [], {'geography': 'True'}),
-            'tile_layer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.TileLayer']"}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'})
+        },
+        u'scout.markercategory': {
+            'Meta': {'object_name': 'MarkerCategory'},
+            'icon_color': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'icon_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'marker_color': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
         },
         u'scout.tilelayer': {
             'Meta': {'object_name': 'TileLayer'},

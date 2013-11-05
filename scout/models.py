@@ -77,6 +77,9 @@ class MarkerCategory(models.Model):
     A category for a marker
     """
     name = models.CharField(max_length=255)
+    icon_name = models.CharField(max_length=255)
+    icon_color = models.CharField(max_length=30)
+    marker_color = models.CharField(max_length=30)
 
     def __unicode__(self):
         return self.name
