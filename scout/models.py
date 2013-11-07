@@ -51,11 +51,11 @@ class Map(models.Model):
             self.tilelayer = TileLayer.objects.all()[0]
 
         result = super(Map, self).save(*args, **kwargs)
-
+            
         # Add a data layer once saved
-        if self.pk is None:
+        if len(self.datalayers.all()) == 0:
             DataLayer.objects.create(map=self)
-
+            
         return result 
 
     def get_absolute_url(self):
@@ -71,6 +71,9 @@ class DataLayer(models.Model):
     """
     map = models.ForeignKey(Map, related_name='datalayers')
 
+    def __unicode__(self):
+        return u"Datalayer for %s" % self.map
+    
     
 class MarkerCategory(models.Model):
     """
@@ -90,6 +93,8 @@ class Marker(models.Model):
     """
     position = models.PointField(geography=True)
     datalayer = models.ForeignKey(DataLayer, related_name='markers')
+
+    address = models.TextField(default="")
 
     created_by = models.ForeignKey(GUPProfile)
     created_on = models.DateTimeField(auto_now_add=True)

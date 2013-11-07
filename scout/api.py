@@ -11,6 +11,8 @@ from tastypie.resources import ModelResource
 from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from pygeocoder import Geocoder
+
 from accounts.api import ProfileResource
 
 from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
@@ -99,7 +101,7 @@ class MarkerCategoryResource(ModelResource):
     class Meta:
         queryset = MarkerCategory.objects.all()
         resource_name = 'scout/marker_category'
-        authentication = ApiKeyAuthentication()        
+        #authentication = ApiKeyAuthentication()        
         #authorization = DjangoAuthorization()
         authorization = Authorization()        
     
@@ -139,6 +141,14 @@ class MarkerResource(GeoModelResource):
         if not bundle.obj.pk:
             user = User.objects.get(pk=bundle.request.user.id)
             bundle.data['created_by'] = {'pk': user.get_profile().pk}
+
+        # Resolve position
+        position = bundle.data['position']['coordinates']
+        geo_results = Geocoder.reverse_geocode(position[0], position[1])
+        if len(geo_results) > 0:
+            bundle.data['address'] = geo_results[0]
+
+        
             
         return bundle
         
