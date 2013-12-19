@@ -7,6 +7,7 @@ from django.utils.translation import ugettext as _
 from autoslug import AutoSlugField
 
 from accounts.models import GUPProfile
+from bucket.models import Bucket
 
 class TileLayer(models.Model):
     """
@@ -44,11 +45,16 @@ class Map(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
     tilelayer = models.ForeignKey(TileLayer, related_name='maps')
 
+    # File container (bucket)
+    bucket = models.ForeignKey(Bucket, related_name='map')
+
     objects = models.GeoManager()
 
     def save(self, *args, **kwargs):
         if self.pk is None:
             self.tilelayer = TileLayer.objects.all()[0]
+            self.bucket = Bucket.objects.create()
+            
 
         result = super(Map, self).save(*args, **kwargs)
             
@@ -107,8 +113,7 @@ class Marker(models.Model):
     def marker_upload(instance, filename):
         return os.path.join(instance.id)
     
-    picture = models.ImageField(upload_to=marker_upload,
-                                null=True, blank=True)
+    picture_url = models.URLField(blank=True)
     
     objects = models.GeoManager()
 
