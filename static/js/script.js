@@ -14,17 +14,12 @@ $(function(){
         transitions: ['dissolve']
     });
 
-    $(document).bind('afterready', function() {
-	    var wW = $('body').width(); 
-	    $('#main #slider .pagination').css('left', wW/2 - 475 + 175);
-	});
-
     var wW = $('body').width(); 
     $('header').css('left', wW/2 - 475);
 
     setTimeout(function() {
         $(document).trigger('afterready');
-    }, 1000);
+    }, 3000);
 
     $("a[href^=#]").click(function() {
 	    $('html, body').animate({
