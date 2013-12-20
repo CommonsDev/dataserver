@@ -193,6 +193,8 @@ INSTALLED_APPS = (
 #   'cms.plugins.twitter',
     'cms.plugins.picture',
     'cms.plugins.googlemap',
+    'cms_background_images',
+
 #    'cmsplugin_news',
 
     'autoslug',
@@ -202,7 +204,6 @@ INSTALLED_APPS = (
     'bucket',
     'multiuploader',
     'sorl.thumbnail',
-    'background_images',
 )
 
 # A sample logging configuration. The only tangible logging
