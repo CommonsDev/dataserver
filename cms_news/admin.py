@@ -4,10 +4,10 @@ from django.db import models
 from django import forms
 
 from cms_news.forms import NewsForm
-from cms_news.models import News
+from cms_news.models import NewsEntry
 
 
-class NewsAdmin(admin.ModelAdmin):
+class NewsEntryAdmin(admin.ModelAdmin):
     """
         Admin for news
     """
@@ -33,7 +33,7 @@ class NewsAdmin(admin.ModelAdmin):
         """
             Override to use the objects and not just the default visibles only.
         """
-        return News.objects.all()
+        return NewsEntry.objects.all()
 
     def make_published(self, request, queryset):
         """
@@ -55,4 +55,4 @@ class NewsAdmin(admin.ModelAdmin):
                                             rows_updated) % {'count': rows_updated})
     make_unpublished.short_description = _('Unpublish selected news')
 
-admin.site.register(News, NewsAdmin)
+admin.site.register(NewsEntry, NewsEntryAdmin)

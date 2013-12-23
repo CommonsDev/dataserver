@@ -6,12 +6,12 @@ from cms.plugin_pool import plugin_pool
 #from cms.plugins.text.settings import USE_TINYMCE
 
 #from cmsplugin_news.widgets.wymeditor_widget import WYMEditor
-from cms_news.models import News
+from cms_news.models import NewsEntry
 
 
 class NewsForm(ModelForm):
     class Meta:
-        model = News
+        model = NewsEntry
 
 #    def _get_widget(self):
 #        plugins = plugin_pool.get_text_enabled_plugins(placeholder=None,
