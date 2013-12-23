@@ -31,8 +31,8 @@ class News(CMSPlugin):
     """
 
     title = models.CharField(_('Title'), max_length=255, blank=True)
-    slug = models.SlugField(_('Slug'), unique_for_date='pub_date',
-                        help_text=_('A slug is a short name which uniquely identifies the news item for this day'), blank=True )
+    #slug = models.SlugField(_('Slug'), unique_for_date='pub_date',
+    #                   help_text=_('A slug is a short name which uniquely identifies the news item for this day'), blank=True )
     #excerpt = models.TextField(_('Excerpt'), blank=True)
     content = models.TextField(_('Content'), blank=True)
     # content = ckeditor.fields.RichTextField(_('Content'), blank=True)
@@ -62,6 +62,9 @@ class News(CMSPlugin):
     #page_link = models.ForeignKey(Page, verbose_name=_("page"), null=True,
     #    blank=True, help_text=_("If present, clicking on image will take user \
     #    to specified page."))
+    
+    save_as = False
+    save_on_top = True
     
     def get_news_picture_url(self):
         try:

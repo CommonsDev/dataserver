@@ -26,7 +26,7 @@ class CMSNewsPlugin(CMSPluginBase):
         })
         return context
 
-    save_as = True
+    save_as = False
     save_on_top = True
     
 plugin_pool.register_plugin(CMSNewsPlugin)

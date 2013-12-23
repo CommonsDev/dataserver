@@ -12,11 +12,11 @@ class NewsAdmin(admin.ModelAdmin):
         Admin for news
     """
     date_hierarchy = 'pub_date'
-    list_display = ('slug', 'title', 'is_published', 'news_picture', 'pub_date')
+    list_display = ('title', 'is_published', 'news_picture', 'pub_date')
     #list_editable = ('title', 'is_published')
     list_filter = ('is_published', )
     search_fields = ['title', 'content']
-    prepopulated_fields = {'slug': ('title',)}
+    #prepopulated_fields = {'slug': ('title',)}
     
   
     actions = ['make_published', 'make_unpublished']
