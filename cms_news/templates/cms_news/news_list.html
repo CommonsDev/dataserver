@@ -1,0 +1,16 @@
+{% load i18n %}
+<h1>Actualités</h1>
+	<ul>
+		{% for news in latest %}
+    			  
+		<li>
+			<a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
+			<em>{{ news.pub_date}}</em>
+			<strong><a href="#">{{ news.title }}</a></strong>
+		</li>
+		{% empty %}
+   			<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
+		{% endfor %}
+
+	
+			

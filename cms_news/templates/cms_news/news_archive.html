@@ -1,0 +1,5 @@
+<h1>Latest news</h1>
+
+{% for object in latest %}
+	<p><strong>{{ object.title }}</strong><br/><a href="{{ object.get_absolute_url }}">Read more</a></p>
+{% endfor %}

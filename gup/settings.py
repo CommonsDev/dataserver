@@ -190,10 +190,10 @@ INSTALLED_APPS = (
     'filer',
     'cmsplugin_filer_file',
     'cms.plugins.video',
-    'cms.plugins.twitter',
+    #'cms.plugins.twitter',
     'cms.plugins.picture',
     'cms.plugins.googlemap',
-#    'cmsplugin_news',
+    'cms_news',
 
     'autoslug',
     'taggit',

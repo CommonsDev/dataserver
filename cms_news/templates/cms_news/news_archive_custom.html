@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load pagination_tags %}
+<h2 style="font-size: 22px; color: #808080;">Nyheter</h2>
+{% autopaginate news pages %}
+{% for object in news %}
+    {% if object.show_in_newsarchive %}
+        <div class="span4">    
+            <h2>
+                <span style="line-height: 5px; font-size: 22px;">{{ object.title }}</span>
+            </h2> 
+            <p>
+               <span style="line-height: 5px;">
+                   {% if object.get_news_picture_url %}
+                   <span class="plugin_picture align-right">
+                        <a href="{{ object.page_link.get_absolute_url }}">
+                            <img src="{{ object.news_picture.url }}" alt="{{ object.title}} " title="{{ object.title }}">
+                        </a>
+                    </span>
+                    {% endif %}
+                {{ object.content|safe  }}
+               </span>
+            </p>
+            {% if object.page_link %}
+            <p class="art-button">
+                <span style="line-height: 5px;">
+                    <span class="plugin_link">
+                        <a href="{{ object.page_link.get_absolute_url }}">{% trans 'Les mer: ' %}{{ object.title }}</a>
+                    </span>
+                </span>
+            </p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% empty %}
+    <h2>{% trans 'Ingen nyheter' %}</h2>
+{% endfor %}
+<div class="span9">    
+{% paginate %}
+</div>
