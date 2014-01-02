@@ -13,22 +13,19 @@ class NewsEntryAdmin(admin.ModelAdmin):
     """
     date_hierarchy = 'pub_date'
     list_display = ('title', 'is_published', 'news_picture', 'pub_date')
-    #list_editable = ('title', 'is_published')
     list_filter = ('is_published', )
     search_fields = ['title', 'content']
-    #prepopulated_fields = {'slug': ('title',)}
     
-  
     actions = ['make_published', 'make_unpublished']
 
     save_as = True
     save_on_top = True
     
+    # TODO: check how we can use ckeditor
     #formfield_overrides = { models.TextField: {'widget': forms.Textarea(attrs={'class':'ckeditor'})}, }
     #class Media:
         #js = ('/media/ckeditor/ckeditor.js',) # The , at the end of this list IS important.
   
-    
     def queryset(self, request):
         """
             Override to use the objects and not just the default visibles only.

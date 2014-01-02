@@ -1,27 +1,46 @@
 {% load i18n %}
-<section id="col1">
-	<h1>Actualités</h1>		 
-	<ul>
-		{% for news in latest %}    			  
-		<li>
-			<a href="#"><img width="62px" src="{% if news.news_picture %}{{news.news_picture.url}}{% else %}{{ STATIC_URL }}images/_TEMP/mini_actu.jpg{% endif %}" /></a>
-			<em>{{ news.pub_date}}</em>
-			<strong><a href="#">{{ news.title }}</a></strong>			
-		</li>
-		{% empty %}
-   			<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
-		{% endfor %}
-	</ul>
-</section>
-<section id="col2">
-	{% for news in latest|slice:":1" %}    			  
-		<img width="388px" class="splash" src="{% if news.news_picture %}{{news.news_picture.url}}{% else %}{{ STATIC_URL }}images/_TEMP/projet_pic.jpg{%endif%}" alt="" />
-		<span class="date">{{ news.pub_date}}</span>
-		<h2>{{ news.title }}</h2>
-		<div class="desc">	
-			{{ news.content }}
+{% load cms_tags sekizai_tags %}
+
+{% addtoblock "js" %}
+	<script src="{{ STATIC_URL }}js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+{% endaddtoblock %}	
+
+<script>
+  $(function() {
+    $( "#news_list" ).tabs();
+  });
+</script>
+
+<div id="news_list">
+	<section id="col1">
+		<h1>Actualités</h1>		 
+		<ul>
+			{% for news in latest %}    			  
+			<li>
+				<img width="62px" src="{% if news.news_picture %}{{news.news_picture.url}}{% else %}{{ STATIC_URL }}images/_TEMP/mini_actu.jpg{% endif %}" />
+				<em>{{ news.pub_date}}</em>
+				<strong><a href="#news_{{forloop.counter}}">{{ news.title }}</a></strong>			
+			</li>
+			{% empty %}
+				<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
+			{% endfor %}
+		</ul>
+	</section>
+	<section id="col2">
+		{% for news in latest %}
+		<div id="news_{{forloop.counter}}">
+			{% comment %}TODO: fetch default anchor from plugin settings{% endcomment %}    			  
+			<a href="{% if news.url%}{{news.url}}{% else %}#actu{% endif %}">
+				<img width="388px" class="splash" src="{% if news.news_picture %}{{news.news_picture.url}}{% else %}{{ STATIC_URL }}images/_TEMP/projet_pic.jpg{%endif%}" alt="" />
+			</a>
+			<span class="date">{{ news.pub_date}}</span>
+			<h2>{{ news.title }}</h2>
+			<div class="desc">	
+				{{ news.content }}
+			</div>
 		</div>
-	{% empty %}
-   			<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
-	{% endfor %}
-</section>
+		{% empty %}
+				<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
+		{% endfor %}
+	</section>
+</div>

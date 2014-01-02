@@ -1,8 +1,0 @@
-<h1>News for {{ year }}</h1>
-<ul>
-    {% for date in date_list %}
-        <li><a href="{% url news_archive_month year=year month=date|date:'m'  %}">{{ date|date:"F" }}</a></li>
-    {% empty %}
-        <li>No news for this year</li>
-    {% endfor %}
-</ul>

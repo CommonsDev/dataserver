@@ -23,7 +23,7 @@ class CMSNewsPlugin(CMSPluginBase):
         """
             Render the latest news
         """
-        latest = NewsEntry.objects.all().order_by('-pub_date')[:5]
+        latest = NewsEntry.objects.all().order_by('-pub_date')[:10]
         context.update({
             'instance': instance,
             'latest': latest,

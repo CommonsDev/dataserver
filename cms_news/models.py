@@ -14,7 +14,7 @@ from cms.utils import get_cms_setting
 #from cms_news import settings
 from .utils import calculate_image_path
 
-
+# TODO : enhance management of published/unpublished news
 #class PublishedNewsManager(models.Manager):
     #"""
         #Filters out all unpublished and items with a publication date in the future
@@ -25,9 +25,9 @@ from .utils import calculate_image_path
                     #.filter(pub_date__lte=datetime.datetime.now())
     
 class NewsPlugin(CMSPlugin):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, blank=True)
 
-#class News(CMSPlugin):
+
 class NewsEntry(models.Model):
     """
     A piece of News
@@ -36,7 +36,7 @@ class NewsEntry(models.Model):
     title = models.CharField(_('Title'), max_length=255, blank=True)
     content = models.TextField(_('Content'), blank=True)
     # content = ckeditor.fields.RichTextField(_('Content'), blank=True)
-    news_picture = models.ImageField(_("News preview image(smaller - 100x100px)"), upload_to=calculate_image_path, max_length=255, null=True, blank=True)
+    news_picture = models.ImageField(_("News Image"), upload_to=calculate_image_path, max_length=255, null=True, blank=True)
 
     is_published = models.BooleanField(_('Published'), default=False)
     pub_date = models.DateTimeField(_('Publication date'), default=datetime.datetime.now)
