@@ -1,13 +1,23 @@
 {% load cms_tags menu_tags %}
+{% load thumbnail %}
 
 <div id="slider">
-    {% if instance.image1 %}<img src="{{ instance.image1.url }}" alt="" />
-        {% else %}<img src="{{ STATIC_URL }}images/_TEMP/projet_pic_large.jpg" alt="" />
+    {% if instance.image1 %}
+        {% thumbnail instance.image1 "2000" as im1 %}
+            <img src="{{ im1.url }}">
+        {% endthumbnail %}
+    {% else %}<img src="{{ STATIC_URL }}images/_TEMP/projet_pic_large.jpg">
     {% endif %}
-    {% if instance.image2 %}<img src="{{ instance.image2.url }}" alt="" />
-        {% else %} <img src="{{ STATIC_URL }}images/_TEMP/test.jpg" alt="" />
+    {% if instance.image2 %}
+        {% thumbnail instance.image2 "2000"  as im2 %}
+            <img src="{{ im2.url }}" alt="">
+        {% endthumbnail %}
+    {% else %} <img src="{{ STATIC_URL }}images/_TEMP/test.jpg" alt="">
     {% endif %}
-    {% if instance.image3 %}<img src="{{ instance.image3.url }}" alt="" />
-        {% else %}<img src="{{ STATIC_URL }}images/_TEMP/test2.jpg" alt="" />
+    {% if instance.image3 %}
+        {% thumbnail instance.image3 "2000" as im3 %}
+            <img src="{{ im3.url }}" alt="" />
+        {% endthumbnail %}
+    {% else %}<img src="{{ STATIC_URL }}images/_TEMP/test2.jpg" alt="">
     {% endif %}
 </div>

@@ -171,7 +171,7 @@ INSTALLED_APPS = (
     'guardian',
     'userena',
     'django_extensions',
-    'easy_thumbnails',
+    #'easy_thumbnails',
 
     'scout',
     'tastypie',
