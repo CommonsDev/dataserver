@@ -61,46 +61,15 @@
     	</section>
         <section id="actu">
             <div class="inner-wrap">
-                <section id="col1">
-                    <h1>Actualités</h1>
-                    <ul>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                    </ul>
-                </section>
-                <section id="col2">
-                    <img class="splash" src="{{ STATIC_URL }}images/_TEMP/projet_pic.jpg" alt="" />
-                    <span class="date">Le lundi 12 Septembre 2013</span>
-                    <h2>Le titre du projet</h2>
-                    <div class="desc">
-			  {% placeholder news_tmp_block or %}
-			  <h3>Cliquez pour écrire</h3>
-			  {% endplaceholder %}
-                    </div>
-                </section>
+                   {% placeholder news_block or %}
+			<section id="col1">
+				<h1>Actualités</h1>		 
+				<h3>Cliquez pour écrire</h3>
+			</section>
+			<section id="col2">
+			</section>			
+		    {% endplaceholder %}                   
+                
             </div>
         </section>
         <section id="carto">
