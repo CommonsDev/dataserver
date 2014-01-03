@@ -190,9 +190,11 @@ INSTALLED_APPS = (
     'filer',
     'cmsplugin_filer_file',
     'cms.plugins.video',
-    'cms.plugins.twitter',
+#   'cms.plugins.twitter',
     'cms.plugins.picture',
     'cms.plugins.googlemap',
+    'cms_background_images',
+
 #    'cmsplugin_news',
 
     'autoslug',
@@ -264,7 +266,6 @@ TASTYPIE_ALLOW_MISSING_SLASH=True
 CMS_TEMPLATES = (
     ('cms_project.html', 'Project Page'),
 )
-
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'
 

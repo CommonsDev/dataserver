@@ -38,12 +38,9 @@
 	    	</div>
     	</header>
     	<section id="main">
-	  {% placeholder project_pictures %}
-            <div id="slider">
-                <img src="{{ STATIC_URL }}images/_TEMP/projet_pic_large.jpg" alt="" />
-                <img src="{{ STATIC_URL }}images/_TEMP/test.jpg" alt="" />
-                <img src="{{ STATIC_URL }}images/_TEMP/test2.jpg" alt="" />
-            </div>
+	  {% placeholder project_pictures or %}
+		{% include "cms_background_images/plugin.html" %}
+	  {% endplaceholder %}
             <span id="slidercover">&nbsp;</span>
     		<div class="inner-wrap">
                 <h1>{% page_attribute "title" %}</h1>
