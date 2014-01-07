@@ -26,7 +26,9 @@
       {% cms_toolbar %}
     	<header>
     		<div class="wrap-header">
-	    		<img height="80" width="95" class="logo" src="{{ STATIC_URL }}images/_TEMP/logo_lille.jpg" alt="Lille" />  
+	    		{% placeholder logo or %}
+				<img height="80" width="95" class="logo" src="{{ STATIC_URL }}images/_TEMP/logo_lille.jpg" alt="Lille" /> 
+			{% endplaceholder %} 
 	    		<nav>
 	    			<ul>
 	    				<li><a href="#main">Le projet</a></li>
