@@ -75,7 +75,11 @@
             </div>
         </section>
         <section id="carto">
-            <span style="display:block;text-align:center;color:white;font-size:3rem;text-transform:uppercase;padding-top:100px"><iframe width="70%" height="500px" src="http://gup.extra-muros.coop/carte/region"/></span>
+	  {% placeholder carto or %}
+	    <span style="display:block;text-align:center;color:white;font-size:3rem;text-transform:uppercase;padding-top:100px">
+	       <iframe width="70%" height="500px" src="http://localhost:8080/#/test"/>
+	    </span>
+	  {% endplaceholder %}
         </section>
     </body>
     </html>

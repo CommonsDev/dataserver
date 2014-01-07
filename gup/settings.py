@@ -196,6 +196,7 @@ INSTALLED_APPS = (
     
     'cms_news',
     'cms_background_images',
+    'cms_carto',
     'autoslug',
     'taggit',
     'flipflop',    
