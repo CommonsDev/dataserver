@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from cms.models import CMSPlugin, Page
 from cms.utils import get_cms_setting
+from djangocms_text_ckeditor.fields import HTMLField
 
 #from cms_news import settings
 from .utils import calculate_image_path
@@ -34,7 +35,7 @@ class NewsEntry(models.Model):
     """
     news = models.ForeignKey(NewsPlugin, related_name="news")
     title = models.CharField(_('Title'), max_length=255, blank=True)
-    content = models.TextField(_('Content'), blank=True)
+    content = HTMLField(_('Content'), blank=True)
     # content = ckeditor.fields.RichTextField(_('Content'), blank=True)
     news_picture = models.ImageField(_("News Image"), upload_to=calculate_image_path, max_length=255, null=True, blank=True)
 

@@ -266,6 +266,27 @@ TASTYPIE_ALLOW_MISSING_SLASH=True
 CMS_TEMPLATES = (
     ('cms_project.html', 'Project Page'),
 )
+
+CKEDITOR_SETTINGS = {
+    'language': '{{ language }}',
+    'toolbar': 'CMS',
+    'skin': 'moono',
+    'height': '600',
+    'toolbar_CMS': [
+        ['Undo', 'Redo'],
+        ['ShowBlocks'],
+        ['Format', 'Styles'],
+        ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
+        '/',
+        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-',
+         'RemoveFormat'],
+        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+        ['Link', 'Unlink', 'Anchor'],
+        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-',
+         'Table'],
+        ['Source']
+    ]
+}
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'
 

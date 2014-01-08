@@ -8,6 +8,7 @@ from tastypie.api import Api
 
 from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
 from accounts.api import ProfileResource, UserResource
+from gup import views
 
 admin.autodiscover()
 
@@ -50,7 +51,9 @@ urlpatterns = patterns('',
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+#CMS
 urlpatterns += patterns('',
-    url(r'^', include('cms.urls')),
+    url(r'^mapage/', views.CMSRedirectView.as_view(), name='cmsredirect'),
+    url(r'^', include('cms.urls'), name='cms_home'),
 )
 

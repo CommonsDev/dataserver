@@ -33,8 +33,7 @@
 	</section>
 	<section id="col2">
 		{% for news in latest %}
-		<div id="news_{{forloop.counter}}">
-			{% comment %}TODO: fetch default anchor from plugin settings{% endcomment %}    			  
+		<div id="news_{{forloop.counter}}">    			  
 			<a href="{{news.url|default:'#actu' }}">
 				{% thumbnail news.news_picture "388" as big %}
 				<img class="splash" src="{{big.url}}" alt="" />
@@ -45,7 +44,7 @@
 			<span class="date">{{ news.pub_date}}</span>
 			<h2>{{ news.title }}</h2>
 			<div class="desc">	
-				{{ news.content }}
+				{{ news.content|safe }}
 			</div>
 		</div>
 		{% empty %}
