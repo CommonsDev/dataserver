@@ -17,7 +17,7 @@ DATABASES = {
         'USER': 'gup',
         'PASSWORD': 'gup',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'PORT': '',                      # Set to empty string for default.s
     }
 }
 
@@ -243,7 +243,7 @@ LEAFLET_CONFIG = {
 ANONYMOUS_USER_ID = -1
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 #LOGIN_URL = '/accounts/signin/'
-LOGIN_URL = 'login'
+LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
 AUTH_PROFILE_MODULE = 'accounts.GUPProfile'
@@ -263,6 +263,7 @@ APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
 
 # CMS
+PROJECT_PAGE_TEMPLATE = 'cms_project.html'
 CMS_TEMPLATES = (
     ('cms_project.html', 'Project Page'),
 )

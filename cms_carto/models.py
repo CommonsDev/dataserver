@@ -4,4 +4,4 @@ from cms.models import CMSPlugin
 from scout.models import Map
 
 class CartoPlugin(CMSPlugin):
-    carto = models.ForeignKey(Map)
+    carto = models.ForeignKey(Map, null=True)

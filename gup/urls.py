@@ -53,7 +53,7 @@ if settings.DEBUG:
 
 #CMS
 urlpatterns += patterns('',
-    url(r'^mapage/', views.CMSRedirectView.as_view(), name='cmsredirect'),
-    url(r'^', include('cms.urls'), name='cms_home'),
+    url(r'^mapage/$', views.CMSRedirectView.as_view(), name='cmsredirect'),
+    url(r'^', include('cms.urls')),
 )
 
