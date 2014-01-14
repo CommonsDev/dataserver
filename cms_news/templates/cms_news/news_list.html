@@ -16,8 +16,7 @@
 	<section id="col1">
 		<h1>Actualités</h1>		 
 		<ul>
-			{{ instance }}
-			{% for news in instance.news_entry.all %}    			  
+			{% for news in latest %}    			  
 				<li>
 				{% if news.news_picture %}
 					{% thumbnail news.news_picture "62x62" crop="center" as small %}
@@ -35,7 +34,7 @@
 		</ul>
 	</section>
 	<section id="col2">
-		{% for news in instance.news_entry.all %}
+		{% for news in latest %}
 		<div id="news_{{forloop.counter}}">    			  
 			<a href="{{news.url|default:'#actu' }}">
 				{% thumbnail news.news_picture "388" as big %}

@@ -9,7 +9,7 @@ class NewsEntryAdmin(admin.ModelAdmin):
         Admin for news
     """
     date_hierarchy = 'pub_date'
-    list_display = ('title', 'is_published', 'news_picture', 'pub_date', 'news')
+    list_display = ('title', 'is_published', 'news_picture', 'pub_date', 'news_container')
     list_filter = ('is_published', )
     search_fields = ['title', 'content']
     

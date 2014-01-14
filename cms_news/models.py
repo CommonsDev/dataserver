@@ -12,7 +12,7 @@ from djangocms_text_ckeditor.fields import HTMLField
 from .utils import calculate_image_path
 
 class NewsPlugin(CMSPlugin):
-    name = models.CharField(max_length=30, blank=True)
+    name = models.CharField(max_length=30, blank=True, default="Des news")
     
     def copy_relations(self, oldinstance):
         print "== copying old instances ==="
