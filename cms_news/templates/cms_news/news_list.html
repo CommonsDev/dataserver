@@ -13,27 +13,29 @@
 </script>
 
 <div id="news_list">
-	{{instance.news.id}}
 	<section id="col1">
 		<h1>Actualités</h1>		 
 		<ul>
-			{% for news in latest %}    			  
-			<li>
-			{% thumbnail news.news_picture "62x62" crop="center" as small %}
-				<img src="{{small.url}}" />
-			{% empty %}
-				<img width="62px" src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg">
-			{% endthumbnail %}
-				<em>{{ news.pub_date}}</em>
-				<strong><a href="#news_{{forloop.counter}}">{{ news.title }}</a></strong>			
-			</li>
+			{{ instance }}
+			{% for news in instance.news_entry.all %}    			  
+				<li>
+				{% if news.news_picture %}
+					{% thumbnail news.news_picture "62x62" crop="center" as small %}
+					<img src="{{small.url}}" />
+					{% endthumbnail %}
+				{% else %}
+					<img width="62px" src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg">
+				{% endif %}
+					<em>{{ news.pub_date}}</em>
+					<strong><a href="#news_{{forloop.counter}}">{{ news.title }}</a></strong>			
+				</li>
 			{% empty %}
 				<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
 			{% endfor %}
 		</ul>
 	</section>
 	<section id="col2">
-		{% for news in latest %}
+		{% for news in instance.news_entry.all %}
 		<div id="news_{{forloop.counter}}">    			  
 			<a href="{{news.url|default:'#actu' }}">
 				{% thumbnail news.news_picture "388" as big %}

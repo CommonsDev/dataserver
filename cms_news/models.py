@@ -13,12 +13,24 @@ from .utils import calculate_image_path
 
 class NewsPlugin(CMSPlugin):
     name = models.CharField(max_length=30, blank=True)
+    
+    def copy_relations(self, oldinstance):
+        print "== copying old instances ==="
+        print "# old instance : %s" % (oldinstance)
+        print "# new instance : %s" % (self)
+        
+        for news_entry in oldinstance.news_entry.all():
+            # instance.pk = None; instance.pk.save() is the slightly odd but
+            # standard Django way of copying a saved model instance
+            news_entry.pk = None
+            news_entry.news_container = self
+            news_entry.save()
 
 class NewsEntry(models.Model):
     """
     A piece of News
     """
-    news = models.ForeignKey(NewsPlugin, related_name="news")
+    news_container = models.ForeignKey(NewsPlugin, related_name="news_entry")
     title = models.CharField(_('Title'), max_length=255, blank=True)
     content = HTMLField(_('Content'), blank=True)
     news_picture = models.ImageField(_("News Image"), upload_to=calculate_image_path, max_length=255, null=True, blank=True)
