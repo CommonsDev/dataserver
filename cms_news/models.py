@@ -15,10 +15,6 @@ class NewsPlugin(CMSPlugin):
     name = models.CharField(max_length=30, blank=True, default="Des news")
     
     def copy_relations(self, oldinstance):
-        print "== copying old instances ==="
-        print "# old instance : %s" % (oldinstance)
-        print "# new instance : %s" % (self)
-        
         for news_entry in oldinstance.news_entry.all():
             # instance.pk = None; instance.pk.save() is the slightly odd but
             # standard Django way of copying a saved model instance
@@ -35,7 +31,6 @@ class NewsEntry(models.Model):
     content = HTMLField(_('Content'), blank=True)
     news_picture = models.ImageField(_("News Image"), upload_to=calculate_image_path, max_length=255, null=True, blank=True)
 
-    is_published = models.BooleanField(_('Published'), default=False)
     pub_date = models.DateTimeField(_('Publication date'), default=datetime.datetime.now)
 
     created = models.DateTimeField(auto_now_add=True, editable=False)
