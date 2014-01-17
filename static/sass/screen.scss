@@ -50,7 +50,7 @@ body {
 // HEADER 
 
 header {
-	width:109px;
+	width:120px;
 	height:241px;
 	border:1px solid black;
 	background:#131313;
@@ -61,7 +61,7 @@ header {
 
 	.wrap-header {
 		border:1px solid #222;
-		width:107px;
+		width:120px;
 		height:239px;
 	}
 
@@ -359,18 +359,58 @@ header {
 
 		.desc {
 			padding:0 20px 0 20px;
-
-			p {
-				text-align:justify;
-				font-size:0.7rem;
-				line-height:0.9rem;
-				color:#666;
-			}
 		}
+	}
+}
+		
+#main .content-from-cms, #actu .content-from-cms {	
+	p {
+		text-align:justify;
+		font-size:0.7rem;
+		line-height:0.9rem;
+		color:#666;
+		margin:0 0 5px;
+	}
+	
+	a {
+		color:#666;
+		text-decoration:none;
+		
+		&:hover {
+			text-decoration:underline;
+		}
+	}
+	
+	ul {
+		font-size:0.7rem;
+		line-height:0.9rem;
+		list-style-type:disc;
+		margin:0 0 5px 15px;
+	}
+	
+	ol {
+		font-size:0.7rem;
+		line-height:0.9rem;
+		list-style-type:decimal;
+		margin:0 0 5px 15px;
+	}
+	
+	h1, h2, h3 {
+		border:0 !important;
+		float:none !important;
+		position:static !important;
+		font-size:1.2rem !important;
+		line-height:1.4rem !important;
+		margin:10px 0 !important;
+		color:#666 !important;
+		font-family:Raleway, sans-serif !important;
+		padding:0 !important;
+		background:none !important;
+		text-transform:none !important;
 	}
 }
 
 #carto {
-	height:690px;
+	height:850px;
 	background:black;
 }

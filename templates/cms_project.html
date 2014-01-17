@@ -1,4 +1,4 @@
-{% load cms_tags sekizai_tags %}
+	{% load cms_tags sekizai_tags %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -26,7 +26,9 @@
       {% cms_toolbar %}
     	<header>
     		<div class="wrap-header">
-	    		<img height="80" width="95" class="logo" src="{{ STATIC_URL }}images/_TEMP/logo_lille.jpg" alt="Lille" />  
+	    		{% placeholder logo or %}
+				<img height="80" width="95" class="logo" src="{{ STATIC_URL }}images/_TEMP/logo_lille.jpg" alt="Lille" /> 
+			{% endplaceholder %} 
 	    		<nav>
 	    			<ul>
 	    				<li><a href="#main">Le projet</a></li>
@@ -38,18 +40,15 @@
 	    	</div>
     	</header>
     	<section id="main">
-	  {% placeholder project_pictures %}
-            <div id="slider">
-                <img src="{{ STATIC_URL }}images/_TEMP/projet_pic_large.jpg" alt="" />
-                <img src="{{ STATIC_URL }}images/_TEMP/test.jpg" alt="" />
-                <img src="{{ STATIC_URL }}images/_TEMP/test2.jpg" alt="" />
-            </div>
+	  {% placeholder project_pictures or %}
+		{% include "cms_background_images/plugin.html" %}
+	  {% endplaceholder %}
             <span id="slidercover">&nbsp;</span>
     		<div class="inner-wrap">
                 <h1>{% page_attribute "title" %}</h1>
                 <div class="wrap-content">
                     <h2>Le projet <span>+</span></h2>
-                    <div class="content">
+                    <div class="content content-from-cms">
                         <article>
 			  {% placeholder project_description or %}
 			  <h3>Click to change project description</h3>
@@ -64,50 +63,23 @@
     	</section>
         <section id="actu">
             <div class="inner-wrap">
-                <section id="col1">
-                    <h1>Actualités</h1>
-                    <ul>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                        <li>
-                            <a href="#"><img src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg" /></a>
-                            <em>Lundi 12 Janvier 2013</em>
-                            <strong><a href="#">Titre de l'actualité sur deux lignes</a></strong>
-                        </li>
-                    </ul>
-                </section>
-                <section id="col2">
-                    <img class="splash" src="{{ STATIC_URL }}images/_TEMP/projet_pic.jpg" alt="" />
-                    <span class="date">Le lundi 12 Septembre 2013</span>
-                    <h2>Le titre du projet</h2>
-                    <div class="desc">
-			  {% placeholder news_tmp_block or %}
-			  <h3>Cliquez pour écrire</h3>
-			  {% endplaceholder %}
-                    </div>
-                </section>
+                   {% placeholder news_block or %}
+			<section id="col1">
+				<h1>Actualités</h1>		 
+				<h3>Cliquez pour écrire</h3>
+			</section>
+			<section id="col2">
+			</section>			
+		    {% endplaceholder %}                   
+                
             </div>
         </section>
         <section id="carto">
-            <span style="display:block;text-align:center;color:white;font-size:3rem;text-transform:uppercase;padding-top:100px"><iframe width="70%" height="500px" src="http://gup.extra-muros.coop/carte/region"/></span>
+	  {% placeholder carto or %}
+	    <span style="display:block;text-align:center;color:white;font-size:3rem;text-transform:uppercase;padding-top:100px">
+	       <iframe width="70%" height="500px" src="http://localhost:8080/#/test"/>
+	    </span>
+	  {% endplaceholder %}
         </section>
     </body>
     </html>

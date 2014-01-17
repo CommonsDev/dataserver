@@ -17,7 +17,7 @@ DATABASES = {
         'USER': 'gup',
         'PASSWORD': 'gup',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'PORT': '',                      # Set to empty string for default.s
     }
 }
 
@@ -171,7 +171,6 @@ INSTALLED_APPS = (
     'guardian',
     'userena',
     'django_extensions',
-    'easy_thumbnails',
 
     'scout',
     'tastypie',
@@ -190,11 +189,13 @@ INSTALLED_APPS = (
     'filer',
     'cmsplugin_filer_file',
     'cms.plugins.video',
-    'cms.plugins.twitter',
+    #'cms.plugins.twitter',
     'cms.plugins.picture',
     'cms.plugins.googlemap',
-#    'cmsplugin_news',
-
+    
+    'cms_news',
+    'cms_background_images',
+    'cms_carto',
     'autoslug',
     'taggit',
     'flipflop',    
@@ -240,8 +241,8 @@ LEAFLET_CONFIG = {
 
 ANONYMOUS_USER_ID = -1
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-#LOGIN_URL = '/accounts/signin/'
-LOGIN_URL = 'login'
+LOGIN_URL = '/accounts/signin/'
+#LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
 AUTH_PROFILE_MODULE = 'accounts.GUPProfile'
@@ -261,10 +262,31 @@ APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
 
 # CMS
+PROJECT_PAGE_TEMPLATE = 'cms_project.html'
 CMS_TEMPLATES = (
     ('cms_project.html', 'Project Page'),
 )
 
+CKEDITOR_SETTINGS = {
+    'language': '{{ language }}',
+    'toolbar': 'CMS',
+    'skin': 'moono',
+    'height': '600',
+    'toolbar_CMS': [
+        ['Undo', 'Redo'],
+        ['ShowBlocks'],
+        ['Format', 'Styles'],
+        ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
+        '/',
+        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-',
+         'RemoveFormat'],
+        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+        ['Link', 'Unlink', 'Anchor'],
+        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-',
+         'Table'],
+        ['Source']
+    ]
+}
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'
 

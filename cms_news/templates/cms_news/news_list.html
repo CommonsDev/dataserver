@@ -1,0 +1,56 @@
+{% load i18n %}
+{% load cms_tags sekizai_tags %}
+{% load thumbnail %}
+
+{% addtoblock "js" %}
+	<script src="{{ STATIC_URL }}js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+{% endaddtoblock %}	
+
+<script>
+  $(function() {
+    $( "#news_list" ).tabs();
+  });
+</script>
+
+<div id="news_list">
+	<section id="col1">
+		<h1>Actualités</h1>		 
+		<ul>
+			{% for news in latest %}    			  
+				<li>
+				{% if news.news_picture %}
+					{% thumbnail news.news_picture "62x62" crop="center" as small %}
+					<img src="{{small.url}}" />
+					{% endthumbnail %}
+				{% else %}
+					<img width="62px" src="{{ STATIC_URL }}images/_TEMP/mini_actu.jpg">
+				{% endif %}
+					<em>{{ news.pub_date}}</em>
+					<strong><a href="#news_{{forloop.counter}}">{{ news.title }}</a></strong>			
+				</li>
+			{% empty %}
+				<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
+			{% endfor %}
+		</ul>
+	</section>
+	<section id="col2">
+		{% for news in latest %}
+		<div id="news_{{forloop.counter}}">    			  
+			<a href="{{news.url|default:'#actu' }}">
+				{% thumbnail news.news_picture "388" as big %}
+				<img class="splash" src="{{big.url}}" alt="" />
+				{% empty %}
+				<img class="splash" src="{{ STATIC_URL }}images/_TEMP/projet_pic.jpg">
+				{% endthumbnail %}
+			</a>
+			<span class="date">{{ news.pub_date}}</span>
+			<h2>{{ news.title }}</h2>
+			<div class="desc content-from-cms">	
+				{{ news.content|safe }}
+			</div>
+		</div>
+		{% empty %}
+				<li><div><h3>&nbsp;&nbsp;{% trans "No news yet" %}</h3></div></li>
+		{% endfor %}
+	</section>
+</div>

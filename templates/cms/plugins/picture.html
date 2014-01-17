@@ -1,0 +1,13 @@
+<span class="plugin_picture{% if picture.float %} align-{{ picture.float }}{% endif %}">
+    
+{% if link %}<a href="{{ link }}">{% endif %}
+<img {% if placeholder ==  "logo" %} 
+        width="95px" class="logo" 
+        {% if picture.image %} src="{{ picture.image.url }}" alt="{{ picture.alt }}"
+        {% else %} height="80px" src="{{ STATIC_URL }}images/_TEMP/logo_lille.jpg" alt="Lille" 
+        {% endif %}
+    {% endif %}
+    {% if picture.longdesc %} title="{{ picture.longdesc }}"{% endif %} 
+/>
+{% if link %}</a>{% endif %}
+</span>
