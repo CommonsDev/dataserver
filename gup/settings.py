@@ -171,7 +171,6 @@ INSTALLED_APPS = (
     'guardian',
     'userena',
     'django_extensions',
-    #'easy_thumbnails',
 
     'scout',
     'tastypie',
@@ -242,8 +241,8 @@ LEAFLET_CONFIG = {
 
 ANONYMOUS_USER_ID = -1
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-#LOGIN_URL = '/accounts/signin/'
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/signin/'
+#LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
 AUTH_PROFILE_MODULE = 'accounts.GUPProfile'

@@ -8,11 +8,14 @@ from cms_news.models import NewsPlugin, NewsEntry
 
 
 class NewsEntryInline(admin.StackedInline):
+    """
+    Inline class to display news entries along with the news container
+    """
     model = NewsEntry
 
 class CMSNewsPlugin(CMSPluginBase):
     """
-        Plugin class for the latest news
+        Plugin class for hooking a container for latest news
     """
     model = NewsPlugin
     name = _('Actus')

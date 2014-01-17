@@ -4,9 +4,10 @@ from django.db import models
 
 from cms_news.models import NewsEntry
 
+
 class NewsEntryAdmin(admin.ModelAdmin):
     """
-        Admin for news
+    Admin for news entries
     """
     date_hierarchy = 'pub_date'
     list_display = ('title', 'news_picture', 'pub_date', 'news_container')

@@ -11,7 +11,11 @@ from djangocms_text_ckeditor.fields import HTMLField
 
 from .utils import calculate_image_path
 
+
 class NewsPlugin(CMSPlugin):
+    """
+    Plugin class to hook up news container in CMS pages
+    """
     name = models.CharField(max_length=30, blank=True, default="Des news")
     
     def copy_relations(self, oldinstance):

@@ -2,7 +2,9 @@ import uuid
 import os
 
 from django.db import models
+
 from cms.models import CMSPlugin
+
 
 def get_picture_path(aPicture, filename):
     """
@@ -16,6 +18,9 @@ def get_picture_path(aPicture, filename):
     return dst
 
 class BackgroundImagesPlugin(CMSPlugin):
+    """
+    Toy class to let users choose a set of images as the project gallery
+    """
     image1 = models.ImageField(upload_to=get_picture_path, blank=True, null=True)
     image2 = models.ImageField(upload_to=get_picture_path, blank=True, null=True)
     image3 = models.ImageField(upload_to=get_picture_path, blank=True, null=True)
