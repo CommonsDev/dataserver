@@ -24,6 +24,11 @@
     </head>
     <body>
       {% cms_toolbar %}
+	{% if not request.user.is_superuser%}
+	<script type="text/javascript">
+		$(document).ready(function() {	$('a[href="?build"]').hide();});
+	</script>
+	{% endif %}
     	<header>
     		<div class="wrap-header">
 	    		{% placeholder logo or %}

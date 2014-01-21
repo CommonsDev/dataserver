@@ -5,7 +5,7 @@ from django.utils.translation import ugettext as _
 
 class BackgroundImagesPlugin(CMSPluginBase):
     model = BackgroundImagesPluginModel # Model where data about this plugin is saved
-    name = _("Images de fond Plugin") # Name of the plugin
+    name = _("Background Images Plugin") # Name of the plugin
     render_template = "cms_background_images/plugin.html" # template to render the plugin with
 
     def render(self, context, instance, placeholder):

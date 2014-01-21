@@ -27,7 +27,7 @@ class CMSRedirectView(RedirectView):
     except:      
       # else, create page and hook plugins to placeholders :      
       page_name = 'home-%s' % (request.user)
-      self.page = create_page(page_name, settings.PROJECT_PAGE_TEMPLATE, 'fr', created_by=request.user, published=True)
+      self.page = create_page(page_name, settings.PROJECT_PAGE_TEMPLATE, 'fr', created_by=request.user, is_home=False, published=True)
       # logo 
       logo_ph = self.page.placeholders.get(slot='logo')
       add_plugin(logo_ph, 'PicturePlugin', 'fr')
