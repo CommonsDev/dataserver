@@ -33,7 +33,8 @@ class NewsEntry(models.Model):
     news_container = models.ForeignKey(NewsPlugin, related_name="news_entry")
     title = models.CharField(_('Title'), max_length=255, blank=True)
     content = HTMLField(_('Content'), blank=True)
-    news_picture = models.ImageField(_("News Image"), upload_to=calculate_image_path, max_length=255, null=True, blank=True)
+    news_picture = models.ImageField(_("News Image"), upload_to=calculate_image_path, max_length=255, null=True, blank=True,
+        help_text=_("Maximum 5Mo"))
 
     pub_date = models.DateTimeField(_('Publication date'), default=datetime.datetime.now)
 

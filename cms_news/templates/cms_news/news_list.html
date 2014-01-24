@@ -40,7 +40,7 @@
 				{% thumbnail news.news_picture "388" as big %}
 				<img class="splash" src="{{big.url}}" alt="" />
 				{% empty %}
-				<img class="splash" src="{{ STATIC_URL }}images/_TEMP/projet_pic.jpg">
+				<!--<img class="splash" src="{{ STATIC_URL }}images/_TEMP/projet_pic.jpg">-->
 				{% endthumbnail %}
 			</a>
 			<span class="date">{{ news.pub_date}}</span>

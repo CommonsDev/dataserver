@@ -22,12 +22,12 @@ class CMSRedirectView(RedirectView):
     
     # check if logged in user has already created a page 
     try:
-      self.page = Page.objects.get(created_by=request.user, published=True, publisher_is_draft=True, template=settings.PROJECT_PAGE_TEMPLATE)
+      self.page = Page.objects.get(created_by=request.user, published=True, publisher_is_draft=True, is_home=False, template=settings.PROJECT_PAGE_TEMPLATE)
     
     except:      
       # else, create page and hook plugins to placeholders :      
       page_name = 'home-%s' % (request.user)
-      self.page = create_page(page_name, settings.PROJECT_PAGE_TEMPLATE, 'fr', created_by=request.user, is_home=False, published=True)
+      self.page = create_page(page_name, settings.PROJECT_PAGE_TEMPLATE, 'fr', created_by=request.user, published=True)
       # logo 
       logo_ph = self.page.placeholders.get(slot='logo')
       add_plugin(logo_ph, 'PicturePlugin', 'fr')

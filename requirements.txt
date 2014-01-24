@@ -16,7 +16,8 @@ simplejson
 
 # CMS 3.0beta -- buggy
 -e git+https://github.com/divio/django-cms.git@develop#egg=django-cms
--e git+https://github.com/divio/djangocms-text-ckeditor.git#egg=djangocms-text-ckeditor
+#-e git+https://github.com/divio/djangocms-text-ckeditor.git#egg=djangocms-text-ckeditor
+-e git+https://github.com/divio/djangocms-text-ckeditor.git@c2fba71969ab12a521bf15af93035a1b13892191#egg=djangocms_text_ckeditor-dev
 django-filer==0.9.4
 cmsplugin-filer==0.9.5
 django-reversion==1.7
