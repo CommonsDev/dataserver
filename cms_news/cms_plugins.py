@@ -18,7 +18,7 @@ class CMSNewsPlugin(CMSPluginBase):
         Plugin class for hooking a container for latest news
     """
     model = NewsPlugin
-    name = _('Actus')
+    name = _('News plugin')
     render_template = "cms_news/news_list.html"
     inlines = [NewsEntryInline]
 
