@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic.base import RedirectView
 
 from cms.models import Page
-from cms.api import create_page, add_plugin
+from cms.api import create_page, add_plugin, assign_user_to_page
 
 from gup import settings
 
@@ -22,12 +22,14 @@ class CMSRedirectView(RedirectView):
     
     # check if logged in user has already created a page 
     try:
-      self.page = Page.objects.get(created_by=request.user, published=True, publisher_is_draft=True, is_home=False, template=settings.PROJECT_PAGE_TEMPLATE)
+      self.page = Page.objects.get(created_by=request.user, in_navigation=True, publisher_is_draft=True, is_home = False, template=settings.PROJECT_PAGE_TEMPLATE)
     
     except:      
       # else, create page and hook plugins to placeholders :      
       page_name = 'home-%s' % (request.user)
-      self.page = create_page(page_name, settings.PROJECT_PAGE_TEMPLATE, 'fr', created_by=request.user, published=True)
+      self.page = create_page(page_name, settings.PROJECT_PAGE_TEMPLATE, 'fr', created_by=request.user, published=True, in_navigation=True)
+      # assign user to created page
+      assign_user_to_page(self.page, request.user, can_add=True, can_change=True, can_change_advanced_settings=True, can_publish=True)
       # logo 
       logo_ph = self.page.placeholders.get(slot='logo')
       add_plugin(logo_ph, 'PicturePlugin', 'fr')
@@ -43,6 +45,7 @@ class CMSRedirectView(RedirectView):
       # carto
       carto_ph = self.page.placeholders.get(slot='carto')
       add_plugin(carto_ph, 'CartoPlugin', 'fr')
+      
 
     return super(CMSRedirectView, self).dispatch(request, *args, **kwargs)
   

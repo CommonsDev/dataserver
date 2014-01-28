@@ -262,10 +262,29 @@ APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
 
 # CMS
+CMS_PERMISSION = True
+CMS_PUBLIC_FOR = 'all'
 PROJECT_PAGE_TEMPLATE = 'cms_project.html'
 CMS_TEMPLATES = (
     ('cms_project.html', 'Project Page'),
 )
+# some CMS primitives do not work unless fallback for lang 'en' is defined
+CMS_LANGUAGES = {
+    1: [
+        {
+            'code': 'fr',
+            'name': 'French',
+            'fallbacks': ['en'],
+            'public': True,
+        },
+        {
+            'code': 'en',
+            'name': 'English',
+            'fallbacks': ['fr'],
+            'public': True,
+        }
+      ]
+      }
 
 CKEDITOR_SETTINGS = {
     'language': '{{ language }}',
