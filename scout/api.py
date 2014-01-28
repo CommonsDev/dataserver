@@ -14,6 +14,7 @@ from pygeocoder import Geocoder
 
 from accounts.api import ProfileResource
 
+from bucket.models import Bucket
 from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
 
 class MapResource(GeoModelResource):
@@ -27,7 +28,15 @@ class MapResource(GeoModelResource):
 
     data_layers = fields.ToManyField('scout.api.DataLayerResource', 'datalayers', full=True, null=True)
     tile_layer = fields.ForeignKey('scout.api.TileLayerResource', 'tilelayer', full=True)
-    bucket = fields.ForeignKey('bucket.api.BucketResource', 'bucket', full=True)    
+    bucket = fields.ForeignKey('bucket.api.BucketResource', 'bucket', null=True, full=True)
+
+    def hydrate(self, bundle, request=None):    
+            if not bundle.obj.pk:
+                bucket = Bucket.objects.create()
+                bundle.data['bucket'] = {'pk': bucket.pk}
+
+            return bundle
+
 
 class MarkerCategoryResource(ModelResource):
     class Meta:
