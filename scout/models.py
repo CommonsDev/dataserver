@@ -53,7 +53,8 @@ class Map(models.Model):
     def save(self, *args, **kwargs):
         if self.pk is None:
             self.tilelayer = TileLayer.objects.all()[0]
-            self.bucket = Bucket.objects.create()
+            if not self.bucket:
+                self.bucket = Bucket.objects.create()
             
 
         result = super(Map, self).save(*args, **kwargs)

@@ -1,14 +1,19 @@
+from tastypie.authentication import ApiKeyAuthentication
+from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.resources import ModelResource
 from tastypie import fields
 
-from .models import Bucket, BucketFile, BucketFileComment
 from taggit.models import Tag
+
+from .models import Bucket, BucketFile, BucketFileComment
 
 class BucketResource(ModelResource):
     class Meta:
+        authentication = ApiKeyAuthentication()
+        authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
 
-    files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True)
+    files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
         
     def get_object_list(self, request):
         return super(BucketResource, self).get_object_list(request)
