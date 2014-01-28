@@ -51,6 +51,7 @@ class TileLayerResource(GeoModelResource):
     class Meta:
         queryset = TileLayer.objects.all()
         resource_name = 'scout/tilelayer'
+        authentication = ApiKeyAuthentication()                
         authorization = DjangoAuthorization()        
 
     maps = fields.ToManyField(MapResource, 'maps', null=True)
@@ -59,6 +60,7 @@ class DataLayerResource(ModelResource):
     class Meta:
         queryset = DataLayer.objects.all()
         resource_name = 'scout/datalayer'
+        authentication = ApiKeyAuthentication()                
         authorization = DjangoAuthorization()
         
     markers = fields.ToManyField('scout.api.MarkerResource', 'markers', null=True, full=True)
