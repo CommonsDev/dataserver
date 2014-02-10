@@ -64,6 +64,7 @@ class UploadView(JSONResponseMixin, FormMixin, View):
             self.bf.save()
             
             try:
+                #TODO: gerer + types de fichiers / parametrer les thumbnails
                 im = get_thumbnail(self.bf.file, "150x100", quality=80)
                 self.bf.thumbnail_url = im.url
             except Exception as e:
