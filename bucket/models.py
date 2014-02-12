@@ -25,7 +25,9 @@ class BucketFile(models.Model):
     bucket = models.ForeignKey(Bucket, related_name='files')
     tags = TaggableManager(blank=True)
     uploaded_on = models.DateTimeField(auto_now_add=True)
+    # FIXME: updated_on
     description = models.TextField(null=True, blank=True)
+    # FIXME : filename
     # uploaded_by = models.ForeignKey(get_profile_model())
 
     def _upload_to(instance, filename):
