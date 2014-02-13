@@ -1,11 +1,20 @@
-from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import DjangoAuthorization, Authorization
-from tastypie.resources import ModelResource
-from tastypie import fields
+from django.contrib.auth.models import User
+from django.conf.urls.defaults import *
+from django.core.paginator import Paginator, InvalidPage
+from django.http import Http404
 
+from tastypie.authorization import DjangoAuthorization, Authorization
+from tastypie.authentication import ApiKeyAuthentication, Authentication
+from tastypie.resources import ModelResource
+from tastypie.utils import trailing_slash
+from tastypie import fields
 from taggit.models import Tag
+from accounts.api import ProfileResource
+# FIXME : use haystack
+#from haystack.query import SearchQuerySet
 
 from .models import Bucket, BucketFile, BucketFileComment
+
 
 class BucketResource(ModelResource):
     class Meta:
@@ -18,11 +27,6 @@ class BucketResource(ModelResource):
     def get_object_list(self, request):
         return super(BucketResource, self).get_object_list(request)
 
-class BucketFileCommentResource(ModelResource):
-    class Meta:
-        queryset = BucketFileComment.objects.all()
-
-
 class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
@@ -30,10 +34,69 @@ class TagResource(ModelResource):
 class BucketFileResource(ModelResource):
     class Meta:
         queryset = BucketFile.objects.all()
-
-    comments = fields.ToManyField(BucketFileCommentResource, 'comments', full=True)
+        resource_name = 'bucketfile'
+        
+    comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
     tags = fields.ToManyField(TagResource, 'tags', full=True)    
         
     def get_object_list(self, request):
         return super(BucketFileResource, self).get_object_list(request)
         
+    def prepend_urls(self):
+        return [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+        ]
+
+    def get_search(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        # FIXME : use haystack
+        #sqs = SearchQuerySet().models(Note).load_all().auto_query(request.GET.get('q', ''))
+        tags_qs = Tag.objects.filter(name__contains=request.GET.get('tags', ''))
+        sqs = BucketFile.objects.filter(description__icontains=request.GET.get('q', '')).filter(tags__in=tags_qs)
+        paginator = Paginator(sqs, 20)
+
+        try:
+            page = paginator.page(int(request.GET.get('page', 1)))
+        except InvalidPage:
+            raise Http404("Sorry, no results on that page.")
+
+        objects = []
+
+        for result in page.object_list:
+            bundle = self.build_bundle(obj=result, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+
+        object_list = {
+            'objects': objects,
+        }
+
+        self.log_throttled_access(request)
+        return self.create_response(request, object_list)
+        
+class BucketFileCommentResource(ModelResource):
+    class Meta:
+        queryset = BucketFileComment.objects.all()
+        always_return_data = True
+        # FIXME: deal with authentification and authorization
+        authentication = ApiKeyAuthentication()
+        authorization = Authorization()
+        filtering = {
+            "bucket_file":'exact', 
+        }
+        
+    submitter = fields.ToOneField(ProfileResource, 'submitter', full=True)
+    bucket_file = fields.ToOneField(BucketFileResource, 'bucket_file')
+    
+    def get_object_list(self, request):
+        return super(BucketFileCommentResource, self).get_object_list(request)
+    
+    def hydrate(self, bundle, request=None):
+        if not bundle.obj.pk:
+            user = User.objects.get(pk=bundle.request.user.id)
+            bundle.data['submitter'] = {'pk': user.get_profile().pk}
+            
+        return bundle
