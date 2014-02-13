@@ -174,6 +174,7 @@ INSTALLED_APPS = (
 
     'scout',
     'tastypie',
+    'sendfile',
 
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
@@ -310,7 +311,6 @@ CKEDITOR_SETTINGS = {
 BUCKET_FILES_FOLDER = 'bucket'
 
 ## multiuploader
-
 MULTIUPLOADER_FILE_EXPIRATION_TIME = 3600
 
 MULTIUPLOADER_FORMS_SETTINGS = {
@@ -336,3 +336,9 @@ MULTIUPLOADER_FORMS_SETTINGS = {
         'AUTO_UPLOAD': True,
     },
 }
+
+# SENDFILE
+SENDFILE_BACKEND = 'sendfile.backends.development'
+
+# SORL
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine' # Needed for Pdf conv
