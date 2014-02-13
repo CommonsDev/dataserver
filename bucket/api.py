@@ -10,8 +10,6 @@ from tastypie.utils import trailing_slash
 from tastypie import fields
 from taggit.models import Tag
 from accounts.api import ProfileResource
-# FIXME : use haystack
-#from haystack.query import SearchQuerySet
 
 from .models import Bucket, BucketFile, BucketFileComment
 
@@ -27,35 +25,45 @@ class BucketResource(ModelResource):
     def get_object_list(self, request):
         return super(BucketResource, self).get_object_list(request)
 
+
 class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
         
+    files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
+        
 class BucketFileResource(ModelResource):
+    
+    comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
+    tags = fields.ToManyField(TagResource, 'tags', full=True)    
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
+   
     class Meta:
         queryset = BucketFile.objects.all()
         resource_name = 'bucketfile'
-        
-    comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
-    tags = fields.ToManyField(TagResource, 'tags', full=True)    
+        filtering = {
+            "bucket":'exact', 
+        }
         
     def get_object_list(self, request):
         return super(BucketFileResource, self).get_object_list(request)
         
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_search'), name="api_get_search"),
+           url(r"^(?P<resource_name>%s)/bucket/(?P<bucket_id>\d+)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('file_search'), name="api_file_search"),
         ]
 
-    def get_search(self, request, **kwargs):
+    def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
+        bucket_id = kwargs['bucket_id'] 
 
         # FIXME : use haystack
-        #sqs = SearchQuerySet().models(Note).load_all().auto_query(request.GET.get('q', ''))
-        tags_qs = Tag.objects.filter(name__contains=request.GET.get('tags', ''))
-        sqs = BucketFile.objects.filter(description__icontains=request.GET.get('q', '')).filter(tags__in=tags_qs)
+         #sqs = SearchQuerySet().models(Note).load_all().auto_query(request.GET.get('q', ''))   .filter(tags__in=tags_qs)
+        tags_qs = Tag.objects.filter(name__contains=request.GET.get('tags', '')) 
+        sqs = BucketFile.objects.filter(bucket=bucket_id).filter(description__icontains=request.GET.get('q', '')).filter(tags__in=tags_qs).distinct()
+        
         paginator = Paginator(sqs, 20)
 
         try:
