@@ -25,10 +25,10 @@ class BucketFile(models.Model):
     bucket = models.ForeignKey(Bucket, related_name='files')
     tags = TaggableManager(blank=True)
     uploaded_on = models.DateTimeField(auto_now_add=True)
-    # FIXME: updated_on
+    updated_on = models.DateTimeField(auto_now=True)
     description = models.TextField(null=True, blank=True)
-    # FIXME : filename
-    # uploaded_by = models.ForeignKey(get_profile_model())
+    filename = models.CharField(max_length=2048, null=True, blank=True)
+    uploaded_by = models.ForeignKey(get_profile_model(), null=True, blank=True)
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
@@ -40,7 +40,7 @@ class BucketFile(models.Model):
         filename, ext = os.path.splitext(filename)
         hash = sha1(str(time.time())).hexdigest()
         fullname = os.path.join(upload_path, "%s.%s%s" % (filename, hash, ext))
-
+        print fullname
         return fullname
     
     file = models.FileField(upload_to=_upload_to, max_length=255)

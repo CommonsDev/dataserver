@@ -10,6 +10,7 @@ from tastypie.utils import trailing_slash
 from tastypie import fields
 from taggit.models import Tag
 from accounts.api import ProfileResource
+from haystack.query import SearchQuerySet
 
 from .models import Bucket, BucketFile, BucketFileComment
 
@@ -30,7 +31,7 @@ class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
         
-    files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
+    files = fields.ToManyField('bucket.api.BucketFileResource', 'files', null=True)
         
 class BucketFileResource(ModelResource):
     
@@ -59,11 +60,10 @@ class BucketFileResource(ModelResource):
         self.throttle_check(request)
         bucket_id = kwargs['bucket_id'] 
 
-        # FIXME : use haystack
-         #sqs = SearchQuerySet().models(Note).load_all().auto_query(request.GET.get('q', ''))   .filter(tags__in=tags_qs)
-        tags_qs = Tag.objects.filter(name__contains=request.GET.get('tags', '')) 
-        sqs = BucketFile.objects.filter(bucket=bucket_id).filter(description__icontains=request.GET.get('q', '')).filter(tags__in=tags_qs).distinct()
+        query = request.GET.get('q', '')
+        sqs = SearchQuerySet().models(BucketFile).load_all().auto_query(query)
         
+        print sqs
         paginator = Paginator(sqs, 20)
 
         try:
@@ -72,9 +72,9 @@ class BucketFileResource(ModelResource):
             raise Http404("Sorry, no results on that page.")
 
         objects = []
-
+        
         for result in page.object_list:
-            bundle = self.build_bundle(obj=result, request=request)
+            bundle = self.build_bundle(obj=result.object, request=request)
             bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
 
@@ -108,3 +108,5 @@ class BucketFileCommentResource(ModelResource):
             bundle.data['submitter'] = {'pk': user.get_profile().pk}
             
         return bundle
+
+
