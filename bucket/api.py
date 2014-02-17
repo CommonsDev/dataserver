@@ -60,11 +60,8 @@ class BucketFileResource(ModelResource):
         self.throttle_check(request)
         bucket_id = kwargs['bucket_id'] 
 
-        # FIXME : use haystack
         query = request.GET.get('q', '')
         sqs = SearchQuerySet().models(BucketFile).load_all().auto_query(query)
-        #tags_qs = Tag.objects.filter(name__contains=request.GET.get('tags', '')) 
-        #sqs = BucketFile.objects.filter(bucket=bucket_id).filter(description__icontains=request.GET.get('q', '')).filter(tags__in=tags_qs).distinct()
         
         print sqs
         paginator = Paginator(sqs, 20)

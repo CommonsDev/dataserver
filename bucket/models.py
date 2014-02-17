@@ -30,7 +30,7 @@ class BucketFile(models.Model):
     filename = models.CharField(max_length=2048, null=True, blank=True)
     uploaded_by = models.ForeignKey(get_profile_model(), null=True, blank=True)
 
-    def _upload_to(self, instance, filename):
+    def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
 
         if upload_path[-1] != '/':
@@ -38,7 +38,6 @@ class BucketFile(models.Model):
 
         filename = get_valid_filename(os.path.basename(filename))
         filename, ext = os.path.splitext(filename)
-        self.filename = filename
         hash = sha1(str(time.time())).hexdigest()
         fullname = os.path.join(upload_path, "%s.%s%s" % (filename, hash, ext))
         print fullname
