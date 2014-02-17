@@ -204,6 +204,7 @@ INSTALLED_APPS = (
     'bucket',
     'multiuploader',
     'sorl.thumbnail',
+    'haystack'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -261,6 +262,15 @@ CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
+
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 # CMS
 CMS_PERMISSION = True
