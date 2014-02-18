@@ -34,10 +34,13 @@ class TagResource(ModelResource):
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', null=True)
         
 class BucketFileResource(ModelResource):
-    
+    """
+    Rest Resource for a given file of a given bucket
+    """
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
     tags = fields.ToManyField(TagResource, 'tags', full=True)    
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
+    uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)    
    
     class Meta:
         queryset = BucketFile.objects.all()

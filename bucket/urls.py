@@ -15,6 +15,6 @@ bucket_api.register(BucketFileCommentResource())
 urlpatterns = patterns('',
     (r'^multiup/', include('multiuploader.urls')),
     url(r'^upload/', UploadView.as_view(), name='bucket-upload'),
-    url(r'^(?P<pk>\d+)/thumbnail/', ThumbnailView.as_view(), name='bucket-thumbnail'),                       
+    url(r'^file/(?P<pk>\d+)/thumbnail/', ThumbnailView.as_view(), name='bucket-thumbnail'),                       
     (r'^api/', include(bucket_api.urls))
 )
