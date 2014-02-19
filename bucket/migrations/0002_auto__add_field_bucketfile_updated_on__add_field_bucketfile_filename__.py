@@ -10,7 +10,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'BucketFile.updated_on'
         db.add_column(u'bucket_bucketfile', 'updated_on',
-                      self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default=datetime.datetime(2014, 2, 17, 0, 0), blank=True),
+                      self.gf('django.db.models.fields.DateTimeField')(auto_now=True, default=datetime.datetime(2014, 2, 18, 0, 0), blank=True),
                       keep_default=False)
 
         # Adding field 'BucketFile.filename'
@@ -20,7 +20,7 @@ class Migration(SchemaMigration):
 
         # Adding field 'BucketFile.uploaded_by'
         db.add_column(u'bucket_bucketfile', 'uploaded_by',
-                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.GUPProfile'], null=True, blank=True),
+                      self.gf('django.db.models.fields.related.ForeignKey')(default=1, to=orm['accounts.GUPProfile']),
                       keep_default=False)
 
 
@@ -86,7 +86,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'thumbnail_url': ('django.db.models.fields.CharField', [], {'max_length': '2048'}),
             'updated_on': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']", 'null': 'True', 'blank': 'True'}),
+            'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']"}),
             'uploaded_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
         u'bucket.bucketfilecomment': {

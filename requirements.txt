@@ -16,8 +16,9 @@ python-dateutil==2.1
 django-taggit==0.10a1
 django-multiuploader==0.2.4
 simplejson
-pysendfile
-pyelasticsearch
+pysendfile==2.0.0
+django-haystack==2.1.0
+pyelasticsearch==0.6.1
 
 # CMS 3.0beta -- buggy
 -e git+https://github.com/divio/django-cms.git@a9ed4e4ecb104d15a308359ed8d39013a716956d#egg=django-cms
