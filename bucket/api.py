@@ -80,7 +80,7 @@ class BucketFileResource(ModelResource):
                 tags = [ t for t in tags if t[0].startswith(autocomplete) ]
             tags = [ {'name':t[0], 'count':t[1]} for t in tags ]
             object_list = {
-                'tags': tags,
+                'objects': tags,
             }
             
         # B: else, we return a list of files
@@ -96,7 +96,7 @@ class BucketFileResource(ModelResource):
                 objects.append(bundle)
 
             object_list = {
-                'files': objects,
+                'objects': objects,
             }
 
         self.log_throttled_access(request)
