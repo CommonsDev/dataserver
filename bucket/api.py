@@ -30,9 +30,7 @@ class BucketResource(ModelResource):
 class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
-        
-    files = fields.ToManyField('bucket.api.BucketFileResource', 'files', null=True)
-        
+                    
 class BucketFileResource(ModelResource):
     """
     Rest Resource for a given file of a given bucket
@@ -61,29 +59,45 @@ class BucketFileResource(ModelResource):
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
+        # URL params
         bucket_id = kwargs['bucket_id'] 
-
+        # Query params
         query = request.GET.get('q', '')
-        sqs = SearchQuerySet().models(BucketFile).load_all().auto_query(query)
+        autocomplete = request.GET.get('auto', None)
+        selected_facets = request.GET.getlist('facet', None)
         
-        print sqs
-        paginator = Paginator(sqs, 20)
-
-        try:
-            page = paginator.page(int(request.GET.get('page', 1)))
-        except InvalidPage:
-            raise Http404("Sorry, no results on that page.")
-
-        objects = []
+        sqs = SearchQuerySet().models(BucketFile).filter(bucket=bucket_id).facet('tags')
         
-        for result in page.object_list:
-            bundle = self.build_bundle(obj=result.object, request=request)
-            bundle = self.full_dehydrate(bundle)
-            objects.append(bundle)
+        # 1st narrow down QS
+        if selected_facets:
+            for facet in selected_facets:
+                sqs = sqs.narrow('tags:%s' % (facet))
+        # A: if autocomplete, we return only a list of tags starting with "auto" along with their count
+        if autocomplete != None:
+            tags = sqs.facet_counts()
+            tags = tags['fields']['tags']
+            if len(autocomplete) > 0:
+                tags = [ t for t in tags if t[0].startswith(autocomplete) ]
+            tags = [ {'name':t[0], 'count':t[1]} for t in tags ]
+            object_list = {
+                'objects': tags,
+            }
+            
+        # B: else, we return a list of files
+        else:
+            if query != "":
+                sqs = sqs.auto_query(query)
+            
+            objects = []
+            # Building object list
+            for result in sqs:
+                bundle = self.build_bundle(obj=result.object, request=request)
+                bundle = self.full_dehydrate(bundle)
+                objects.append(bundle)
 
-        object_list = {
-            'objects': objects,
-        }
+            object_list = {
+                'objects': objects,
+            }
 
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
