@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url, include
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 
@@ -14,11 +14,13 @@ from haystack.query import SearchQuerySet
 
 from .models import Bucket, BucketFile, BucketFileComment
 
-
 class BucketResource(ModelResource):
     class Meta:
-        authentication = ApiKeyAuthentication()
-        authorization = DjangoAuthorization()        
+        authentication = Authentication()
+        authorization = Authorization()        
+
+        #authentication = ApiKeyAuthentication()
+        #authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
 
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
@@ -30,22 +32,36 @@ class BucketResource(ModelResource):
 class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
-                    
+        
+        
 class BucketFileResource(ModelResource):
     """
     Rest Resource for a given file of a given bucket
     """
-    comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
-    tags = fields.ToManyField(TagResource, 'tags', full=True)    
-    bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
-    uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)    
-   
     class Meta:
         queryset = BucketFile.objects.all()
         resource_name = 'bucketfile'
         filtering = {
             "bucket":'exact', 
         }
+        authentication = ApiKeyAuthentication()
+        authorization = Authorization()        
+    
+    comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
+    tags = fields.ToManyField(TagResource, 'tags', full=True)    
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
+    uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)
+    file = fields.FileField(attribute='file')
+   
+        
+
+    def hydrate(self, bundle, request=None):
+        # Assign current user to new file
+        if not bundle.obj.pk:
+            user = User.objects.get(pk=bundle.request.user.id)
+            bundle.data['uploaded_by'] = {'pk': user.get_profile().pk}
+
+        return bundle
         
     def get_object_list(self, request):
         return super(BucketFileResource, self).get_object_list(request)

@@ -187,8 +187,6 @@ INSTALLED_APPS = (
     'mptt',
     'menus',
     'sekizai',
-    'filer',
-    'cmsplugin_filer_file',
     'cms.plugins.video',
     #'cms.plugins.twitter',
     'cms.plugins.picture',

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.files.uploadedfile import UploadedFile
 from django.http import HttpResponse
+from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormMixin
 from django.views.generic import View
@@ -18,6 +19,10 @@ from sorl.thumbnail import get_thumbnail
 
 from .models import BucketFile
 from .forms import BucketUploadForm
+
+from accounts.models import GUPProfile
+
+from .api import BucketFileResource
 
 class JSONResponseMixin(object):
     """
@@ -86,9 +91,18 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         return super(UploadView, self).dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = form_class(request.POST, request.FILES)
+        res = BucketFileResource()
+        try:
+            res.is_authenticated(request)
+        except:
+            raise PermissionDenied()
         
+        form_class = self.get_form_class()
+
+        qdict = request.POST.copy()
+        qdict['uploaded_by'] = '1' # FIXME!
+        form = form_class(qdict, request.FILES)
+
         if form.is_valid():
             file = request.FILES[u'file']
             wrapped_file = UploadedFile(file)
@@ -99,13 +113,17 @@ class UploadView(JSONResponseMixin, FormMixin, View):
             self.bf.filename = wrapped_file.file.name
             self.bf.file_size = wrapped_file.file.size
             self.bf.file = file
+            self.bf.uploaded_by = form.cleaned_data['uploaded_by']
             self.bf.bucket = form.cleaned_data['bucket']
             self.bf.save()
             
             return self.form_valid(form)            
         else:
             return self.form_invalid(form)
-    
+
+    def form_invalid(self, form):
+        return self.render_to_json_response({'error': 'error not implemented'})
+            
     def form_valid(self, form):
         # generating json response array
         result = [{"id": self.bf.id,
