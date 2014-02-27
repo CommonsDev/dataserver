@@ -91,16 +91,16 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         return super(UploadView, self).dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        res = BucketFileResource()
+        self.api_res = BucketFileResource()
         try:
-            res.is_authenticated(request)
+            self.api_res.is_authenticated(request)
         except:
             raise PermissionDenied()
-        
+
         form_class = self.get_form_class()
 
         qdict = request.POST.copy()
-        qdict['uploaded_by'] = '1' # FIXME!
+        qdict['uploaded_by'] = request.user.get_profile().pk
         form = form_class(qdict, request.FILES)
 
         if form.is_valid():
@@ -116,6 +116,9 @@ class UploadView(JSONResponseMixin, FormMixin, View):
             self.bf.uploaded_by = form.cleaned_data['uploaded_by']
             self.bf.bucket = form.cleaned_data['bucket']
             self.bf.save()
+
+            self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
+            self.bf.save()
             
             return self.form_valid(form)            
         else:
@@ -125,17 +128,9 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         return self.render_to_json_response({'error': 'error not implemented'})
             
     def form_valid(self, form):
-        # generating json response array
-        result = [{"id": self.bf.id,
-                   "name": self.bf.filename,
-                   "size": self.bf.file_size,
-                   "url": reverse('multiuploader_file_link', args=[self.bf.pk]),
-                   "thumbnail_url": reverse('bucket-thumbnail', args=[self.bf.pk]),
-                   "delete_url": reverse('multiuploader_delete', args=[self.bf.pk]),
-                   "delete_type": "POST", }]
-        
-        response_data = json.dumps(result)
-        mimetype = 'application/json'
-        return HttpResponse(response_data, mimetype=mimetype)            
+        """
+        Once saved, return the object as if we were reading the API (json, ...)
+        """
+        return self.api_res.get_detail(self.request, pk=self.bf.pk)
 
 
