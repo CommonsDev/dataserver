@@ -73,7 +73,6 @@ class BucketFileResource(ModelResource):
 
     def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
-        self.is_authenticated(request)
         self.throttle_check(request)
         # URL params
         bucket_id = kwargs['bucket_id'] 
