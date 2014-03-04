@@ -52,7 +52,7 @@ class BucketFileResource(ModelResource):
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
     uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
-   
+    filename = fields.CharField(attribute='filename', null=True)
         
 
     def hydrate(self, bundle, request=None):
@@ -80,8 +80,9 @@ class BucketFileResource(ModelResource):
         query = request.GET.get('q', '')
         autocomplete = request.GET.get('auto', None)
         selected_facets = request.GET.getlist('facet', None)
+        order = request.GET.getlist('order', '-pub_date')
         
-        sqs = SearchQuerySet().models(BucketFile).filter(bucket=bucket_id).facet('tags')
+        sqs = SearchQuerySet().models(BucketFile).filter(bucket=bucket_id).order_by(order).facet('tags')
         
         # 1st narrow down QS
         if selected_facets:

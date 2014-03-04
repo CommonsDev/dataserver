@@ -12,6 +12,7 @@ class BucketFileIndex(indexes.SearchIndex, indexes.Indexable):
   pub_date = indexes.DateTimeField(model_attr='uploaded_on')
   tags = indexes.MultiValueField(null=True, faceted=True)
   bucket = indexes.IntegerField(model_attr="bucket__id")
+  filename = indexes.CharField(model_attr='filename', null=True)
   
   content_auto = indexes.NgramField(use_template=True)
   
