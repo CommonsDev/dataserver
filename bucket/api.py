@@ -32,7 +32,14 @@ class BucketResource(ModelResource):
 class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
-        
+        resource_name = 'tag' 
+        allowed_methods = ['get', 'post', 'patch']
+        authentication = ApiKeyAuthentication()
+        authorization = Authorization()  
+    
+    def get_object_list(self, request):
+        return super(TagResource, self).get_object_list(request)
+
         
 class BucketFileResource(ModelResource):
     """
@@ -44,6 +51,7 @@ class BucketFileResource(ModelResource):
         filtering = {
             "bucket":'exact', 
         }
+        allowed_methods = ['get', 'post', 'patch']
         authentication = ApiKeyAuthentication()
         authorization = Authorization()        
     
