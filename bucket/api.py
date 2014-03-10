@@ -33,6 +33,9 @@ class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
         resource_name = 'tag' 
+        filtering = {
+            "name":"exact",
+        }
         allowed_methods = ['get', 'post', 'patch']
         authentication = ApiKeyAuthentication()
         authorization = Authorization()  
@@ -40,6 +43,19 @@ class TagResource(ModelResource):
     def get_object_list(self, request):
         return super(TagResource, self).get_object_list(request)
 
+    def hydrate(self, bundle, request=None):
+        """
+        We allow sending dumb tag objects with only a "name" attribute, then we retrieve or create proper tag objects
+        """
+        if bundle.data["name"]:
+            tagName = bundle.data["name"]
+            try:
+                tag = Tag.objects.get(name=tagName)
+            except Tag.DoesNotExist:
+                tag = Tag(name=tagName)
+                tag.save()
+            bundle = self.build_bundle(obj=tag)
+        return bundle
         
 class BucketFileResource(ModelResource):
     """
@@ -61,8 +77,7 @@ class BucketFileResource(ModelResource):
     uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
     filename = fields.CharField(attribute='filename', null=True)
-        
-
+    
     def hydrate(self, bundle, request=None):
         # Assign current user to new file
         if not bundle.obj.pk:
@@ -78,7 +93,7 @@ class BucketFileResource(ModelResource):
         return [
            url(r"^(?P<resource_name>%s)/bucket/(?P<bucket_id>\d+)/search%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('file_search'), name="api_file_search"),
         ]
-
+    
     def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.throttle_check(request)
