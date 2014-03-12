@@ -67,7 +67,7 @@ class BucketFileResource(ModelResource):
         filtering = {
             "bucket":'exact', 
         }
-        allowed_methods = ['get', 'post', 'patch']
+        allowed_methods = ['get', 'post', 'patch', 'delete']
         authentication = ApiKeyAuthentication()
         authorization = Authorization()        
     
@@ -79,8 +79,11 @@ class BucketFileResource(ModelResource):
     filename = fields.CharField(attribute='filename', null=True)
     
     def hydrate(self, bundle, request=None):
+        print " == hydrating file !!"
+        print bundle
         # Assign current user to new file
         if not bundle.obj.pk:
+            print " assigning user to file !!"
             user = User.objects.get(pk=bundle.request.user.id)
             bundle.data['uploaded_by'] = {'pk': user.get_profile().pk}
 

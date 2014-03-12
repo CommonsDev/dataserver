@@ -58,7 +58,10 @@ class ThumbnailView(View):
         # Lookup bucket file first
         bfile = get_object_or_404(BucketFile, pk=file_id)
         target = bfile.file.name
-
+        # !! FIXME !! BUG in Tastypie causes file/image fields to be reconstructed with absolute path when PATCHing a file (see https://gist.github.com/ratpik/6308307)
+        # so we strip off the /media/ if present
+        if target[0:6] == "/media":
+            target = target[7:]
         # Guess mimetype
         mimetype, encoding = mimetypes.guess_type(bfile.file.url)        
         
@@ -73,6 +76,7 @@ class ThumbnailView(View):
         try:
             thumbnail = get_thumbnail(target, preview_width, quality=80, format='JPEG')
         except Exception as e:
+            print "!! error in getting thumbnail !!"
             raise e
 
         # Issue a X-Sendfile to the server
