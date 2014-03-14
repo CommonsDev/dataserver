@@ -49,7 +49,7 @@ class ThumbnailView(View):
     other file supported.
     FIXME: THIS VIEW IS TERRIBLE: NO CACHE AND NOTHING!
     """
-    preprocess_uno = ('application/vnd.oasis.opendocument.text',)
+    preprocess_uno = ('application/vnd.oasis.opendocument.text', 'application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint')
     
     def get(self, request, *args, **kwargs):
         file_id = self.kwargs['pk']
@@ -57,15 +57,18 @@ class ThumbnailView(View):
 
         # Lookup bucket file first
         bfile = get_object_or_404(BucketFile, pk=file_id)
-        target = bfile.file.name
-        # !! FIXME !! BUG in Tastypie causes file/image fields to be reconstructed with absolute path when PATCHing a file (see https://gist.github.com/ratpik/6308307)
+        
+        # FIXME1: BUG in Tastypie causes file/image fields to be reconstructed with absolute path when PATCHing a file (see https://gist.github.com/ratpik/6308307)
         # so we strip off the /media/ if present
-        if target[0:6] == "/media":
-            target = target[7:]
+        if bfile.file.name[0:6] == "/media":
+            bfile.file.name = bfile.file.name[7:]
+        target = bfile.file.name
         # Guess mimetype
         mimetype, encoding = mimetypes.guess_type(bfile.file.url)        
         
         # Convert document to PDF first, if needed
+        # FIXME2: bug when several files are loaded => clashes 
+        # FIXME3: check if converted file is nor already there
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
             conversion_cmd = "unoconv -f pdf -o %s %s" % (os.path.join(settings.MEDIA_ROOT, target),

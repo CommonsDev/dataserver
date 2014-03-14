@@ -114,7 +114,8 @@ class Marker(models.Model):
     def marker_upload(instance, filename):
         return os.path.join(instance.id)
     
-    picture_url = models.URLField(blank=True)
+    # is URLField really required here ?? that make it not usable for relative urls
+    picture_url = models.CharField(max_length=255, blank=True)
     
     objects = models.GeoManager()
 
