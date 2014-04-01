@@ -50,7 +50,7 @@ USE_I18N = True
 USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
+USE_TZ = False
 
 import os
 
@@ -174,6 +174,7 @@ INSTALLED_APPS = (
 
     'scout',
     'tastypie',
+    'sendfile',
 
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
@@ -186,8 +187,6 @@ INSTALLED_APPS = (
     'mptt',
     'menus',
     'sekizai',
-    'filer',
-    'cmsplugin_filer_file',
     'cms.plugins.video',
     #'cms.plugins.twitter',
     'cms.plugins.picture',
@@ -203,6 +202,7 @@ INSTALLED_APPS = (
     'bucket',
     'multiuploader',
     'sorl.thumbnail',
+    'haystack'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -261,6 +261,16 @@ TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
 
+# Haystack
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'haystack',
+    },
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
 # CMS
 CMS_PERMISSION = True
 CMS_PUBLIC_FOR = 'all'
@@ -310,7 +320,6 @@ CKEDITOR_SETTINGS = {
 BUCKET_FILES_FOLDER = 'bucket'
 
 ## multiuploader
-
 MULTIUPLOADER_FILE_EXPIRATION_TIME = 3600
 
 MULTIUPLOADER_FORMS_SETTINGS = {
@@ -336,3 +345,9 @@ MULTIUPLOADER_FORMS_SETTINGS = {
         'AUTO_UPLOAD': True,
     },
 }
+
+# SENDFILE
+SENDFILE_BACKEND = 'sendfile.backends.development'
+
+# SORL
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine' # Needed for Pdf conv

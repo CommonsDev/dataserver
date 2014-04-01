@@ -109,12 +109,15 @@ class Marker(models.Model):
     category = models.ForeignKey(MarkerCategory, related_name='markers')
 
     title = models.CharField(max_length=255, null=True, blank=True)
+    subtitle = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-
+    video_src = models.TextField(null=True, blank=True)
+    
     def marker_upload(instance, filename):
         return os.path.join(instance.id)
     
-    picture_url = models.URLField(blank=True)
+    # is URLField really required here ?? that make it not usable for relative urls
+    picture_url = models.CharField(max_length=255, blank=True)
     
     objects = models.GeoManager()
 

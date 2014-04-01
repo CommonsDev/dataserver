@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.conf.urls import url
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, logout
 from django.db import models
 from tastypie.http import HttpUnauthorized, HttpForbidden
 
@@ -39,7 +39,7 @@ class UserResource(ModelResource):
         authentication = Authentication()
         authorization = Authorization()
 
-    def override_urls(self):
+    def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/login%s$" %
                 (self._meta.resource_name, trailing_slash()),
