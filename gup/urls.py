@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from tastypie.api import Api
 
 from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
-from accounts.api import ProfileResource, UserResource
+from accounts.api import ProfileResource, UserResource, GroupResource
 from gup import views
 
 admin.autodiscover()
@@ -25,6 +25,7 @@ api.register(MarkerCategoryResource())
 # User
 api.register(ProfileResource())
 api.register(UserResource())
+api.register(GroupResource())
 
 urlpatterns = patterns('',
     # Examples:

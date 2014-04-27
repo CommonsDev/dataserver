@@ -1,6 +1,6 @@
 # -*- encoding: utf-8 -*-
 from django.conf.urls import url
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
 from django.db import models
 from tastypie.http import HttpUnauthorized, HttpForbidden
@@ -28,7 +28,7 @@ class ProfileResource(ModelResource):
         bundle.data['first_name'] = bundle.obj.user.first_name
         bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
-
+        
 
 class UserResource(ModelResource):
     class Meta:
@@ -39,6 +39,8 @@ class UserResource(ModelResource):
         authentication = Authentication()
         authorization = Authorization()
 
+    profile = fields.ForeignKey(ProfileResource, 'profile', full=True)
+        
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/login%s$" %
@@ -144,4 +146,16 @@ class UserResource(ModelResource):
         else:
             return self.create_response(request, {'success': False}, HttpUnauthorized)
 
+
+class GroupResource(ModelResource):
+    class Meta:
+        queryset = Group.objects.all()
+        resource_name = 'account/group'
+        authentication = Authentication()
+        authorization = Authorization()
+
+    users = fields.ToManyField(UserResource, 'user_set', full=True)
+
+    
+# Create API key for every new user
 models.signals.post_save.connect(create_api_key, sender=User)
