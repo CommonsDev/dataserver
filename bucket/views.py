@@ -95,6 +95,8 @@ class ThumbnailView(View):
 class UploadView(JSONResponseMixin, FormMixin, View):
     """
     A generic HTML5 Upload view
+    
+    FIXME : deal with permissions !!
     """
     form_class = BucketUploadForm
     template_name = 'multiuploader/form.html'
@@ -115,17 +117,15 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         qdict = request.POST.copy()
         qdict['uploaded_by'] = request.user.get_profile().pk
         form = form_class(qdict, request.FILES)
-        print "[bucket view] will check form !!"
-        print form
 
         if form.is_valid():
-            print "[bucket view] form valid !!"
-            print qdict
             file = request.FILES[u'file']
             wrapped_file = UploadedFile(file)
             
             # writing file manually into model
             # because we don't need form of any type.
+            
+            # 
             # check if we update a file by giving an 'id' param 
             if 'id' in request.POST:
                 file_id = qdict['id']
@@ -133,10 +133,8 @@ class UploadView(JSONResponseMixin, FormMixin, View):
                 self.bf.file = file
                 self.bf.uploaded_by = form.cleaned_data['uploaded_by']
                 self.bf.save()
-                print "[bucket view] file saved !!"
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
                 self.bf.save()
-                print "[bucket view] got thumbnail !!"
             # new file
             else:
                 self.bf = BucketFile()
@@ -146,10 +144,8 @@ class UploadView(JSONResponseMixin, FormMixin, View):
                 self.bf.uploaded_by = form.cleaned_data['uploaded_by']
                 self.bf.bucket = form.cleaned_data['bucket']
                 self.bf.save()
-                print "[bucket view] file saved !!"
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
                 self.bf.save()
-                print "[bucket view] got thumbnail !!"
 
             return self.form_valid(form)            
         else:
