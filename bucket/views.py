@@ -116,6 +116,7 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         qdict['uploaded_by'] = request.user.get_profile().pk
         form = form_class(qdict, request.FILES)
         print "[bucket view] will check form !!"
+        print form
 
         if form.is_valid():
             print "[bucket view] form valid !!"

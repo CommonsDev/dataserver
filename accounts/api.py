@@ -20,7 +20,6 @@ class ProfileResource(ModelResource):
         queryset = GUPProfile.objects.all()
         resource_name = 'account/profile'
         authorization = DjangoAuthorization()
-
         fields = ['mugshot']
 
     def dehydrate(self, bundle):
@@ -28,14 +27,16 @@ class ProfileResource(ModelResource):
         bundle.data['first_name'] = bundle.obj.user.first_name
         bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
-
-
+    
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.all()
         allowed_methods = ['get', 'post']
         resource_name = 'account/user'
         fields = ['username']
+        filtering = {
+            "username":"exact",
+        }
         authentication = Authentication()
         authorization = Authorization()
 
@@ -114,7 +115,8 @@ class UserResource(ModelResource):
                 ret = self.create_response(request, {
                     'success': True,
                     'username': user.username,
-                    'key': key.key
+                    'key': key.key,
+                    'profile_id': user.profile.pk
                 })
 
                 return ret

@@ -15,7 +15,7 @@ class GUPProfile(UserenaBaseProfile):
                                 related_name='profile')
     favourite_snack = models.CharField(_('favourite snack'),
                                        max_length=5)
-
+                                       
 @receiver(post_save, sender=User)
 def create_profile_on_user_signup(sender, created, instance, **kwargs):
     if created:
