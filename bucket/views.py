@@ -131,6 +131,7 @@ class UploadView(JSONResponseMixin, FormMixin, View):
                 file_id = qdict['id']
                 self.bf = get_object_or_404(BucketFile, pk=file_id)
                 self.bf.file = file
+                self.bf.being_edited_by = None 
                 self.bf.uploaded_by = form.cleaned_data['uploaded_by']
                 self.bf.save()
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
