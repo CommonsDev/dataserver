@@ -9,7 +9,7 @@ from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
 from taggit.models import Tag
-from accounts.api import ProfileResource
+from accounts.api import UserResource
 from haystack.query import SearchQuerySet
 
 from .models import Bucket, BucketFile, BucketFileComment
@@ -74,7 +74,7 @@ class BucketFileResource(ModelResource):
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
     tags = fields.ToManyField(TagResource, 'tags', full=True)    
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
-    uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)
+    uploaded_by = fields.ToOneField(UserResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
     filename = fields.CharField(attribute='filename', null=True)
     
@@ -155,7 +155,7 @@ class BucketFileCommentResource(ModelResource):
             "bucket_file":'exact', 
         }
         
-    submitter = fields.ToOneField(ProfileResource, 'submitter', full=True)
+    submitter = fields.ToOneField(UserResource, 'submitter', full=True)
     bucket_file = fields.ToOneField(BucketFileResource, 'bucket_file')
     
     def get_object_list(self, request):

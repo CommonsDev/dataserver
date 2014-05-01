@@ -13,40 +13,28 @@ from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
 
-from .models import GUPProfile
-
-class ProfileResource(ModelResource):
-    class Meta:
-        queryset = GUPProfile.objects.all()
-        resource_name = 'account/profile'
-        authorization = DjangoAuthorization()
-
-        fields = ['mugshot']
-
-    def dehydrate(self, bundle):
-        bundle.data['username'] = bundle.obj.user.username
-        bundle.data['first_name'] = bundle.obj.user.first_name
-        bundle.data['last_name'] = bundle.obj.user.last_name
-        return bundle
-        
+from .models import Profile
 
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.exclude(pk=-1) # Exclude anonymous user
-        detail_uri_name = 'username'        
+        detail_uri_name = 'username'
         allowed_methods = ['get', 'post']
         resource_name = 'account/user'
-        fields = ['username']
         authentication = Authentication()
         authorization = Authorization()
+        fields = ['username', 'first_name', 'last_name']
 
-    profile = fields.ForeignKey(ProfileResource, 'profile', full=True)
+
+    def dehydrate(self, bundle):
+        bundle.data['mugshot'] = bundle.obj.profile.mugshot
+        #bundle.data['first_name'] = bundle.obj.user.first_name
+        #bundle.data['last_name'] = bundle.obj.user.last_name
+        return bundle
+    
         
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<username>[\w\d_.-]+)/$" %
-                self._meta.resource_name,
-                self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
             url(r"^(?P<resource_name>%s)/login%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('login'), name="api_login"),

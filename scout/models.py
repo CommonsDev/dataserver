@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 
 from autoslug import AutoSlugField
 
-from accounts.models import GUPProfile
+from accounts.models import Profile
 from bucket.models import Bucket
 
 class TileLayer(models.Model):
@@ -103,7 +103,7 @@ class Marker(models.Model):
 
     address = models.TextField(default="")
 
-    created_by = models.ForeignKey(GUPProfile)
+    created_by = models.ForeignKey(Profile)
     created_on = models.DateTimeField(auto_now_add=True)
 
     category = models.ForeignKey(MarkerCategory, related_name='markers')
