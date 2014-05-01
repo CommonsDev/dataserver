@@ -20,8 +20,6 @@ from sorl.thumbnail import get_thumbnail
 from .models import BucketFile
 from .forms import BucketUploadForm
 
-from accounts.models import GUPProfile
-
 from .api import BucketFileResource
 
 class JSONResponseMixin(object):
@@ -57,7 +55,7 @@ class ThumbnailView(View):
 
         # Lookup bucket file first
         bfile = get_object_or_404(BucketFile, pk=file_id)
-        print "[bucket view] Looked-up bucket file first"
+        # print "[bucket view] Looked-up bucket file first"
         # FIXME1: BUG in Tastypie causes file/image fields to be reconstructed with absolute path when PATCHing a file (see https://gist.github.com/ratpik/6308307)
         # so we strip off the /media/ if present
         if bfile.file.name[0:6] == "/media":
@@ -71,8 +69,8 @@ class ThumbnailView(View):
         # FIXME3: check if converted file is nor already there
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
-            print "[bucket view] == converting to pdf : %s " % bfile.file.name
-            print "target exist ?? : %r " % os.path.isfile(os.path.join(settings.MEDIA_ROOT, target))
+            # print "[bucket view] == converting to pdf : %s " % bfile.file.name
+            # print "target exist ?? : %r " % os.path.isfile(os.path.join(settings.MEDIA_ROOT, target))
             if  os.path.isfile(os.path.join(settings.MEDIA_ROOT, target)):
                 print "___ file exist %s " % os.path.join(settings.MEDIA_ROOT, target)
             else:
@@ -95,6 +93,8 @@ class ThumbnailView(View):
 class UploadView(JSONResponseMixin, FormMixin, View):
     """
     A generic HTML5 Upload view
+    
+    FIXME : deal with permissions !!
     """
     form_class = BucketUploadForm
     template_name = 'multiuploader/form.html'
@@ -115,26 +115,35 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         qdict = request.POST.copy()
         qdict['uploaded_by'] = request.user.get_profile().pk
         form = form_class(qdict, request.FILES)
-        print "[bucket view] will check form !!"
 
         if form.is_valid():
-            print "[bucket view] form valid !!"
             file = request.FILES[u'file']
             wrapped_file = UploadedFile(file)
             
             # writing file manually into model
             # because we don't need form of any type.
-            self.bf = BucketFile()
-            self.bf.filename = wrapped_file.file.name
-            self.bf.file_size = wrapped_file.file.size
-            self.bf.file = file
-            self.bf.uploaded_by = form.cleaned_data['uploaded_by']
-            self.bf.bucket = form.cleaned_data['bucket']
-            self.bf.save()
-            print "[bucket view] file saved !!"
-            self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
-            self.bf.save()
-            print "[bucket view] got thumbnail !!"
+            # 
+            # check if we update a file by giving an 'id' param 
+            if 'id' in request.POST:
+                file_id = qdict['id']
+                self.bf = get_object_or_404(BucketFile, pk=file_id)
+                self.bf.file = file
+                self.bf.being_edited_by = None 
+                self.bf.uploaded_by = form.cleaned_data['uploaded_by']
+                self.bf.save()
+                self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
+                self.bf.save()
+            # new file
+            else:
+                self.bf = BucketFile()
+                self.bf.filename = wrapped_file.file.name
+                self.bf.file_size = wrapped_file.file.size
+                self.bf.file = file
+                self.bf.uploaded_by = form.cleaned_data['uploaded_by']
+                self.bf.bucket = form.cleaned_data['bucket']
+                self.bf.save()
+                self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
+                self.bf.save()
 
             return self.form_valid(form)            
         else:

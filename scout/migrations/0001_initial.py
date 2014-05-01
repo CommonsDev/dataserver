@@ -55,7 +55,7 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('position', self.gf('django.contrib.gis.db.models.fields.PointField')(geography=True)),
             ('datalayer', self.gf('django.db.models.fields.related.ForeignKey')(related_name='markers', to=orm['scout.DataLayer'])),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.GUPProfile'])),
+            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Profile'])),
             ('created_on', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='markers', to=orm['scout.MarkerCategory'])),
             ('title', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
@@ -83,8 +83,8 @@ class Migration(SchemaMigration):
 
 
     models = {
-        u'accounts.gupprofile': {
-            'Meta': {'object_name': 'GUPProfile'},
+        u'accounts.profile': {
+            'Meta': {'object_name': 'Profile'},
             'favourite_snack': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
@@ -147,7 +147,7 @@ class Migration(SchemaMigration):
         u'scout.marker': {
             'Meta': {'object_name': 'Marker'},
             'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.MarkerCategory']"}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']"}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.Profile']"}),
             'created_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'datalayer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.DataLayer']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),

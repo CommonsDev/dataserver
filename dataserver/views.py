@@ -6,7 +6,7 @@ from django.views.generic.base import RedirectView
 from cms.models import Page
 from cms.api import create_page, add_plugin, assign_user_to_page
 
-from gup import settings
+from dataserver import settings
 
 class CMSRedirectView(RedirectView):
   """

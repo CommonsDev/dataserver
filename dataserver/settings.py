@@ -1,4 +1,4 @@
-# Django settings for gup project.
+# Django settings for dataserver project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -130,10 +130,10 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-ROOT_URLCONF = 'gup.urls'
+ROOT_URLCONF = 'dataserver.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'gup.wsgi.application'
+WSGI_APPLICATION = 'dataserver.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -247,7 +247,7 @@ LOGIN_URL = '/accounts/signin/'
 #LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
-AUTH_PROFILE_MODULE = 'accounts.GUPProfile'
+AUTH_PROFILE_MODULE = 'accounts.Profile'
 
 
 
@@ -262,6 +262,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
+TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # Haystack
 HAYSTACK_CONNECTIONS = {
