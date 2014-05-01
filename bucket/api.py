@@ -25,10 +25,6 @@ class BucketResource(ModelResource):
 
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
         
-    def get_object_list(self, request):
-        return super(BucketResource, self).get_object_list(request)
-
-
 class TagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
@@ -40,9 +36,6 @@ class TagResource(ModelResource):
         authentication = ApiKeyAuthentication()
         authorization = Authorization()  
     
-    def get_object_list(self, request):
-        return super(TagResource, self).get_object_list(request)
-
     def hydrate(self, bundle, request=None):
         """
         We allow sending dumb tag objects with only a "name" attribute, then we retrieve or create proper tag objects
@@ -82,13 +75,9 @@ class BucketFileResource(ModelResource):
     def hydrate(self, bundle, request=None):
         # Assign current user to new file
         if not bundle.obj.pk:
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['uploaded_by'] = {'pk': user.get_profile().pk}
+            bundle.data['uploaded_by'] = bundle.request.user
         
         return bundle
-        
-    def get_object_list(self, request):
-        return super(BucketFileResource, self).get_object_list(request)
         
     def prepend_urls(self):
         return [
@@ -156,14 +145,9 @@ class BucketFileCommentResource(ModelResource):
     submitter = fields.ToOneField(UserResource, 'submitter', full=True)
     bucket_file = fields.ToOneField(BucketFileResource, 'bucket_file')
     
-    def get_object_list(self, request):
-        return super(BucketFileCommentResource, self).get_object_list(request)
-    
     def hydrate(self, bundle, request=None):
         if not bundle.obj.pk:
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['submitter'] = {'pk': user.get_profile().pk}
-            
+            bundle.data['submitter'] = bundle.request.user            
         return bundle
 
 

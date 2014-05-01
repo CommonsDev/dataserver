@@ -55,7 +55,6 @@ class ThumbnailView(View):
 
         # Lookup bucket file first
         bfile = get_object_or_404(BucketFile, pk=file_id)
-        # print "[bucket view] Looked-up bucket file first"
         # FIXME1: BUG in Tastypie causes file/image fields to be reconstructed with absolute path when PATCHing a file (see https://gist.github.com/ratpik/6308307)
         # so we strip off the /media/ if present
         if bfile.file.name[0:6] == "/media":
@@ -66,11 +65,8 @@ class ThumbnailView(View):
         
         # Convert document to PDF first, if needed
         # FIXME2: bug when several files are loaded => clashes 
-        # FIXME3: check if converted file is nor already there
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
-            # print "[bucket view] == converting to pdf : %s " % bfile.file.name
-            # print "target exist ?? : %r " % os.path.isfile(os.path.join(settings.MEDIA_ROOT, target))
             if  os.path.isfile(os.path.join(settings.MEDIA_ROOT, target)):
                 print "___ file exist %s " % os.path.join(settings.MEDIA_ROOT, target)
             else:
@@ -113,8 +109,10 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         form_class = self.get_form_class()
 
         qdict = request.POST.copy()
-        qdict['uploaded_by'] = request.user.get_profile().pk
+        print "Request user : %s" % (request.user.pk)
+        qdict['uploaded_by'] = request.user.pk
         form = form_class(qdict, request.FILES)
+        print form
 
         if form.is_valid():
             file = request.FILES[u'file']
