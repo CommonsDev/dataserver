@@ -18,7 +18,6 @@ class Profile(UserenaBaseProfile):
     def username(self):
         return self.user.username
     
-
 @receiver(post_save, sender=User)
 def create_profile_on_user_signup(sender, created, instance, **kwargs):
     if created:

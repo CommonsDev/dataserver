@@ -12,7 +12,6 @@ from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
-
 from .models import Profile
 
 class UserResource(ModelResource):
@@ -108,7 +107,7 @@ class UserResource(ModelResource):
                 ret = self.create_response(request, {
                     'success': True,
                     'username': user.username,
-                    'key': key.key
+                    'key': key.key,
                 })
 
                 return ret
