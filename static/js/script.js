@@ -10,7 +10,7 @@ $(function(){
     window.f = new flux.slider('#slider', {
         autoplay: true,
         pagination:true,
-        delay:5000,
+        delay:4000,
         transitions: ['dissolve']
     });
 
@@ -19,17 +19,20 @@ $(function(){
 
     setTimeout(function() {
         $(document).trigger('afterready');
-    }, 3000);
+    }, 5000);
 
     $("a[href^=#]").click(function() {
 	    $('html, body').animate({
 	        scrollTop: $($(this).attr('href')).offset().top
-	    }, 2000);
+	    }, 1000);
 	});
 });
 
 $(window).resize(function(){
-	var wW = $('body').width(); 
+    var wW = $('body').width(); 
     $('header').css('left', wW/2 - 475);
     $('#main #slider .pagination').css('left', wW/2 - 475 + 175);
 });
+
+
+
