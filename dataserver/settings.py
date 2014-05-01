@@ -9,6 +9,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+CARTO_BASE_URL = "http://gup.extra-muros.coop/carte/"
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
