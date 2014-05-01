@@ -77,16 +77,14 @@ class BucketFileResource(ModelResource):
     uploaded_by = fields.ToOneField(UserResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
     filename = fields.CharField(attribute='filename', null=True)
+    being_edited_by = fields.ToOneField(ProfileResource, 'being_edited_by', full=True, null = True)
     
     def hydrate(self, bundle, request=None):
-        print " == hydrating file !!"
-        print bundle
         # Assign current user to new file
         if not bundle.obj.pk:
-            print " assigning user to file !!"
             user = User.objects.get(pk=bundle.request.user.id)
             bundle.data['uploaded_by'] = {'pk': user.get_profile().pk}
-
+        
         return bundle
         
     def get_object_list(self, request):

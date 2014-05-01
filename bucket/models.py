@@ -28,7 +28,8 @@ class BucketFile(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     description = models.TextField(null=True, blank=True)
     filename = models.CharField(max_length=2048, null=True, blank=True)
-    uploaded_by = models.ForeignKey(get_profile_model())
+    uploaded_by = models.ForeignKey(get_profile_model(), related_name='uploader_of')
+    being_edited_by = models.ForeignKey(get_profile_model(), related_name='editor_of', null = True)
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
