@@ -77,7 +77,7 @@ class BucketFileResource(ModelResource):
     uploaded_by = fields.ToOneField(UserResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
     filename = fields.CharField(attribute='filename', null=True)
-    being_edited_by = fields.ToOneField(ProfileResource, 'being_edited_by', full=True, null = True)
+    being_edited_by = fields.ToOneField(UserResource, 'being_edited_by', full=True, null = True)
     
     def hydrate(self, bundle, request=None):
         # Assign current user to new file

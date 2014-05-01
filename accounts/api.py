@@ -108,7 +108,6 @@ class UserResource(ModelResource):
                     'success': True,
                     'username': user.username,
                     'key': key.key,
-                    'profile_id': user.profile.pk
                 })
 
                 return ret

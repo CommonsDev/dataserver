@@ -10,24 +10,28 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'BucketFile.being_edited_by'
         db.add_column(u'bucket_bucketfile', 'being_edited_by',
-                      self.gf('django.db.models.fields.related.ForeignKey')(related_name='editor_of', null=True, to=orm['accounts.GUPProfile']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(related_name='editor_of', null=True, to=orm['auth.User']),
                       keep_default=False)
 
+
+        # Changing field 'BucketFile.uploaded_by'
+        db.alter_column(u'bucket_bucketfile', 'uploaded_by_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User']))
+
+        # Changing field 'BucketFileComment.submitter'
+        db.alter_column(u'bucket_bucketfilecomment', 'submitter_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User']))
 
     def backwards(self, orm):
         # Deleting field 'BucketFile.being_edited_by'
         db.delete_column(u'bucket_bucketfile', 'being_edited_by_id')
 
 
+        # Changing field 'BucketFile.uploaded_by'
+        db.alter_column(u'bucket_bucketfile', 'uploaded_by_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Profile']))
+
+        # Changing field 'BucketFileComment.submitter'
+        db.alter_column(u'bucket_bucketfilecomment', 'submitter_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Profile']))
+
     models = {
-        u'accounts.gupprofile': {
-            'Meta': {'object_name': 'GUPProfile'},
-            'favourite_snack': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
-            'privacy': ('django.db.models.fields.CharField', [], {'default': "'registered'", 'max_length': '15'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'profile'", 'unique': 'True', 'to': u"orm['auth.User']"})
-        },
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -63,7 +67,7 @@ class Migration(SchemaMigration):
         },
         u'bucket.bucketfile': {
             'Meta': {'object_name': 'BucketFile'},
-            'being_edited_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'editor_of'", 'null': 'True', 'to': u"orm['accounts.GUPProfile']"}),
+            'being_edited_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'editor_of'", 'null': 'True', 'to': u"orm['auth.User']"}),
             'bucket': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'files'", 'to': u"orm['bucket.Bucket']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'file': ('django.db.models.fields.files.FileField', [], {'max_length': '255'}),
@@ -71,7 +75,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'thumbnail_url': ('django.db.models.fields.CharField', [], {'max_length': '2048'}),
             'updated_on': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'uploader_of'", 'to': u"orm['accounts.GUPProfile']"}),
+            'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'uploader_of'", 'to': u"orm['auth.User']"}),
             'uploaded_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'})
         },
         u'bucket.bucketfilecomment': {
@@ -79,7 +83,7 @@ class Migration(SchemaMigration):
             'bucket_file': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'comments'", 'to': u"orm['bucket.BucketFile']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'submitted_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'submitter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']"}),
+            'submitter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'text': ('django.db.models.fields.TextField', [], {})
         },
         u'contenttypes.contenttype': {

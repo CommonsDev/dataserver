@@ -169,12 +169,11 @@ INSTALLED_APPS = (
     'djangular',
     'django.contrib.gis',
     
-    'accounts',
     'guardian',
     'userena',
+    'accounts',
     'django_extensions',
 
-    'scout',
     'tastypie',
     'sendfile',
 
@@ -202,6 +201,7 @@ INSTALLED_APPS = (
     'flipflop',    
     'alambic',
     'bucket',
+    'scout',
     'multiuploader',
     'sorl.thumbnail',
     'haystack'
