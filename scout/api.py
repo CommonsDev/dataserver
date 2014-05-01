@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 
 from pygeocoder import Geocoder
 
-from accounts.api import ProfileResource
+from accounts.api import UserResource
 
 from bucket.models import Bucket
 from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
@@ -75,7 +75,7 @@ class MarkerResource(GeoModelResource):
         always_return_data = True
     
     data_layer = fields.ToOneField(DataLayerResource, 'datalayer')
-    created_by = fields.ToOneField(ProfileResource, 'created_by', full=True)
+    created_by = fields.ToOneField(UserResource, 'created_by', full=True)
     category = fields.ToOneField(MarkerCategoryResource, 'category', full=True)
 
     def hydrate(self, bundle, request=None):

@@ -2,13 +2,14 @@ from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.views.generic import TemplateView
 
 from tastypie.api import Api
 
 from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
-from accounts.api import ProfileResource, UserResource
-from gup import views
+from accounts.api import UserResource, GroupResource
+from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, TagResource
+
+import views
 
 admin.autodiscover()
 
@@ -22,9 +23,16 @@ api.register(MarkerResource())
 api.register(DataLayerResource())
 api.register(MarkerCategoryResource())
 
-# User
-api.register(ProfileResource())
+# Auth
 api.register(UserResource())
+api.register(GroupResource())
+
+# Kanban
+api.register(BoardResource())
+api.register(ListResource())
+api.register(CardResource())
+api.register(TaskResource())
+api.register(TagResource())
 
 urlpatterns = patterns('',
     # Examples:

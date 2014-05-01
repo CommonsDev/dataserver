@@ -43,6 +43,14 @@ class Card(models.Model):
     list = models.ForeignKey(List, related_name='cards')
     tags = TaggableManager(blank=True)
 
+    @property
+    def completion(self):
+        tasks = self.tasks.all()
+        if len(tasks) == 0:
+            return 100
+        done_tasks = [t for t in tasks if t.done]
+        return float(len(done_tasks)) / len(tasks)
+
 
     def __unicode__(self):
         return self.title
