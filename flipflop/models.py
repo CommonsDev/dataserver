@@ -37,7 +37,7 @@ class Card(models.Model):
 
     due_date = models.DateTimeField(_('due date'), null=True, blank=True)
     
-    submitter = models.ForeignKey(User, verbose_name=_('submitter'), related_name="submitter")
+    submitter = models.ForeignKey(User, verbose_name=_('submitter'), related_name="submitted_cards")
     assigned_to = models.ManyToManyField(User, verbose_name=_('assigned to'), blank=True)
 
     list = models.ForeignKey(List, related_name='cards')
@@ -47,22 +47,21 @@ class Card(models.Model):
     def completion(self):
         tasks = self.tasks.all()
         if len(tasks) == 0:
-            return 100
+            return -1
         done_tasks = [t for t in tasks if t.done]
         return float(len(done_tasks)) / len(tasks)
 
+    @property
+    def comment_count(self):
+        return 0
+
+    @property
+    def attachment_count(self):
+        return 0
 
     def __unicode__(self):
         return self.title
-
-    def hydrate(self, bundle, request=None):
-        if not bundle.obj.pk:
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['submitter'] = {'pk': user.get_profile().pk}
-            
-        return bundle     
         
-
 
 class Task(models.Model):
     """

@@ -80,8 +80,7 @@ class MarkerResource(GeoModelResource):
 
     def hydrate(self, bundle, request=None):
         if not bundle.obj.pk:
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['created_by'] = {'pk': user.get_profile().pk}
+            bundle.data['created_by'] = bundle.request.user
 
         # Resolve position
         position = bundle.data['position']['coordinates']
