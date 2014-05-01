@@ -129,7 +129,7 @@ class UploadView(JSONResponseMixin, FormMixin, View):
                 self.bf = get_object_or_404(BucketFile, pk=file_id)
                 self.bf.file = file
                 self.bf.being_edited_by = None 
-                self.bf.uploaded_by = form.cleaned_data['uploaded_by']
+                self.bf.uploaded_by = form.cleaned_data['uploaded_by'] # FIXME : security hole !! should
                 self.bf.save()
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
                 self.bf.save()
@@ -139,7 +139,7 @@ class UploadView(JSONResponseMixin, FormMixin, View):
                 self.bf.filename = wrapped_file.file.name
                 self.bf.file_size = wrapped_file.file.size
                 self.bf.file = file
-                self.bf.uploaded_by = form.cleaned_data['uploaded_by']
+                self.bf.uploaded_by = form.cleaned_data['uploaded_by'] # FIXME : security hole !!
                 self.bf.bucket = form.cleaned_data['bucket']
                 self.bf.save()
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
