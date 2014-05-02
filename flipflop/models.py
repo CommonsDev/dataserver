@@ -2,11 +2,17 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 
+from guardian.shortcuts import get_users_with_perms
+
 from taggit.managers import TaggableManager
 
 class Board(models.Model):
     title = models.CharField(_('title'), max_length=100)
 
+    @property
+    def members(self):
+        return get_users_with_perms(self)
+    
     def __unicode__(self):
         return self.title
 
@@ -73,4 +79,15 @@ class Task(models.Model):
 
     def __unicode__(self):
         return self.title
+
+class CardComment(models.Model):
+    """
+    A comment about a card for eg.
+    """
+    user = models.ForeignKey(User)
+    card = models.ForeignKey(Card, related_name='comments')
+
+    posted_at = models.DateTimeField(auto_now_add=True)    
+    text = models.TextField()
     
+
