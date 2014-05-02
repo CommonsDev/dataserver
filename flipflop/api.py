@@ -13,33 +13,36 @@ class ListResource(ModelResource):
     class Meta:
         queryset = List.objects.all()
         resource_name = 'flipflop/list'
-
+        always_return_data = True
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
         
 
-    cards = fields.ToManyField('flipflop.api.CardResource', 'cards', full=True)
+    board = fields.ForeignKey('flipflop.api.BoardResource', 'board')
+    cards = fields.ToManyField('flipflop.api.CardResource', 'cards', full=True, null=True, blank=True)
 
 class BoardResource(ModelResource):
     class Meta:
         queryset = Board.objects.all()
         resource_name = 'flipflop/board'
+        always_return_data = True
 
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
         
 
-    lists = fields.ToManyField('flipflop.api.ListResource', 'lists', use_in='detail', full=True)
+    lists = fields.ToManyField('flipflop.api.ListResource', 'lists', use_in='detail', full=True, null=True, blank=True)
     members = fields.ToManyField(UserResource, attribute='members', null=True, blank=True, full=True)
     
 class TaskResource(ModelResource):
     class Meta:
         queryset = Task.objects.all()
         resource_name = 'flipflop/task'
-
+        always_return_data = True
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        
+
+    card = fields.ForeignKey('flipflop.api.CardResource', 'card')
 
 class TagResource(ModelResource):
     class Meta:
@@ -60,7 +63,7 @@ class CardResource(ModelResource):
     assigned_to = fields.ToManyField(UserResource, 'assigned_to', blank=True, full=True)
     submitter = fields.ToOneField(UserResource, 'submitter', full=True)
     list = fields.ToOneField(ListResource, 'list')
-    comments = fields.ToManyField('flipflop.api.CardCommentResource', 'comments', use_in='detail', full=True)    
+    comments = fields.ToManyField('flipflop.api.CardCommentResource', 'comments', use_in='detail', full=True, null=True, blank=True)    
 
     completion = fields.IntegerField(attribute='completion', readonly=True)
     comment_count = fields.IntegerField(attribute='comment_count', readonly=True)

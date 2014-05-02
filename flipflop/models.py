@@ -59,7 +59,7 @@ class Card(models.Model):
 
     @property
     def comment_count(self):
-        return 0
+        return len(self.comments.all())
 
     @property
     def attachment_count(self):
