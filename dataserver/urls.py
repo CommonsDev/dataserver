@@ -7,7 +7,7 @@ from tastypie.api import Api
 
 from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
 from accounts.api import UserResource, GroupResource
-from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, TagResource, CardCommentResource
+from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 
 import views
 
@@ -33,7 +33,7 @@ api.register(ListResource())
 api.register(CardResource())
 api.register(TaskResource())
 api.register(CardCommentResource())
-api.register(TagResource())
+api.register(LabelResource())
 
 urlpatterns = patterns('',
     # Examples:

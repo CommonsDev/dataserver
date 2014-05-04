@@ -1,18 +1,25 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.db.models import signals
 
 from guardian.shortcuts import get_users_with_perms
 
-from taggit.managers import TaggableManager
+class Label(models.Model):
+    label = models.CharField(max_length=100)
 
+    def __unicode__(self):
+        return self.label
+    
 class Board(models.Model):
     title = models.CharField(_('title'), max_length=100)
 
+    labels = models.ManyToManyField(Label, null=True, blank=True, related_name='boards')
+    
     @property
     def members(self):
         return get_users_with_perms(self)
-    
+
     def __unicode__(self):
         return self.title
 
@@ -47,7 +54,7 @@ class Card(models.Model):
     assigned_to = models.ManyToManyField(User, verbose_name=_('assigned to'), blank=True)
 
     list = models.ForeignKey(List, related_name='cards')
-    tags = TaggableManager(blank=True)
+    labels = models.ManyToManyField(Label, null=True, blank=True)
 
     @property
     def completion(self):
@@ -67,6 +74,7 @@ class Card(models.Model):
 
     def __unicode__(self):
         return self.title
+
         
 
 class Task(models.Model):

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from guardian.admin import GuardedModelAdmin
 
-from .models import Board, List, Card, Task, CardComment
+from .models import Board, List, Card, Task, CardComment, Label
 
 class InlineTask(admin.TabularInline):
     model = Task
@@ -25,3 +25,4 @@ class BoardAdmin(GuardedModelAdmin):
 admin.site.register(Card, CardAdmin)
 admin.site.register(Board, BoardAdmin)
 admin.site.register(CardComment)
+admin.site.register(Label)
