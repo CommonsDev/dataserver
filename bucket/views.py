@@ -61,8 +61,8 @@ class ThumbnailView(View):
             bfile.file.name = bfile.file.name[7:]
         target = bfile.file.name
         # Guess mimetype
-        mimetype, encoding = mimetypes.guess_type(bfile.file.url)        
-        
+        mimetype, encoding = mimetypes.guess_type(bfile.file.url)
+
         # Convert document to PDF first, if needed
         # FIXME2: bug when several files are loaded => clashes 
         if mimetype in ThumbnailView.preprocess_uno:
@@ -78,12 +78,14 @@ class ThumbnailView(View):
         # Generate thumbnail
         try:
             thumbnail = get_thumbnail(target, preview_width, quality=80, format='JPEG')
-        except Exception as e:
-            print "!! error in getting thumbnail !!"
-            raise e
+        except Exception:
+            thumbnail = None
 
-        # Issue a X-Sendfile to the server
-        fp = os.path.join(settings.MEDIA_ROOT, thumbnail.name)
+        if thumbnail:
+            # Issue a X-Sendfile to the server
+            fp = os.path.join(settings.MEDIA_ROOT, thumbnail.name)
+        else:
+            fp = os.path.join(settings.STATIC_ROOT, 'images/defaultfilepreview.jpg')
         return sendfile(request, fp)
                 
 class UploadView(JSONResponseMixin, FormMixin, View):

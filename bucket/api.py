@@ -16,19 +16,20 @@ from .models import Bucket, BucketFile, BucketFileComment
 
 class BucketResource(ModelResource):
     class Meta:
-        authentication = Authentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()        
-
+        resource_name = 'bucket/bucket'
+        always_return_data = True        
         #authentication = ApiKeyAuthentication()
         #authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
 
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
         
-class TagResource(ModelResource):
+class BucketTagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
-        resource_name = 'tag' 
+        resource_name = 'bucket/tag' 
         filtering = {
             "name":"exact",
         }
@@ -56,16 +57,16 @@ class BucketFileResource(ModelResource):
     """
     class Meta:
         queryset = BucketFile.objects.all()
-        resource_name = 'bucketfile'
+        resource_name = 'bucket/file'
         filtering = {
             "bucket":'exact', 
         }
-        allowed_methods = ['get', 'post', 'patch', 'delete']
+
         authentication = ApiKeyAuthentication()
         authorization = Authorization()        
     
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
-    tags = fields.ToManyField(TagResource, 'tags', full=True)    
+    tags = fields.ToManyField(BucketTagResource, 'tags', full=True)    
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
     uploaded_by = fields.ToOneField(UserResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
@@ -87,6 +88,7 @@ class BucketFileResource(ModelResource):
     def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.throttle_check(request)
+
         # URL params
         bucket_id = kwargs['bucket_id'] 
         # Query params
@@ -96,7 +98,7 @@ class BucketFileResource(ModelResource):
         order = request.GET.getlist('order', '-pub_date')
         
         sqs = SearchQuerySet().models(BucketFile).filter(bucket=bucket_id).order_by(order).facet('tags')
-        
+
         # 1st narrow down QS
         if selected_facets:
             for facet in selected_facets:
@@ -135,6 +137,7 @@ class BucketFileCommentResource(ModelResource):
     class Meta:
         queryset = BucketFileComment.objects.all()
         always_return_data = True
+        resource_name = 'bucket/filecomment'
         # FIXME: deal with authentification and authorization
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
