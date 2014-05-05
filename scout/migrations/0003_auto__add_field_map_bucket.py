@@ -20,8 +20,8 @@ class Migration(SchemaMigration):
 
 
     models = {
-        u'accounts.gupprofile': {
-            'Meta': {'object_name': 'GUPProfile'},
+        u'accounts.profile': {
+            'Meta': {'object_name': 'Profile'},
             'favourite_snack': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
@@ -90,7 +90,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Marker'},
             'address': ('django.db.models.fields.TextField', [], {'default': "''"}),
             'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.MarkerCategory']"}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']"}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.Profile']"}),
             'created_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'datalayer': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'markers'", 'to': u"orm['scout.DataLayer']"}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),

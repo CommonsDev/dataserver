@@ -1,11 +1,24 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.db.models import signals
 
-from taggit.managers import TaggableManager
+from guardian.shortcuts import get_users_with_perms
 
+class Label(models.Model):
+    label = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.label
+    
 class Board(models.Model):
     title = models.CharField(_('title'), max_length=100)
+
+    labels = models.ManyToManyField(Label, null=True, blank=True, related_name='boards')
+    
+    @property
+    def members(self):
+        return get_users_with_perms(self)
 
     def __unicode__(self):
         return self.title
@@ -37,24 +50,32 @@ class Card(models.Model):
 
     due_date = models.DateTimeField(_('due date'), null=True, blank=True)
     
-    submitter = models.ForeignKey(User, verbose_name=_('submitter'), related_name="submitter")
+    submitter = models.ForeignKey(User, verbose_name=_('submitter'), related_name="submitted_cards")
     assigned_to = models.ManyToManyField(User, verbose_name=_('assigned to'), blank=True)
 
     list = models.ForeignKey(List, related_name='cards')
-    tags = TaggableManager(blank=True)
+    labels = models.ManyToManyField(Label, null=True, blank=True)
 
+    @property
+    def completion(self):
+        tasks = self.tasks.all()
+        if len(tasks) == 0:
+            return -1
+        done_tasks = [t for t in tasks if t.done]
+        return float(len(done_tasks)) / len(tasks)
+
+    @property
+    def comment_count(self):
+        return len(self.comments.all())
+
+    @property
+    def attachment_count(self):
+        return 0
 
     def __unicode__(self):
         return self.title
 
-    def hydrate(self, bundle, request=None):
-        if not bundle.obj.pk:
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['submitter'] = {'pk': user.get_profile().pk}
-            
-        return bundle     
         
-
 
 class Task(models.Model):
     """
@@ -66,4 +87,15 @@ class Task(models.Model):
 
     def __unicode__(self):
         return self.title
+
+class CardComment(models.Model):
+    """
+    A comment about a card for eg.
+    """
+    user = models.ForeignKey(User)
+    card = models.ForeignKey(Card, related_name='comments')
+
+    posted_at = models.DateTimeField(auto_now_add=True)    
+    text = models.TextField()
     
+

@@ -1,4 +1,4 @@
-# Django settings for gup project.
+# Django settings for dataserver project.
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -8,6 +8,8 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
+
+CARTO_BASE_URL = "http://gup.extra-muros.coop/carte/"
 
 DATABASES = {
     'default': {
@@ -69,7 +71,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = '/home/gup/envs/dataserver-env/static'
+STATIC_ROOT = os.path.join(PROJECT_DIR, '..', '..', 'static/')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -128,10 +130,10 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-ROOT_URLCONF = 'gup.urls'
+ROOT_URLCONF = 'dataserver.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'gup.wsgi.application'
+WSGI_APPLICATION = 'dataserver.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -167,12 +169,11 @@ INSTALLED_APPS = (
     'djangular',
     'django.contrib.gis',
     
-    'accounts',
     'guardian',
     'userena',
+    'accounts',
     'django_extensions',
 
-    'scout',
     'tastypie',
     'sendfile',
 
@@ -200,6 +201,7 @@ INSTALLED_APPS = (
     'flipflop',    
     'alambic',
     'bucket',
+    'scout',
     'multiuploader',
     'sorl.thumbnail',
     'haystack'
@@ -245,7 +247,7 @@ LOGIN_URL = '/accounts/signin/'
 #LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
-AUTH_PROFILE_MODULE = 'accounts.GUPProfile'
+AUTH_PROFILE_MODULE = 'accounts.Profile'
 
 
 
@@ -260,13 +262,14 @@ CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH=True
+TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # Haystack
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
         'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'haystack',
+        'INDEX_NAME': 'bucket',
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'

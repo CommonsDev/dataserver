@@ -29,7 +29,7 @@ class Migration(SchemaMigration):
         db.create_table(u'bucket_bucketfilecomment', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('bucket_file', self.gf('django.db.models.fields.related.ForeignKey')(related_name='comments', to=orm['bucket.BucketFile'])),
-            ('submitter', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.GUPProfile'])),
+            ('submitter', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Profile'])),
             ('submitted_on', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('text', self.gf('django.db.models.fields.TextField')()),
         ))
@@ -48,8 +48,8 @@ class Migration(SchemaMigration):
 
 
     models = {
-        u'accounts.gupprofile': {
-            'Meta': {'object_name': 'GUPProfile'},
+        u'accounts.profile': {
+            'Meta': {'object_name': 'Profile'},
             'favourite_snack': ('django.db.models.fields.CharField', [], {'max_length': '5'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mugshot': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
@@ -103,7 +103,7 @@ class Migration(SchemaMigration):
             'bucket_file': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'comments'", 'to': u"orm['bucket.BucketFile']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'submitted_on': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'submitter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.GUPProfile']"}),
+            'submitter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.Profile']"}),
             'text': ('django.db.models.fields.TextField', [], {})
         },
         u'contenttypes.contenttype': {

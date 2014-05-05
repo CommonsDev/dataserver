@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from .models import Board, List, Card, Task
+from guardian.admin import GuardedModelAdmin
+
+from .models import Board, List, Card, Task, CardComment, Label
 
 class InlineTask(admin.TabularInline):
     model = Task
@@ -14,7 +16,7 @@ class CardAdmin(admin.ModelAdmin):
 class InlineList(admin.TabularInline):
     model = List
     
-class BoardAdmin(admin.ModelAdmin):
+class BoardAdmin(GuardedModelAdmin):
     model = Board
     inlines = [
         InlineList,
@@ -22,3 +24,5 @@ class BoardAdmin(admin.ModelAdmin):
 
 admin.site.register(Card, CardAdmin)
 admin.site.register(Board, BoardAdmin)
+admin.site.register(CardComment)
+admin.site.register(Label)

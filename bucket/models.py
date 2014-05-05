@@ -5,8 +5,7 @@ from hashlib import sha1
 from django.conf import settings
 from django.db import models
 from django.utils.text import get_valid_filename
-
-from userena.utils import get_profile_model
+from django.contrib.auth.models import User
 
 from taggit.managers import TaggableManager
 
@@ -28,7 +27,8 @@ class BucketFile(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
     description = models.TextField(null=True, blank=True)
     filename = models.CharField(max_length=2048, null=True, blank=True)
-    uploaded_by = models.ForeignKey(get_profile_model())
+    uploaded_by = models.ForeignKey(User, related_name='uploader_of')
+    being_edited_by = models.ForeignKey(User, related_name='editor_of', null = True)
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
@@ -51,7 +51,7 @@ class BucketFileComment(models.Model):
     A comment on a file
     """
     bucket_file = models.ForeignKey(BucketFile, related_name='comments')
-    submitter = models.ForeignKey(get_profile_model())
+    submitter = models.ForeignKey(User)
     submitted_on = models.DateTimeField(auto_now_add=True)
     text = models.TextField()
 

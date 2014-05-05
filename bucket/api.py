@@ -9,30 +9,27 @@ from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
 from taggit.models import Tag
-from accounts.api import ProfileResource
+from accounts.api import UserResource
 from haystack.query import SearchQuerySet
 
 from .models import Bucket, BucketFile, BucketFileComment
 
 class BucketResource(ModelResource):
     class Meta:
-        authentication = Authentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()        
-
+        resource_name = 'bucket/bucket'
+        always_return_data = True        
         #authentication = ApiKeyAuthentication()
         #authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
 
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
         
-    def get_object_list(self, request):
-        return super(BucketResource, self).get_object_list(request)
-
-
-class TagResource(ModelResource):
+class BucketTagResource(ModelResource):
     class Meta:
         queryset = Tag.objects.all()
-        resource_name = 'tag' 
+        resource_name = 'bucket/tag' 
         filtering = {
             "name":"exact",
         }
@@ -40,9 +37,6 @@ class TagResource(ModelResource):
         authentication = ApiKeyAuthentication()
         authorization = Authorization()  
     
-    def get_object_list(self, request):
-        return super(TagResource, self).get_object_list(request)
-
     def hydrate(self, bundle, request=None):
         """
         We allow sending dumb tag objects with only a "name" attribute, then we retrieve or create proper tag objects
@@ -63,34 +57,28 @@ class BucketFileResource(ModelResource):
     """
     class Meta:
         queryset = BucketFile.objects.all()
-        resource_name = 'bucketfile'
+        resource_name = 'bucket/file'
         filtering = {
             "bucket":'exact', 
         }
-        allowed_methods = ['get', 'post', 'patch', 'delete']
+
         authentication = ApiKeyAuthentication()
         authorization = Authorization()        
     
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
-    tags = fields.ToManyField(TagResource, 'tags', full=True)    
+    tags = fields.ToManyField(BucketTagResource, 'tags', full=True)    
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
-    uploaded_by = fields.ToOneField(ProfileResource, 'uploaded_by', full=True)
+    uploaded_by = fields.ToOneField(UserResource, 'uploaded_by', full=True)
     file = fields.FileField(attribute='file')
     filename = fields.CharField(attribute='filename', null=True)
+    being_edited_by = fields.ToOneField(UserResource, 'being_edited_by', full=True, null = True)
     
     def hydrate(self, bundle, request=None):
-        print " == hydrating file !!"
-        print bundle
         # Assign current user to new file
         if not bundle.obj.pk:
-            print " assigning user to file !!"
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['uploaded_by'] = {'pk': user.get_profile().pk}
-
-        return bundle
+            bundle.data['uploaded_by'] = bundle.request.user
         
-    def get_object_list(self, request):
-        return super(BucketFileResource, self).get_object_list(request)
+        return bundle
         
     def prepend_urls(self):
         return [
@@ -100,6 +88,7 @@ class BucketFileResource(ModelResource):
     def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.throttle_check(request)
+
         # URL params
         bucket_id = kwargs['bucket_id'] 
         # Query params
@@ -109,7 +98,7 @@ class BucketFileResource(ModelResource):
         order = request.GET.getlist('order', '-pub_date')
         
         sqs = SearchQuerySet().models(BucketFile).filter(bucket=bucket_id).order_by(order).facet('tags')
-        
+
         # 1st narrow down QS
         if selected_facets:
             for facet in selected_facets:
@@ -148,6 +137,7 @@ class BucketFileCommentResource(ModelResource):
     class Meta:
         queryset = BucketFileComment.objects.all()
         always_return_data = True
+        resource_name = 'bucket/filecomment'
         # FIXME: deal with authentification and authorization
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
@@ -155,17 +145,12 @@ class BucketFileCommentResource(ModelResource):
             "bucket_file":'exact', 
         }
         
-    submitter = fields.ToOneField(ProfileResource, 'submitter', full=True)
+    submitter = fields.ToOneField(UserResource, 'submitter', full=True)
     bucket_file = fields.ToOneField(BucketFileResource, 'bucket_file')
-    
-    def get_object_list(self, request):
-        return super(BucketFileCommentResource, self).get_object_list(request)
     
     def hydrate(self, bundle, request=None):
         if not bundle.obj.pk:
-            user = User.objects.get(pk=bundle.request.user.id)
-            bundle.data['submitter'] = {'pk': user.get_profile().pk}
-            
+            bundle.data['submitter'] = bundle.request.user            
         return bundle
 
 

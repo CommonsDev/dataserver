@@ -20,8 +20,6 @@ from sorl.thumbnail import get_thumbnail
 from .models import BucketFile
 from .forms import BucketUploadForm
 
-from accounts.models import GUPProfile
-
 from .api import BucketFileResource
 
 class JSONResponseMixin(object):
@@ -57,22 +55,18 @@ class ThumbnailView(View):
 
         # Lookup bucket file first
         bfile = get_object_or_404(BucketFile, pk=file_id)
-        print "[bucket view] Looked-up bucket file first"
         # FIXME1: BUG in Tastypie causes file/image fields to be reconstructed with absolute path when PATCHing a file (see https://gist.github.com/ratpik/6308307)
         # so we strip off the /media/ if present
         if bfile.file.name[0:6] == "/media":
             bfile.file.name = bfile.file.name[7:]
         target = bfile.file.name
         # Guess mimetype
-        mimetype, encoding = mimetypes.guess_type(bfile.file.url)        
-        
+        mimetype, encoding = mimetypes.guess_type(bfile.file.url)
+
         # Convert document to PDF first, if needed
         # FIXME2: bug when several files are loaded => clashes 
-        # FIXME3: check if converted file is nor already there
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
-            print "[bucket view] == converting to pdf : %s " % bfile.file.name
-            print "target exist ?? : %r " % os.path.isfile(os.path.join(settings.MEDIA_ROOT, target))
             if  os.path.isfile(os.path.join(settings.MEDIA_ROOT, target)):
                 print "___ file exist %s " % os.path.join(settings.MEDIA_ROOT, target)
             else:
@@ -84,17 +78,21 @@ class ThumbnailView(View):
         # Generate thumbnail
         try:
             thumbnail = get_thumbnail(target, preview_width, quality=80, format='JPEG')
-        except Exception as e:
-            print "!! error in getting thumbnail !!"
-            raise e
+        except Exception:
+            thumbnail = None
 
-        # Issue a X-Sendfile to the server
-        fp = os.path.join(settings.MEDIA_ROOT, thumbnail.name)
+        if thumbnail:
+            # Issue a X-Sendfile to the server
+            fp = os.path.join(settings.MEDIA_ROOT, thumbnail.name)
+        else:
+            fp = os.path.join(settings.STATIC_ROOT, 'images/defaultfilepreview.jpg')
         return sendfile(request, fp)
                 
 class UploadView(JSONResponseMixin, FormMixin, View):
     """
     A generic HTML5 Upload view
+    
+    FIXME : deal with permissions !!
     """
     form_class = BucketUploadForm
     template_name = 'multiuploader/form.html'
@@ -113,28 +111,39 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         form_class = self.get_form_class()
 
         qdict = request.POST.copy()
-        qdict['uploaded_by'] = request.user.get_profile().pk
+        print "Request user : %s" % (request.user.pk)
+        qdict['uploaded_by'] = request.user.pk
         form = form_class(qdict, request.FILES)
-        print "[bucket view] will check form !!"
+        print form
 
         if form.is_valid():
-            print "[bucket view] form valid !!"
             file = request.FILES[u'file']
             wrapped_file = UploadedFile(file)
             
             # writing file manually into model
             # because we don't need form of any type.
-            self.bf = BucketFile()
-            self.bf.filename = wrapped_file.file.name
-            self.bf.file_size = wrapped_file.file.size
-            self.bf.file = file
-            self.bf.uploaded_by = form.cleaned_data['uploaded_by']
-            self.bf.bucket = form.cleaned_data['bucket']
-            self.bf.save()
-            print "[bucket view] file saved !!"
-            self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
-            self.bf.save()
-            print "[bucket view] got thumbnail !!"
+            # 
+            # check if we update a file by giving an 'id' param 
+            if 'id' in request.POST:
+                file_id = qdict['id']
+                self.bf = get_object_or_404(BucketFile, pk=file_id)
+                self.bf.file = file
+                self.bf.being_edited_by = None 
+                self.bf.uploaded_by = form.cleaned_data['uploaded_by'] # FIXME : security hole !! should
+                self.bf.save()
+                self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
+                self.bf.save()
+            # new file
+            else:
+                self.bf = BucketFile()
+                self.bf.filename = wrapped_file.file.name
+                self.bf.file_size = wrapped_file.file.size
+                self.bf.file = file
+                self.bf.uploaded_by = form.cleaned_data['uploaded_by'] # FIXME : security hole !!
+                self.bf.bucket = form.cleaned_data['bucket']
+                self.bf.save()
+                self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
+                self.bf.save()
 
             return self.form_valid(form)            
         else:
