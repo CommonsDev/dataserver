@@ -39,7 +39,7 @@ class BucketFile(models.Model):
         filename = get_valid_filename(os.path.basename(filename))
         filename, ext = os.path.splitext(filename)
         hash = sha1(str(time.time())).hexdigest()
-        fullname = os.path.join(upload_path, "%s.%s%s" % (filename, hash, ext))
+        fullname = os.path.join(upload_path, "%s%s" % (hash, ext))
         return fullname
     
     file = models.FileField(upload_to=_upload_to, max_length=255)
