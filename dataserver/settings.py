@@ -193,9 +193,6 @@ INSTALLED_APPS = (
     'cms.plugins.picture',
     'cms.plugins.googlemap',
     
-    'cms_news',
-    'cms_background_images',
-    'cms_carto',
     'autoslug',
     'taggit',
     'flipflop',    
@@ -204,7 +201,10 @@ INSTALLED_APPS = (
     'scout',
     'multiuploader',
     'sorl.thumbnail',
-    'haystack'
+    'haystack',
+    'cms_news',
+    'cms_background_images',
+    'cms_carto'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -354,3 +354,4 @@ SENDFILE_BACKEND = 'sendfile.backends.development'
 
 # SORL
 THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine' # Needed for Pdf conv
+THUMBNAIL_CONVERT = 'gm convert'
