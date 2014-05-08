@@ -9,15 +9,13 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-CARTO_BASE_URL = "http://gup.extra-muros.coop/carte/"
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'gup',                      # Or path to database file if using sqlite3.
+        'NAME': 'dataserver',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': 'gup',
-        'PASSWORD': 'gup',
+        'USER': 'dataserver',
+        'PASSWORD': 'dataserver',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.s
     }
@@ -118,10 +116,6 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',    
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -148,7 +142,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
     'multiuploader.context_processors.booleans',
 )
@@ -182,29 +175,19 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
-    'djangocms_text_ckeditor',
-    'cms',
-    'cms.stacks',
     'mptt',
     'menus',
     'sekizai',
-    'cms.plugins.video',
-    #'cms.plugins.twitter',
-    'cms.plugins.picture',
-    'cms.plugins.googlemap',
     
     'autoslug',
     'taggit',
     'flipflop',    
-    'alambic',
+#    'alambic',
     'bucket',
     'scout',
     'multiuploader',
     'sorl.thumbnail',
     'haystack',
-    'cms_news',
-    'cms_background_images',
-    'cms_carto'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -274,51 +257,6 @@ HAYSTACK_CONNECTIONS = {
 }
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
-# CMS
-CMS_PERMISSION = True
-CMS_PUBLIC_FOR = 'all'
-PROJECT_PAGE_TEMPLATE = 'cms_project.html'
-CMS_TEMPLATES = (
-    ('cms_project.html', 'Project Page'),
-)
-# some CMS primitives do not work unless fallback for lang 'en' is defined
-CMS_LANGUAGES = {
-    1: [
-        {
-            'code': 'fr',
-            'name': 'French',
-            'fallbacks': ['en'],
-            'public': True,
-        },
-        {
-            'code': 'en',
-            'name': 'English',
-            'fallbacks': ['fr'],
-            'public': True,
-        }
-      ]
-      }
-
-CKEDITOR_SETTINGS = {
-    'language': '{{ language }}',
-    'toolbar': 'CMS',
-    'skin': 'moono',
-    'height': '600',
-    'toolbar_CMS': [
-        ['Undo', 'Redo'],
-        ['ShowBlocks'],
-        ['Format', 'Styles'],
-        ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
-        '/',
-        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-',
-         'RemoveFormat'],
-        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
-        ['Link', 'Unlink', 'Anchor'],
-        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-',
-         'Table'],
-        ['Source']
-    ]
-}
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'
 
