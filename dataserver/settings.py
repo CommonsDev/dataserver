@@ -35,7 +35,7 @@ TIME_ZONE = 'Europe/Paris'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'fr-FR'
+LANGUAGE_CODE = 'fr'
 
 LANGUAGES = [
     ('fr', 'French'),
@@ -176,22 +176,24 @@ INSTALLED_APPS = (
 
     'tastypie',
     'sendfile',
-
+    
+    'djangocms_admin_style',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
+    #= djangocms dependencies : see also 'djangocms_admin_style' that need to be above 'django.contrib.admin',
     'djangocms_text_ckeditor',
     'cms',
-    'cms.stacks',
     'mptt',
     'menus',
     'sekizai',
-    'cms.plugins.video',
-    #'cms.plugins.twitter',
-    'cms.plugins.picture',
-    'cms.plugins.googlemap',
+    #= djangocms built-in plugins
+    # 'cms.plugins.file',
+    'djangocms_picture',
+    #'djangocms_link',
+    #'djangocms_snippet',
     
     'autoslug',
     'taggit',
@@ -202,6 +204,7 @@ INSTALLED_APPS = (
     'multiuploader',
     'sorl.thumbnail',
     'haystack',
+    #= djangocms custom plugins
     'cms_news',
     'cms_background_images',
     'cms_carto'
@@ -300,24 +303,9 @@ CMS_LANGUAGES = {
       }
 
 CKEDITOR_SETTINGS = {
-    'language': '{{ language }}',
-    'toolbar': 'CMS',
+    'language': 'fr',
+    'toolbar': 'HTMLField',
     'skin': 'moono',
-    'height': '600',
-    'toolbar_CMS': [
-        ['Undo', 'Redo'],
-        ['ShowBlocks'],
-        ['Format', 'Styles'],
-        ['TextColor', 'BGColor', '-', 'PasteText', 'PasteFromWord'],
-        '/',
-        ['Bold', 'Italic', 'Underline', '-', 'Subscript', 'Superscript', '-',
-         'RemoveFormat'],
-        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
-        ['Link', 'Unlink', 'Anchor'],
-        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-',
-         'Table'],
-        ['Source']
-    ]
 }
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'
