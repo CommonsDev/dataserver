@@ -1,5 +1,6 @@
 import os
 
+from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
@@ -103,7 +104,7 @@ class Marker(models.Model):
 
     address = models.TextField(default="")
 
-    created_by = models.ForeignKey(Profile)
+    created_by = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
 
     category = models.ForeignKey(MarkerCategory, related_name='markers')
