@@ -36,7 +36,6 @@ djangocms-admin-style==0.1.2
 djangocms-picture
 django-filer==0.9.5
 cmsplugin-filer==0.9.5
-#django-reversion==1.7
--e git+https://github.com/etianen/django-reversion.git@django-1.6#egg=django-reversion-django-1.6
+django-reversion==1.7.1
 
 pygeocoder
