@@ -21,6 +21,10 @@ import os
 # os.environ["DJANGO_SETTINGS_MODULE"] = "dataserver.settings"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dataserver.settings")
 
+# Add absolute path to project folder FIXME: should be taken from a site-settings file
+sys.path.append('/home/gup/envs/dataserver-env/')
+sys.path.append('/home/gup/envs/dataserver-env/dataserver/')
+
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.

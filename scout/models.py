@@ -103,7 +103,7 @@ class Marker(models.Model):
 
     address = models.TextField(default="")
 
-    created_by = models.ForeignKey(Profile)
+    created_by = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
 
     category = models.ForeignKey(MarkerCategory, related_name='markers')
