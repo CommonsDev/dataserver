@@ -10,7 +10,7 @@ from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 
-import views
+from transport_vlille.api import VlilleResource
 
 admin.autodiscover()
 
@@ -42,6 +42,8 @@ api.register(BucketTagResource())
 api.register(BucketFileResource())
 api.register(BucketFileCommentResource())
 
+# Vlille
+api.register(VlilleResource())
 
 urlpatterns = patterns('',
     # Examples:
@@ -67,10 +69,3 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-#CMS
-urlpatterns += patterns('',
-    url(r'^mapage/$', views.CMSRedirectView.as_view(), name='cmsredirect'),
-    url(r'^', include('cms.urls')),
-)
-

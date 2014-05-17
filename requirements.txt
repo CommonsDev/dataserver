@@ -39,3 +39,6 @@ cmsplugin-filer==0.9.5
 django-reversion==1.7.1
 
 pygeocoder
+
+# vlille
+-e git+https://github.com/glibersat/python-vlille.git#egg=python-vlille
