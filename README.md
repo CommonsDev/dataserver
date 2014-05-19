@@ -8,6 +8,15 @@ https://github.com/toastdriven/django-tastypie/pull/930
 
 Author: Guillaume Libersat. See COPYING for license.
 
+API list :
+
+- Alambic (pre alpha) : Room discussion 
+- Bucket : File manager
+- Flipflop : Kanban task system
+- Scout : Map resources 
+- Groupbuying (pre alpha) : Grouped buying system
+- Vlille : Transport Vlille Lille Bike Service
+
 
 Install App
 ===========
@@ -32,8 +41,8 @@ Your prompt should update to something like (note the prefix):
 .. warning:: For all next steps, you need to be in an activated environment.
   
   
-Getting the code
-================
+###Getting the code
+
 
 Once you're in your virtualenv directory, use::
 
@@ -51,11 +60,12 @@ fetch the dependencies using::
   From now on, the ``dataserver`` directory will be called **the project root** (or **PROJECT_ROOT**).
 
 
-# DATABASE CONFIGURATION #
+Database configuration
+---
 
 You have the choice to install a Postgis or Sqlite database. Sqlite is easier to get a test environment :
 
-## PostGis DB ##
+##### PostGis DB
 If you use a postgresql backend, you need to install postgis ( `sudo apt-get install postgis` ).
 
 You need to generate the postgis template before syncning your database :
@@ -67,7 +77,7 @@ create the DB with the following code:
   $ createdb -U gup -E utf8 -O gup gup -T template_postgis
   
   
-## SQlite  ##
+#####  SQlite 
 Install spatialite ( `sudo apt-get install libspatialite5` )
 
 Change settings.py : 
@@ -75,8 +85,8 @@ Change settings.py :
   'NAME': 'gup.db',                      # Or path to database file if using sqlite3.
 
 
-Populating the Database
-=======================
+### Populating the Database
+
 
 Then you need to initialize your database with these commands::
 
