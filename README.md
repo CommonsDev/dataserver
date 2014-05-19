@@ -13,7 +13,7 @@ Install App
 ===========
 
 First, you need to setup an isolated developement environment for the
-python apps using virtualenv_. If you don't have virtualenv_, you can
+python apps using *virtualenv*. If you don't have *virtualenv*, you can
 install it using your package manager such as *apt* if you're on
 debian:
 
@@ -56,7 +56,7 @@ fetch the dependencies using::
 You have the choice to install a Postgis or Sqlite database. Sqlite is easier to get a test environment :
 
 ## PostGis DB ##
-If you use a postgresql backend, you need to install postgis (''sudo apt-get install postgis'').
+If you use a postgresql backend, you need to install postgis ( `sudo apt-get install postgis` ).
 
 You need to generate the postgis template before syncning your database :
 
@@ -68,7 +68,7 @@ create the DB with the following code:
   
   
 ## SQlite  ##
-Install spatialite (''sudo apt-get install libspatialite5'')
+Install spatialite ( `sudo apt-get install libspatialite5` )
 
 Change settings.py : 
   'ENGINE': 'django.contrib.gis.db.backends.spatialite', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
