@@ -1,7 +1,9 @@
+from django.conf.urls import url
 from tastypie.authorization import DjangoAuthorization, Authorization
 from tastypie.authentication import ApiKeyAuthentication, Authentication
 from tastypie.resources import ModelResource
 from tastypie import fields
+from tastypie.utils import trailing_slash
 
 from guardian.shortcuts import assign_perm
 
@@ -62,7 +64,6 @@ class LabelResource(ModelResource):
         resource_name = 'flipflop/label'
         authentication = ApiKeyAuthentication()
         authorization = Authorization()
-        
 
 class CardResource(ModelResource):
     class Meta:
@@ -75,7 +76,7 @@ class CardResource(ModelResource):
 
     tasks = fields.ToManyField('flipflop.api.TaskResource', 'tasks', blank=True, full=True)
     labels = fields.ToManyField(LabelResource, 'labels', blank=True, null=True, full=True)
-    assigned_to = fields.ToManyField(UserResource, 'assigned_to', blank=True, full=True)
+    assignees = fields.ToManyField(UserResource, 'assigned_to', blank=True, full=True)
     submitter = fields.ToOneField(UserResource, 'submitter', full=True)
     list = fields.ToOneField(ListResource, 'list')
     comments = fields.ToManyField('flipflop.api.CardCommentResource', 'comments', use_in='detail', full=True, null=True, blank=True)    
@@ -83,6 +84,7 @@ class CardResource(ModelResource):
     completion = fields.IntegerField(attribute='completion', readonly=True)
     comment_count = fields.IntegerField(attribute='comment_count', readonly=True)
     attachment_count = fields.IntegerField(attribute='attachment_count', readonly=True)
+    tasks_done_count = fields.IntegerField(attribute='tasks_done_count', readonly=True)
 
     def hydrate(self, bundle):
         if not bundle.obj.pk:

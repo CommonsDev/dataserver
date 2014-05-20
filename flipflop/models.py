@@ -65,6 +65,10 @@ class Card(models.Model):
         return float(len(done_tasks)) / len(tasks)
 
     @property
+    def tasks_done_count(self):
+        return len(self.tasks.filter(done=True))
+    
+    @property
     def comment_count(self):
         return len(self.comments.all())
 
