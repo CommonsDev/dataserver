@@ -2,7 +2,7 @@
     
 {% if link %}<a href="{{ link }}">{% endif %}
 <img {% if placeholder ==  "logo" %} 
-        width="95px" class="logo" 
+        style="max-height:90px; max-width:95px" class="logo" 
         {% if picture.image %} src="{{ picture.image.url }}" alt="{{ picture.alt }}"
         {% else %} height="80px" src="{{ STATIC_URL }}images/_TEMP/logo_lille.jpg" alt="Lille" 
         {% endif %}
