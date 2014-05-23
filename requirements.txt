@@ -22,11 +22,14 @@ django-haystack==2.1.0
 pyelasticsearch==0.6.1
 
 # CMS 3.0beta -- buggy
--e git+https://github.com/divio/django-cms.git@a9ed4e4ecb104d15a308359ed8d39013a716956d#egg=django-cms
--e git+https://github.com/divio/djangocms-text-ckeditor.git@c2fba71969ab12a521bf15af93035a1b13892191#egg=djangocms_text_ckeditor-dev
+#-e git+https://github.com/divio/django-cms.git@a9ed4e4ecb104d15a308359ed8d39013a716956d#egg=django-cms
+django-cms==3.0.2
+#-e git+https://github.com/divio/djangocms-text-ckeditor.git@c2fba71969ab12a521bf15af93035a1b13892191#egg=djangocms_text_ckeditor-dev
+djangocms-text-ckeditor==2.1.4
 django-filer==0.9.4
 cmsplugin-filer==0.9.5
 #django-reversion==1.7
 -e git+https://github.com/etianen/django-reversion.git@django-1.6#egg=django-reversion-django-1.6
 
 pygeocoder
+djangocms-stacks

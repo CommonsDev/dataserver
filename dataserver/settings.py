@@ -17,7 +17,7 @@ DATABASES = {
         'NAME': 'gup',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'gup',
-        'PASSWORD': 'gup',
+        'PASSWORD': 'gupgup',
         'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.s
     }
@@ -25,7 +25,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['api.gup.extra-muros.coop', 'gup.extra-muros.coop']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -38,7 +38,7 @@ TIME_ZONE = 'Europe/Paris'
 LANGUAGE_CODE = 'fr-FR'
 
 LANGUAGES = [
-    ('fr', 'French'),
+    ('fr-FR', 'French'),
 ]
 
 SITE_ID = 1
@@ -184,14 +184,15 @@ INSTALLED_APPS = (
 
     'djangocms_text_ckeditor',
     'cms',
-    'cms.stacks',
+#    'stacks',
+#    'django_select2',
     'mptt',
     'menus',
     'sekizai',
-    'cms.plugins.video',
+    #'cms.plugins.video',
     #'cms.plugins.twitter',
-    'cms.plugins.picture',
-    'cms.plugins.googlemap',
+    'djangocms_picture',
+    #'cms.plugins.googlemap',
     
     'autoslug',
     'taggit',
