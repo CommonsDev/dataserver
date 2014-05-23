@@ -21,7 +21,6 @@ django-sendfile==0.3.4
 django-haystack==2.1.0
 pyelasticsearch==0.6.1
 
-# CMS 3.0beta -- buggy
 django-cms==3.0.2
 djangocms-text-ckeditor==2.1.4
 django-filer==0.9.5

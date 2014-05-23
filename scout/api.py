@@ -8,9 +8,8 @@ from tastypie.authentication import ApiKeyAuthentication
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
 
+from dataserver.authorization import GuardianAuthorization
 from dataserver.utils import AnonymousApiKeyAuthentication
-
-from guardianpie.authorization import GuardianAuthorization
 
 from pygeocoder import Geocoder
 
@@ -51,7 +50,7 @@ class MapResource(GeoModelResource):
     bucket = fields.ForeignKey('bucket.api.BucketResource', 'bucket', null=True, full=True)
 
     def obj_create(self, bundle, **kwargs):
-        bundle.obj = Map(bucket=Bucket.objects.create(), created_by=bundle.request.user)
+        bundle.obj = Map(bucket=Bucket.objects.create(created_by=bundle.request.user), created_by=bundle.request.user)
         bundle = self.full_hydrate(bundle)
         bundle.obj.save()
 

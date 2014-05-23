@@ -1,6 +1,6 @@
 import os
 
-from django.dispatch import receiver, Signal
+from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
@@ -10,7 +10,6 @@ from django.utils.translation import ugettext as _
 from autoslug import AutoSlugField
 from guardian.shortcuts import assign_perm
 
-from accounts.models import Profile
 from bucket.models import Bucket
 
 class TileLayer(models.Model):
