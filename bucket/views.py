@@ -111,10 +111,8 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         form_class = self.get_form_class()
 
         qdict = request.POST.copy()
-        print "Request user : %s" % (request.user.pk)
         qdict['uploaded_by'] = request.user.pk
         form = form_class(qdict, request.FILES)
-        print form
 
         if form.is_valid():
             file = request.FILES[u'file']
