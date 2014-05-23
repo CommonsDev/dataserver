@@ -34,5 +34,21 @@ $(window).resize(function(){
     $('#main #slider .pagination').css('left', wW/2 - 475 + 175);
 });
 
-
-
+$(document).ready(function() {
+    var hash = $(location).attr('hash');
+    var scrollPos = (hash) ? $(hash).offset().top : 0
+    var setFocus = function() {
+        console.log(">>>iframe stealing focus !");
+        $('html, body').animate({ scrollTop: scrollPos}, 1);
+        $("#main").focus();
+        $("#carto_iframe").blur();
+    }
+    $("#carto_iframe").load(function () {
+        console.debug('>>>> iFrame loaded!');
+        setTimeout(function() {
+            $('html, body').animate({ scrollTop: scrollPos}, 1);
+        }, 300);
+    });
+    $("#carto_iframe").focus(setFocus());
+    $("#carto_iframe").ready(console.log(">>>> iframe ready !"))
+});

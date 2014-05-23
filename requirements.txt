@@ -1,5 +1,5 @@
 Django==1.6.2
-Pillow==2.0.0
+Pillow==2.4.0
 South==0.8.4
 
 -e git+https://github.com/mariocesar/sorl-thumbnail.git@master#egg=sorl-thumbnail
@@ -22,11 +22,20 @@ django-haystack==2.1.0
 pyelasticsearch==0.6.1
 
 # CMS 3.0beta -- buggy
--e git+https://github.com/divio/django-cms.git@a9ed4e4ecb104d15a308359ed8d39013a716956d#egg=django-cms
--e git+https://github.com/divio/djangocms-text-ckeditor.git@c2fba71969ab12a521bf15af93035a1b13892191#egg=djangocms_text_ckeditor-dev
-django-filer==0.9.4
+django-cms==3.0.1
+
+django-classy-tags==0.4
+html5lib==1.0b1
+django-mptt==0.6
+django-sekizai==0.7
+# six==1.3.0 #right now bumped to 1.4.1 by ??
+djangocms-admin-style==0.1.2
+#djangocms-text-ckeditor==2.1.1
+#-e git+https://github.com/divio/djangocms-text-ckeditor.git@c2fba71969ab12a521bf15af93035a1b13892191#egg=djangocms_text_ckeditor-dev
+-e git+https://github.com/itcrab/djangocms-text-ckeditor.git@5ccf6ca00bd61977592770d5eb4098d886cadf7c#egg=djangocms_text_ckeditor-fix-itcrab
+djangocms-picture
+django-filer==0.9.5
 cmsplugin-filer==0.9.5
-#django-reversion==1.7
--e git+https://github.com/etianen/django-reversion.git@django-1.6#egg=django-reversion-django-1.6
+django-reversion==1.7.1
 
 pygeocoder
