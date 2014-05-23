@@ -63,7 +63,7 @@ class GuardianAuthorization(DjangoAuthorization):
                 b) the `bundle.request` object doesn have a `user` attribute
         """
         if not self.base_checks(bundle.request, object_list.model):
-            raise HttpApplicationError("Invalid resource.")
+            return HttpApplicationError("Invalid resource.")
         return True
 
     def generic_item_check(self, object_list, bundle, permission):
@@ -73,7 +73,7 @@ class GuardianAuthorization(DjangoAuthorization):
         """
         self.generic_base_check(object_list, bundle)
         if not bundle.request.user.has_perm(permission, bundle.obj):
-            raise HttpForbidden("You are not allowed to access that resource.")
+            return HttpForbidden("You are not allowed to access that resource.")
 
         return True
 

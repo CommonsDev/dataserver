@@ -147,6 +147,10 @@ def allow_user_to_edit_maps(sender, instance, created, *args, **kwargs):
     assign_perm("change_map", user_or_group=instance.created_by, obj=instance)
     assign_perm("delete_map", user_or_group=instance.created_by, obj=instance)
 
+    assign_perm("view_bucket", user_or_group=instance.created_by, obj=instance.bucket)
+    assign_perm("change_bucket", user_or_group=instance.created_by, obj=instance.bucket)
+    assign_perm("delete_bucket", user_or_group=instance.created_by, obj=instance.bucket)    
+
 
 @receiver(post_save, sender=User)
 def allow_user_to_create_map_via_api(sender, instance, created, *args, **kwargs):

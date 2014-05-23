@@ -14,7 +14,7 @@ django-autoslug==1.7.1
 psycopg2==2.5.2
 python-dateutil==2.1
 django-taggit==0.11.2
-django-multiuploader==0.2.6
+django-multiuploader==0.2.9
 simplejson
 pysendfile==2.0.0
 django-sendfile==0.3.4
