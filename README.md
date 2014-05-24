@@ -1,25 +1,30 @@
 Unisson Data Server
 ===================
 
-A collection of REST APIs that provides various services. 
-
-You need to patch tastypie using this:
-https://github.com/toastdriven/django-tastypie/pull/930
+A temporary space for experimenting with REST APIs.
+In a near future, the data server will become a framework for developing distributed web services.
+The is a technical companion to the [Unisson Method](http://unisson.co/fr/projectbc/)[FR].
 
 Author: Guillaume Libersat. See COPYING for license.
 
 API list :
 
-- Alambic (pre alpha) : Room discussion 
-- Bucket : File manager
-- Flipflop : Kanban task system
-- Scout : Map resources 
-- Groupbuying (pre alpha) : Grouped buying system
-- Vlille : Transport Vlille Lille Bike Service
+- Bucket (beta) : File manager
+- Flipflop (beta) : Kanban boards
+- Scout (beta) : Map
+- Transport/Vlille (beta) : Lille Public Bike Service
+- Groupbuying (pre-alpha) : Grouped buying system
+- Alambic (pre-alpha) : Room discussion
 
 
-Install App
-===========
+Roadmap
+=======
+
+Our next step is to decouple the APIs by using a standard such as [Json Linked Data](http://json-ld.org/).
+
+
+How to install ?
+================
 
 First, you need to setup an isolated developement environment for the
 python apps using *virtualenv*. If you don't have *virtualenv*, you can
@@ -36,7 +41,7 @@ Then, enters the environment:
   
 Your prompt should update to something like (note the prefix):
 
-    (i4p-env)glibersat@carpe:~/Source/dataserver-env
+    (dataserver-env)glibersat@carpe:~/Source/dataserver-env
     
 .. warning:: For all next steps, you need to be in an activated environment.
   
@@ -53,7 +58,7 @@ fetch the dependencies using::
 
     pip install -r requirements.txt
   
-*It may be the right time to get a cup of coffee! :-)*
+*It may be the right time to fetch a cup of coffee! :-)*
 
 .. note::
 
@@ -71,10 +76,10 @@ If you use a postgresql backend, you need to install postgis ( `sudo apt-get ins
 You need to generate the postgis template before syncning your database :
 
 First, just run as "postgres" user the [following script](https://github.com/JoshData/boundaries_us/blob/master/misc/create_template_postgis-debian.sh)
-This will create a template named `template_postgis` to use when creating the DB. You can now create a "gup" user and 
+This will create a template named `template_postgis` to use when creating the DB. You can now create a "dataserver" user and 
 create the DB with the following code:
 
-  $ createdb -U gup -E utf8 -O gup gup -T template_postgis
+  $ createdb -U gup -E utf8 -O dataserver dataserver -T template_postgis
   
   
 #####  SQlite 
@@ -82,7 +87,7 @@ Install spatialite ( `sudo apt-get install libspatialite5` )
 
 Change settings.py : 
   'ENGINE': 'django.contrib.gis.db.backends.spatialite', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-  'NAME': 'gup.db',                      # Or path to database file if using sqlite3.
+  'NAME': 'dataserver.db',                      # Or path to database file if using sqlite3.
 
 
 ### Populating the Database
