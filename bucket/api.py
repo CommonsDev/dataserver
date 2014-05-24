@@ -23,7 +23,7 @@ class BucketResource(ModelResource):
         #authentication = ApiKeyAuthentication()
         #authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
-
+ 
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
         
 class BucketTagResource(ModelResource):
@@ -88,6 +88,7 @@ class BucketFileResource(ModelResource):
     def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.throttle_check(request)
+        self.is_authenticated(request)
 
         # URL params
         bucket_id = kwargs['bucket_id'] 

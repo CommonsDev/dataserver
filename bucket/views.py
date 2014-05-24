@@ -68,9 +68,8 @@ class ThumbnailView(View):
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
             if  os.path.isfile(os.path.join(settings.MEDIA_ROOT, target)):
-                print "___ file exist %s " % os.path.join(settings.MEDIA_ROOT, target)
+                pass
             else:
-                print "converting file %s " % bfile.file.name
                 conversion_cmd = "unoconv -f pdf -o %s %s" % (os.path.join(settings.MEDIA_ROOT, target),
                                                               os.path.join(settings.MEDIA_ROOT, bfile.file.name))
                 subprocess.check_output(conversion_cmd.split())
