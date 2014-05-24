@@ -35,10 +35,10 @@ TIME_ZONE = 'Europe/Paris'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = 'fr-FR'
 
 LANGUAGES = [
-    ('fr', 'French'),
+    ('fr-FR', 'French'),
 ]
 
 SITE_ID = 1
@@ -189,11 +189,10 @@ INSTALLED_APPS = (
     'mptt',
     'menus',
     'sekizai',
-    #= djangocms built-in plugins
-    # 'cms.plugins.file',
+    #'cms.plugins.video',
+    #'cms.plugins.twitter',
     'djangocms_picture',
-    #'djangocms_link',
-    #'djangocms_snippet',
+    #'cms.plugins.googlemap',
     
     'autoslug',
     'taggit',

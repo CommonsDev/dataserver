@@ -3,8 +3,8 @@ from django.conf.urls import patterns, url, include
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 
-from tastypie.authorization import DjangoAuthorization, Authorization
-from tastypie.authentication import ApiKeyAuthentication, Authentication
+from tastypie.authentication import ApiKeyAuthentication
+from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
@@ -12,19 +12,32 @@ from taggit.models import Tag
 from accounts.api import UserResource
 from haystack.query import SearchQuerySet
 
+from dataserver.authorization import GuardianAuthorization
+from dataserver.authentication import AnonymousApiKeyAuthentication
+
 from .models import Bucket, BucketFile, BucketFileComment
 
 class BucketResource(ModelResource):
     class Meta:
         authentication = ApiKeyAuthentication()
-        authorization = Authorization()        
+        authorization = GuardianAuthorization(
+            create_permission_code="add_bucket",
+            view_permission_code="view_bucket",
+            update_permission_code="change_bucket",
+            delete_permission_code="delete_bucket"
+        )
         resource_name = 'bucket/bucket'
         always_return_data = True        
-        #authentication = ApiKeyAuthentication()
-        #authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
  
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
+
+    def obj_create(self, bundle, **kwargs):
+        bundle.obj = Bucket(created_by=bundle.request.user)
+        bundle = self.full_hydrate(bundle)
+        bundle.obj.save()
+
+        return bundle
         
 class BucketTagResource(ModelResource):
     class Meta:
@@ -34,7 +47,7 @@ class BucketTagResource(ModelResource):
             "name":"exact",
         }
         allowed_methods = ['get', 'post', 'patch']
-        authentication = ApiKeyAuthentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()  
     
     def hydrate(self, bundle, request=None):
@@ -62,7 +75,7 @@ class BucketFileResource(ModelResource):
             "bucket":'exact', 
         }
 
-        authentication = ApiKeyAuthentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()        
     
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
@@ -140,7 +153,7 @@ class BucketFileCommentResource(ModelResource):
         always_return_data = True
         resource_name = 'bucket/filecomment'
         # FIXME: deal with authentification and authorization
-        authentication = ApiKeyAuthentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
         filtering = {
             "bucket_file":'exact', 

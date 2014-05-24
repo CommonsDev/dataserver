@@ -1,3 +1,4 @@
+import json
 import mimetypes
 import os.path
 import subprocess
@@ -10,7 +11,6 @@ from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormMixin
 from django.views.generic import View
-from django.utils import simplejson as json
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
