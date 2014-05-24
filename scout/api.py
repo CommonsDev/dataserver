@@ -9,7 +9,7 @@ from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
 
 from dataserver.authorization import GuardianAuthorization
-from dataserver.utils import AnonymousApiKeyAuthentication
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from pygeocoder import Geocoder
 
