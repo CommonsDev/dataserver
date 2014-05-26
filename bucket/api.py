@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth.models import User, Group
 from django.conf.urls import patterns, url, include
 from django.core.paginator import Paginator, InvalidPage
@@ -59,8 +61,8 @@ class BucketResource(ModelResource):
         self.method_check(request, allowed=['post'])
         self.throttle_check(request)
         self.is_authenticated(request)
-
-        target_group_id = request.POST.get('group_id', None)
+       
+        target_group_id = json.loads(request.body)['group_id']
         target_group = get_object_or_404(Group, pk=target_group_id)
         bucket_id = kwargs['bucket_id'] 
         bucket = get_object_or_404(Bucket, pk=bucket_id)
