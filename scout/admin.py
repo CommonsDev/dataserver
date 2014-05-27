@@ -1,8 +1,10 @@
 from django.contrib import admin
 
+from guardian.admin import GuardedModelAdmin
+
 from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
 
-class MapAdmin(admin.ModelAdmin):
+class MapAdmin(GuardedModelAdmin):
     pass
 
 class TileLayerAdmin(admin.ModelAdmin):

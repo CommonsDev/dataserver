@@ -3,12 +3,13 @@ import os
 import mimetypes
 
 from tastypie import fields
-from tastypie.authorization import DjangoAuthorization, Authorization
+from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
 
-from django.contrib.auth.models import User
+from dataserver.authorization import GuardianAuthorization
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from pygeocoder import Geocoder
 
@@ -17,42 +18,62 @@ from accounts.api import UserResource
 from bucket.models import Bucket
 from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
 
+class MapAuthorization(GuardianAuthorization):
+    def __init__(self):
+        super(MapAuthorization, self).__init__(
+            create_permission_code="add_map",
+            view_permission_code="view_map",
+            update_permission_code="change_map",
+            delete_permission_code="delete_map"
+        )
+        
+    def read_detail(self, object_list, bundle):
+        for obj in object_list:
+            if obj.privacy != 'GROUP_RW_OTHERS_RO':
+                return super(MapAuthorization, self).read_detail(object_list, bundle)                
+
+        return True
+
 class MapResource(GeoModelResource):
     class Meta:
         queryset = Map.objects.all()
         resource_name = 'scout/map'
-        authentication = ApiKeyAuthentication()        
-        authorization = DjangoAuthorization()
-        always_return_data = True        
-        detail_uri_name = 'slug'        
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = MapAuthorization()
 
+        always_return_data = True        
+        detail_uri_name = 'slug'
+
+    # created_by = fields.ToOneField('accounts.api.UserResource', 'created_by', readonly=True)
     data_layers = fields.ToManyField('scout.api.DataLayerResource', 'datalayers', full=True, null=True)
     tile_layer = fields.ForeignKey('scout.api.TileLayerResource', 'tilelayer', full=True)
     bucket = fields.ForeignKey('bucket.api.BucketResource', 'bucket', null=True, full=True)
 
-    def hydrate(self, bundle, request=None):    
-            if not bundle.obj.pk:
-                bucket = Bucket.objects.create()
-                bundle.data['bucket'] = {'pk': bucket.pk}
+    def obj_create(self, bundle, **kwargs):
+        bundle.obj = Map(bucket=Bucket.objects.create(created_by=bundle.request.user), created_by=bundle.request.user)
+        bundle = self.full_hydrate(bundle)
+        bundle.obj.save()
 
-            return bundle
-
+        return bundle
+    
 
 class MarkerCategoryResource(ModelResource):
     class Meta:
         queryset = MarkerCategory.objects.all()
         resource_name = 'scout/marker_category'
-        #authentication = ApiKeyAuthentication()        
-        #authorization = DjangoAuthorization()
-        authorization = Authorization()        
+        
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = ReadOnlyAuthorization()        
     
 
 class TileLayerResource(GeoModelResource):
     class Meta:
         queryset = TileLayer.objects.all()
         resource_name = 'scout/tilelayer'
-        authentication = ApiKeyAuthentication()                
-        authorization = DjangoAuthorization()        
+
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = Authorization() # FIXME
+
 
     maps = fields.ToManyField(MapResource, 'maps', null=True)
 
@@ -60,8 +81,8 @@ class DataLayerResource(ModelResource):
     class Meta:
         queryset = DataLayer.objects.all()
         resource_name = 'scout/datalayer'
-        authentication = ApiKeyAuthentication()                
-        authorization = DjangoAuthorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = Authorization()
         
     markers = fields.ToManyField('scout.api.MarkerResource', 'markers', null=True, full=True)
     map = fields.ToOneField('scout.api.MapResource', 'map')
@@ -70,8 +91,8 @@ class MarkerResource(GeoModelResource):
     class Meta:
         queryset = Marker.objects.all()
         resource_name = 'scout/marker'
-        authentication = ApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = Authorization()
         always_return_data = True
     
     data_layer = fields.ToOneField(DataLayerResource, 'datalayer')

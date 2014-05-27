@@ -42,11 +42,9 @@ api.register(BucketFileCommentResource())
 
 
 urlpatterns = patterns('',
-    (r'^flipflop/', include('flipflop.urls')),
-    (r'^bucket/', include('bucket.urls')),
-    (r'^admin/', include(admin.site.urls)),
-    
-    (r'^', include(api.urls)),
+    url(r'^admin/', include(admin.site.urls)),
+    url(r'^', include(api.urls)),
+
 )
 
 if settings.DEBUG:

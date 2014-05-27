@@ -23,7 +23,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['api.gup.extra-muros.coop', 'gup.extra-muros.coop']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -36,7 +36,7 @@ TIME_ZONE = 'Europe/Paris'
 LANGUAGE_CODE = 'fr-FR'
 
 LANGUAGES = [
-    ('fr', 'French'),
+    ('fr-FR', 'French'),
 ]
 
 SITE_ID = 1
@@ -69,7 +69,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR, '..','..', 'static/')
+STATIC_ROOT = os.path.join(PROJECT_DIR, '..', '..', 'static/')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -169,11 +169,8 @@ INSTALLED_APPS = (
 
     'tastypie',
     'sendfile',
-
-    # Uncomment the next line to enable the admin:
+    
     'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
 
     'mptt',
     'menus',
@@ -255,7 +252,7 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'bucket',
     },
 }
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'

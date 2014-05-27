@@ -1,12 +1,15 @@
 import os
 
+from django.dispatch import receiver
+from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.urlresolvers import reverse
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext as _
 
 from autoslug import AutoSlugField
+from guardian.shortcuts import assign_perm
 
-from accounts.models import Profile
 from bucket.models import Bucket
 
 class TileLayer(models.Model):
@@ -27,13 +30,25 @@ class TileLayer(models.Model):
         return cls.objects.order_by('pk')[0]  # FIXME, make it administrable
     
     def __unicode__(self):
-        return self.name or "Unnamed layer"
+        return self.name or u"Unnamed layer"
 
         
 class Map(models.Model):
     """
     A map.
     """
+    PRIVACY_CHOICES = (
+        ('GROUP_RW', _("RW for the group")),
+        ('GROUP_RW_OTHERS_RO', _("RO for anyone and RW for the Group"))
+    )
+    
+    class Meta:
+        permissions = (
+            ('view_map', _("View Map")),
+        )
+        
+    privacy = models.CharField(max_length=20, choices=PRIVACY_CHOICES)
+        
     slug = AutoSlugField(db_index=True, populate_from='name', unique=True)
     name = models.CharField(max_length=200, verbose_name=_("name"))        
     description = models.TextField(blank=True, null=True, verbose_name=_("description"))
@@ -43,6 +58,7 @@ class Map(models.Model):
     zoom = models.IntegerField(default=7, verbose_name=_("zoom"))
     locate = models.BooleanField(default=False, verbose_name=_("locate"), help_text=_("Locate user on load?"))
     modified_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, related_name='maps_created')
     tilelayer = models.ForeignKey(TileLayer, related_name='maps')
 
     # File container (bucket)
@@ -51,7 +67,7 @@ class Map(models.Model):
     objects = models.GeoManager()
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
+        if self.pk is None:            
             self.tilelayer = TileLayer.objects.all()[0]
             if not self.bucket:
                 self.bucket = Bucket.objects.create()
@@ -69,7 +85,7 @@ class Map(models.Model):
         return reverse("map", kwargs={'slug': self.slug, 'username': self.owner.username})
 
     def __unicode__(self):
-        return self.name or "Unnamed map"
+        return self.name or u"Unnamed map"
         
 
 class DataLayer(models.Model):
@@ -103,7 +119,7 @@ class Marker(models.Model):
 
     address = models.TextField(default="")
 
-    created_by = models.ForeignKey(Profile)
+    created_by = models.ForeignKey(User)
     created_on = models.DateTimeField(auto_now_add=True)
 
     category = models.ForeignKey(MarkerCategory, related_name='markers')
@@ -123,3 +139,21 @@ class Marker(models.Model):
 
     def __unicode__(self):
         return u"%s" % (self.title or 'marker')
+
+
+@receiver(post_save, sender=Map)
+def allow_user_to_edit_maps(sender, instance, created, *args, **kwargs):
+    assign_perm("view_map", user_or_group=instance.created_by, obj=instance)
+    assign_perm("change_map", user_or_group=instance.created_by, obj=instance)
+    assign_perm("delete_map", user_or_group=instance.created_by, obj=instance)
+
+    assign_perm("view_bucket", user_or_group=instance.created_by, obj=instance.bucket)
+    assign_perm("change_bucket", user_or_group=instance.created_by, obj=instance.bucket)
+    assign_perm("delete_bucket", user_or_group=instance.created_by, obj=instance.bucket)    
+
+
+@receiver(post_save, sender=User)
+def allow_user_to_create_map_via_api(sender, instance, created, *args, **kwargs):
+    if created:
+        assign_perm("scout.add_map", instance)
+    
