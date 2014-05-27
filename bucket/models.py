@@ -24,6 +24,7 @@ class Bucket(models.Model):
         )
 
     created_by = models.ForeignKey(User, related_name='buckets_created')
+    name = models.CharField(max_length=200, verbose_name=_("name"))
 
     def __unicode__(self):
         return u"Bucket with %d objects" % len(self.files.all())

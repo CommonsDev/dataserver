@@ -1,16 +1,20 @@
-from django.contrib.auth.models import User
+import json
+
+from django.contrib.auth.models import User, Group
 from django.conf.urls import patterns, url, include
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
+from accounts.api import UserResource
+from haystack.query import SearchQuerySet
+from guardian.shortcuts import assign_perm
+from taggit.models import Tag
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
-from taggit.models import Tag
-from accounts.api import UserResource
-from haystack.query import SearchQuerySet
 
 from dataserver.authorization import GuardianAuthorization
 from dataserver.authentication import AnonymousApiKeyAuthentication
@@ -38,6 +42,35 @@ class BucketResource(ModelResource):
         bundle.obj.save()
 
         return bundle
+
+    def prepend_urls(self):
+        """
+        URL override for when a user wants to share a bucket with a group (assign a bucket to a group)
+        """
+        return [
+           url(r"^(?P<resource_name>%s)/(?P<bucket_id>\d+)/assign%s$" % 
+                (self._meta.resource_name, trailing_slash()),
+                 self.wrap_view('bucket_assign'), name="api_bucket_assign"),
+        ]
+
+    def bucket_assign(self, request, **kwargs):
+        """
+        Method to assign edit permissions for a bucket 'bucket_id' to
+        a group passed as POST parameter 'group_id' 
+        """
+        self.method_check(request, allowed=['post'])
+        self.throttle_check(request)
+        self.is_authenticated(request)
+       
+        target_group_id = json.loads(request.body)['group_id']
+        target_group = get_object_or_404(Group, pk=target_group_id)
+        bucket_id = kwargs['bucket_id'] 
+        bucket = get_object_or_404(Bucket, pk=bucket_id)
+        # assign bucket to group
+        assign_perm("view_bucket", user_or_group=target_group, obj=bucket)
+        assign_perm("change_bucket", user_or_group=target_group, obj=bucket)
+        return self.create_response(request, {'success': True})
+
         
 class BucketTagResource(ModelResource):
     class Meta:
@@ -75,7 +108,7 @@ class BucketFileResource(ModelResource):
             "bucket":'exact', 
         }
 
-        authentication = AnonymousApiKeyAuthentication()
+        authentication = ApiKeyAuthentication()
         authorization = Authorization()        
     
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
