@@ -185,6 +185,8 @@ INSTALLED_APPS = (
     'multiuploader',
     'sorl.thumbnail',
     'haystack',
+    
+    'projects',
 )
 
 # A sample logging configuration. The only tangible logging

@@ -9,6 +9,7 @@ from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerR
 from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+from projects.api import ProjectResource
 
 admin.autodiscover()
 
@@ -39,6 +40,9 @@ api.register(BucketResource())
 api.register(BucketTagResource())
 api.register(BucketFileResource())
 api.register(BucketFileCommentResource())
+
+# Projects
+api.register(ProjectResource())
 
 
 urlpatterns = patterns('',
