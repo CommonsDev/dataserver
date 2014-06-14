@@ -9,6 +9,7 @@ from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerR
 from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+from deal.api import DealResource
 
 import views
 
@@ -42,6 +43,8 @@ api.register(BucketTagResource())
 api.register(BucketFileResource())
 api.register(BucketFileCommentResource())
 
+# deal
+api.register(DealResource())
 
 urlpatterns = patterns('',
     # Examples:
@@ -52,17 +55,17 @@ urlpatterns = patterns('',
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     (r'^accounts/', include('userena.urls')),
-  
+
     (r'^api/', include(api.urls)),
     (r'^api/', include('alambic.urls')),
     (r'^flipflop/', include('flipflop.urls')),
-                       
+
     url(r'^djangular/', include('djangular.urls')),
 
     (r'^bucket/', include('bucket.urls')),
 
 #    url(r'^select2/', include('django_select2.urls')),
-                       
+
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 )
@@ -75,4 +78,3 @@ urlpatterns += patterns('',
     url(r'^mapage/$', views.CMSRedirectView.as_view(), name='cmsredirect'),
     url(r'^', include('cms.urls')),
 )
-
