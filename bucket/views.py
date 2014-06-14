@@ -1,3 +1,4 @@
+import json
 import mimetypes
 import os.path
 import subprocess
@@ -10,7 +11,6 @@ from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormMixin
 from django.views.generic import View
-from django.utils import simplejson as json
 from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
 
@@ -68,9 +68,8 @@ class ThumbnailView(View):
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
             if  os.path.isfile(os.path.join(settings.MEDIA_ROOT, target)):
-                print "___ file exist %s " % os.path.join(settings.MEDIA_ROOT, target)
+                pass
             else:
-                print "converting file %s " % bfile.file.name
                 conversion_cmd = "unoconv -f pdf -o %s %s" % (os.path.join(settings.MEDIA_ROOT, target),
                                                               os.path.join(settings.MEDIA_ROOT, bfile.file.name))
                 subprocess.check_output(conversion_cmd.split())
@@ -111,10 +110,8 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         form_class = self.get_form_class()
 
         qdict = request.POST.copy()
-        print "Request user : %s" % (request.user.pk)
         qdict['uploaded_by'] = request.user.pk
         form = form_class(qdict, request.FILES)
-        print form
 
         if form.is_valid():
             file = request.FILES[u'file']

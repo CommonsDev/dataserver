@@ -48,10 +48,10 @@ body {
 }
 
 // HEADER 
-
+ 
 header {
 	width:120px;
-	height:241px;
+	height:220px;
 	border:1px solid black;
 	background:#131313;
 	position:fixed;
@@ -62,7 +62,7 @@ header {
 	.wrap-header {
 		border:1px solid #222;
 		width:120px;
-		height:239px;
+		height:220px;
 	}
 
 	img.logo {
@@ -73,7 +73,7 @@ header {
 	nav {
 		ul {
 			margin:0 5px;
-			padding-top:15px;
+			padding-top:5px;
 			border-top:1px solid #222;
 			@include box-shadow(0 -1px 0 #000);
 

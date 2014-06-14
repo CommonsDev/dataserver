@@ -1,30 +1,76 @@
-from django.contrib.auth.models import User
+import json
+
+from django.contrib.auth.models import User, Group
 from django.conf.urls import patterns, url, include
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 
-from tastypie.authorization import DjangoAuthorization, Authorization
-from tastypie.authentication import ApiKeyAuthentication, Authentication
+from accounts.api import UserResource
+from haystack.query import SearchQuerySet
+from guardian.shortcuts import assign_perm
+from taggit.models import Tag
+from tastypie.authentication import ApiKeyAuthentication
+from tastypie.authorization import Authorization
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
-from taggit.models import Tag
-from accounts.api import UserResource
-from haystack.query import SearchQuerySet
+
+from dataserver.authorization import GuardianAuthorization
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from .models import Bucket, BucketFile, BucketFileComment
 
 class BucketResource(ModelResource):
     class Meta:
         authentication = ApiKeyAuthentication()
-        authorization = Authorization()        
+        authorization = GuardianAuthorization(
+            create_permission_code="add_bucket",
+            view_permission_code="view_bucket",
+            update_permission_code="change_bucket",
+            delete_permission_code="delete_bucket"
+        )
         resource_name = 'bucket/bucket'
         always_return_data = True        
-        #authentication = ApiKeyAuthentication()
-        #authorization = DjangoAuthorization()        
         queryset = Bucket.objects.all()
-
+ 
     files = fields.ToManyField('bucket.api.BucketFileResource', 'files', full=True, null=True)
+
+    def obj_create(self, bundle, **kwargs):
+        bundle.obj = Bucket(created_by=bundle.request.user)
+        bundle = self.full_hydrate(bundle)
+        bundle.obj.save()
+
+        return bundle
+
+    def prepend_urls(self):
+        """
+        URL override for when a user wants to share a bucket with a group (assign a bucket to a group)
+        """
+        return [
+           url(r"^(?P<resource_name>%s)/(?P<bucket_id>\d+)/assign%s$" % 
+                (self._meta.resource_name, trailing_slash()),
+                 self.wrap_view('bucket_assign'), name="api_bucket_assign"),
+        ]
+
+    def bucket_assign(self, request, **kwargs):
+        """
+        Method to assign edit permissions for a bucket 'bucket_id' to
+        a group passed as POST parameter 'group_id' 
+        """
+        self.method_check(request, allowed=['post'])
+        self.throttle_check(request)
+        self.is_authenticated(request)
+       
+        target_group_id = json.loads(request.body)['group_id']
+        target_group = get_object_or_404(Group, pk=target_group_id)
+        bucket_id = kwargs['bucket_id'] 
+        bucket = get_object_or_404(Bucket, pk=bucket_id)
+        # assign bucket to group
+        assign_perm("view_bucket", user_or_group=target_group, obj=bucket)
+        assign_perm("change_bucket", user_or_group=target_group, obj=bucket)
+        return self.create_response(request, {'success': True})
+
         
 class BucketTagResource(ModelResource):
     class Meta:
@@ -34,7 +80,7 @@ class BucketTagResource(ModelResource):
             "name":"exact",
         }
         allowed_methods = ['get', 'post', 'patch']
-        authentication = ApiKeyAuthentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()  
     
     def hydrate(self, bundle, request=None):
@@ -88,6 +134,7 @@ class BucketFileResource(ModelResource):
     def file_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.throttle_check(request)
+        self.is_authenticated(request)
 
         # URL params
         bucket_id = kwargs['bucket_id'] 
@@ -139,7 +186,7 @@ class BucketFileCommentResource(ModelResource):
         always_return_data = True
         resource_name = 'bucket/filecomment'
         # FIXME: deal with authentification and authorization
-        authentication = ApiKeyAuthentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
         filtering = {
             "bucket_file":'exact', 

@@ -20,11 +20,13 @@ class UserResource(ModelResource):
         resource_name = 'account/user'
         authentication = Authentication()
         authorization = Authorization()
-        fields = ['username', 'first_name', 'last_name']
+        fields = ['username', 'first_name', 'last_name', 'groups']
 
+    groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 
     def dehydrate(self, bundle):
         bundle.data['mugshot'] = bundle.obj.profile.mugshot
+        bundle.data['groups'] = [{"id" : group.id, "name":group.name} for group in bundle.obj.groups.all()]
         #bundle.data['first_name'] = bundle.obj.user.first_name
         #bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
@@ -113,7 +115,7 @@ class UserResource(ModelResource):
                 return self.create_response(
                     request, {
                         'success': False,
-                        'reason': 'disabled',
+                        'reason': 'disabled',   
                     },
                     HttpForbidden,
                 )

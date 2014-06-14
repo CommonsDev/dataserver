@@ -35,10 +35,10 @@ TIME_ZONE = 'Europe/Paris'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'fr'
+LANGUAGE_CODE = 'fr-FR'
 
 LANGUAGES = [
-    ('fr', 'French'),
+    ('fr-FR', 'French'),
 ]
 
 SITE_ID = 1
@@ -71,7 +71,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_DIR, '..','..', 'static/')
+STATIC_ROOT = os.path.join(PROJECT_DIR, '..', '..', 'static/')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -189,11 +189,10 @@ INSTALLED_APPS = (
     'mptt',
     'menus',
     'sekizai',
-    #= djangocms built-in plugins
-    # 'cms.plugins.file',
+    #'cms.plugins.video',
+    #'cms.plugins.twitter',
     'djangocms_picture',
-    #'djangocms_link',
-    #'djangocms_snippet',
+    #'cms.plugins.googlemap',
     
     'autoslug',
     'taggit',
@@ -275,7 +274,7 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'bucket',
     },
 }
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
 # CMS
 CMS_PERMISSION = True

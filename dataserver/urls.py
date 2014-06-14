@@ -60,6 +60,8 @@ urlpatterns = patterns('',
     url(r'^djangular/', include('djangular.urls')),
 
     (r'^bucket/', include('bucket.urls')),
+
+#    url(r'^select2/', include('django_select2.urls')),
                        
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),

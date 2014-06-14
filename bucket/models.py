@@ -3,20 +3,33 @@ import time
 from hashlib import sha1
 
 from django.conf import settings
-from django.db import models
-from django.utils.text import get_valid_filename
 from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.text import get_valid_filename
+from django.utils.translation import ugettext as _
+
+from guardian.shortcuts import assign_perm
 
 from taggit.managers import TaggableManager
 
 class Bucket(models.Model):
-    pass
+    """
+    A bucket is a collection of files
+    """
+    class Meta:
+        permissions = (
+            ('view_bucket', _("View Bucket")),
+        )
+
+    created_by = models.ForeignKey(User, related_name='buckets_created')
+    name = models.CharField(max_length=200, verbose_name=_("name"))
 
     def __unicode__(self):
         return u"Bucket with %d objects" % len(self.files.all())
 
 
-        
 class BucketFile(models.Model):
     """
     A file contained in a bucket
@@ -60,4 +73,16 @@ class BucketFileComment(models.Model):
         return "%s on %s (%s)" % (self.text,
                                   self.bucket_file,
                                   self.submitter)
+
+@receiver(post_save, sender=Bucket)
+def allow_user_to_edit_buckets(sender, instance, created, *args, **kwargs):
+    assign_perm("view_bucket", user_or_group=instance.created_by, obj=instance)
+    assign_perm("change_bucket", user_or_group=instance.created_by, obj=instance)
+    assign_perm("delete_bucket", user_or_group=instance.created_by, obj=instance)
+
+
+@receiver(post_save, sender=User)
+def allow_user_to_create_bucket_via_api(sender, instance, created, *args, **kwargs):
+    if created:
+        assign_perm("bucket.add_bucket", instance)
     

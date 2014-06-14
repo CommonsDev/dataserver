@@ -1,9 +1,10 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.db.models import signals
 
-from guardian.shortcuts import get_users_with_perms
+from guardian.shortcuts import get_users_with_perms, assign_perm
 
 class Label(models.Model):
     label = models.CharField(max_length=100)
@@ -12,6 +13,14 @@ class Label(models.Model):
         return self.label
     
 class Board(models.Model):
+    class Meta:
+        permissions = (
+            ('view_board', _("View Board")),
+        )
+
+    created_by = models.ForeignKey(User, related_name='kanban_created')
+
+    
     title = models.CharField(_('title'), max_length=100)
 
     labels = models.ManyToManyField(Label, null=True, blank=True, related_name='boards')
@@ -65,6 +74,10 @@ class Card(models.Model):
         return float(len(done_tasks)) / len(tasks)
 
     @property
+    def tasks_done_count(self):
+        return len(self.tasks.filter(done=True))
+    
+    @property
     def comment_count(self):
         return len(self.comments.all())
 
@@ -97,5 +110,17 @@ class CardComment(models.Model):
 
     posted_at = models.DateTimeField(auto_now_add=True)    
     text = models.TextField()
+    
+@receiver(post_save, sender=Board)
+def allow_user_to_edit_boards(sender, instance, created, *args, **kwargs):
+    assign_perm("view_board", user_or_group=instance.created_by, obj=instance)
+    assign_perm("change_board", user_or_group=instance.created_by, obj=instance)
+    assign_perm("delete_board", user_or_group=instance.created_by, obj=instance)
+
+    
+@receiver(post_save, sender=User)
+def allow_user_to_create_boards_via_api(sender, instance, created, *args, **kwargs):
+    if created:
+        assign_perm("flipflop.add_board", instance)
     
 
