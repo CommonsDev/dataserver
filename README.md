@@ -79,23 +79,29 @@ First, just run as "postgres" user the [following script](https://github.com/Jos
 This will create a template named `template_postgis` to use when creating the DB. You can now create a "dataserver" user and 
 create the DB with the following code:
 
-  $ sudo -i -u postgres
-  $ createdb -E UTF8 template_postgis
-  $ psql -d template_postgis -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql
-  $ psql -d template_postgis -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql
-  $ psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
-  $ psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
-  $ psql -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
-  $ createuser dataserver -P
-  $ createdb -E utf8 -O dataserver dataserver -T template_postgis
+
+    $ sudo -i -u postgres
+    $ createdb -E UTF8 template_postgis
+    $ psql -d template_postgis -f /usr/share/postgresql/9.3/contrib/postgis-2.1/postgis.sql
+    $ psql -d template_postgis -f /usr/share/postgresql/9.3/contrib/postgis-2.1/spatial_ref_sys.sql
+    $ psql -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
+    $ psql -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+    $ psql -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
+    $ createuser dataserver -P
+    $ createdb -E utf8 -O dataserver dataserver -T template_postgis
+
 
 Also don't forget to edit your `/etc/postgresql/9.3/main/pg_hba.conf` file if you are starting from a fresh postgres installation :
 
-  local   all             all       md5
+
+   local   all             all       md5
+  
   
 then :
 
-   $ sudo /etc/init.d/postgresql restart
+
+    $ sudo /etc/init.d/postgresql restart
+  
   
   
 #####  SQlite 
