@@ -187,6 +187,7 @@ INSTALLED_APPS = (
     'haystack',
     
     'projects',
+    'projectsheet',
 )
 
 # A sample logging configuration. The only tangible logging

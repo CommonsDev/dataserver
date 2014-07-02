@@ -10,6 +10,7 @@ from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from projects.api import ProjectResource
+from projectsheet.api import ProjectSheetResource
 
 admin.autodiscover()
 
@@ -43,6 +44,9 @@ api.register(BucketFileCommentResource())
 
 # Projects
 api.register(ProjectResource())
+
+# Project Sheets
+api.register(ProjectSheetResource())
 
 
 urlpatterns = patterns('',

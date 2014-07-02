@@ -1,11 +1,11 @@
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
 
-from .models import Project
+from .models import ProjectSheet
 
-class ProjectResource(ModelResource):
+class ProjectSheetResource(ModelResource):
     class Meta:
-        queryset = Project.objects.all()
+        queryset = ProjectSheet.objects.all()
         allowed_methods = ['get', 'post', 'patch']
-        resource_name = 'project'
+        resource_name = 'projectsheet'
         authorization = Authorization()
