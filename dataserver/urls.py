@@ -9,6 +9,7 @@ from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerR
 from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+from thing.api import PlaceResource, ThingResource, PeopleThingResource
 
 import views
 
@@ -16,6 +17,11 @@ admin.autodiscover()
 
 # Build API
 api = Api(api_name='v0')
+
+#PlaceThing
+api.register(PlaceResource())
+api.register(ThingResource())
+api.register(PeopleThingResource())
 
 # Scout
 api.register(MapResource())

@@ -13,8 +13,8 @@ CARTO_BASE_URL = "http://gup.extra-muros.coop/carte/"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'gup',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'gup.db',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'gup',
         'PASSWORD': 'gup',
@@ -207,7 +207,8 @@ INSTALLED_APPS = (
     #= djangocms custom plugins
     'cms_news',
     'cms_background_images',
-    'cms_carto'
+    'cms_carto',
+    'thing'
 )
 
 # A sample logging configuration. The only tangible logging
