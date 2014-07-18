@@ -8,13 +8,17 @@ The is a technical companion to the [Unisson Method](http://unisson.co/fr/projec
 Author: Guillaume Libersat. See COPYING for license.
 
 API list :
-
 - Bucket (beta) : File manager
 - Flipflop (beta) : Kanban boards
 - Scout (beta) : Map
 - Transport/Vlille (beta) : Lille Public Bike Service
 - Groupbuying (pre-alpha) : Grouped buying system
 - Alambic (pre-alpha) : Room discussion
+- Projects : Project Information
+- ProjectSheet : Project Description
+- Commons : Determine witch "commons project" use to answer an usage
+- Unisson : Evaluate "commons project" with Unisson methode
+
 
 
 Roadmap

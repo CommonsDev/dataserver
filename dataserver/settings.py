@@ -188,6 +188,8 @@ INSTALLED_APPS = (
     
     'projects',
     'projectsheet',
+    'commons',
+    'unisson',
 )
 
 # A sample logging configuration. The only tangible logging

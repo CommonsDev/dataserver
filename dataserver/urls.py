@@ -11,6 +11,8 @@ from bucket.api import BucketResource, BucketFileResource, BucketTagResource, Bu
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from projects.api import ProjectResource
 from projectsheet.api import ProjectSheetResource
+from commons.api import UsageResource, PertinenceResource
+from unisson.api import IngredientResource, EvaluationIngredientResource
 
 admin.autodiscover()
 
@@ -48,6 +50,14 @@ api.register(ProjectResource())
 # Project Sheets
 api.register(ProjectSheetResource())
 
+# Commons
+api.register(UsageResource())
+api.register(PertinenceResource())
+
+
+# Unisson
+api.register(IngredientResource())
+api.register(EvaluationIngredientResource())
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
