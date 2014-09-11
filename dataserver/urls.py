@@ -10,7 +10,7 @@ from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from projects.api import ProjectResource
-from projectsheet.api import ProjectSheetResource
+from projectsheet.api import ProjectSheetResource, ProjectSheetTemplateResource, ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource
 from commons.api import UsageResource, PertinenceResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
 
@@ -49,6 +49,9 @@ api.register(ProjectResource())
 
 # Project Sheets
 api.register(ProjectSheetResource())
+api.register(ProjectSheetTemplateResource())
+api.register(ProjectSheetSuggestedItemResource())
+api.register(ProjectSheetQuestionResource())
 
 # Commons
 api.register(UsageResource())
@@ -61,7 +64,7 @@ api.register(EvaluationIngredientResource())
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^', include(api.urls)),
+    url(r'^api/', include(api.urls)),
 
 )
 

@@ -17,6 +17,9 @@ class ProjectSheetQuestion(models.Model):
     
     def __unicode__(self):
         return u"%s - %s" % (self.order, self.text)
+    
+    class Meta:
+        ordering = ('order',)
 
 class ProjectSheet(models.Model):
     project = models.OneToOneField(Project)

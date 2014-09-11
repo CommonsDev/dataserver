@@ -4,7 +4,7 @@ from taggit.managers import TaggableManager
 
 class Project(models.Model):
     title = models.CharField(max_length=100)
-    slug = AutoSlugField(unique=True, populate_from="title", always_update=True)
+    slug = AutoSlugField(unique=True)
     baseline = models.CharField(max_length=250, null=True, blank=True)
     tags = TaggableManager(blank=True)
     description = models.TextField(blank=True)
