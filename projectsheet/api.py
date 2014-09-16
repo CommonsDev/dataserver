@@ -16,6 +16,9 @@ class ProjectSheetTemplateResource(ModelResource):
         resource_name = 'projectsheettemplate'
         authorization = Authorization()
         always_return_data = True
+        filtering = { 
+            'id' : ('exact', )
+        }
         
     def dehydrate(self, bundle):
         bundle.data["questions"] = []
@@ -25,7 +28,7 @@ class ProjectSheetTemplateResource(ModelResource):
     
 class ProjectSheetQuestionResource(ModelResource):
     class Meta:
-        queryset = ProjectSheetTemplate.objects.all()
+        queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
         resource_name = 'projectsheetquestion'
         authorization = Authorization()
@@ -55,7 +58,7 @@ class ProjectSheetResource(ModelResource):
         filtering = { 
             'project' : ALL_WITH_RELATIONS,
             'template' : ALL_WITH_RELATIONS,
-}
+        }
         
     def dehydrate(self, bundle):
         bundle.data["items"] = []

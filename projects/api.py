@@ -13,4 +13,5 @@ class ProjectResource(ModelResource):
         
         filtering = {
             "slug": ('exact',),
+            'id' : ('exact', )
         }
