@@ -12,6 +12,21 @@ from guardian.shortcuts import assign_perm
 
 from bucket.models import Bucket
 
+## Transitional schema for a postal address
+class PostalAddress(models.Model):
+    """
+    The mailing address
+    http://schema.org/PostalAddress
+
+    For the country codes, see http://en.wikipedia.org/wiki/ISO_3166-1
+    """
+    country = models.CharField(max_length=2)
+    address_locality = models.CharField(max_length=255, null=True)
+    address_region = models.CharField(max_length=50, null=True)
+    post_office_box_number = models.CharField(max_length=20, null=True)
+    postal_code = models.CharField(max_length=30, null=True)
+    street_address = models.TextField(null=True)
+
 class TileLayer(models.Model):
     """
     A Tile layer for a given map.
@@ -28,11 +43,11 @@ class TileLayer(models.Model):
         Returns the default tile layer (used for a map when no layer is set).
         """
         return cls.objects.order_by('pk')[0]  # FIXME, make it administrable
-    
+
     def __unicode__(self):
         return self.name or u"Unnamed layer"
 
-        
+
 class Map(models.Model):
     """
     A map.
@@ -41,16 +56,16 @@ class Map(models.Model):
         ('GROUP_RW', _("RW for the group")),
         ('GROUP_RW_OTHERS_RO', _("RO for anyone and RW for the Group"))
     )
-    
+
     class Meta:
         permissions = (
             ('view_map', _("View Map")),
         )
-        
+
     privacy = models.CharField(max_length=20, choices=PRIVACY_CHOICES)
-        
+
     slug = AutoSlugField(db_index=True, populate_from='name', unique=True)
-    name = models.CharField(max_length=200, verbose_name=_("name"))        
+    name = models.CharField(max_length=200, verbose_name=_("name"))
     description = models.TextField(blank=True, null=True, verbose_name=_("description"))
 
     # Geo attributes
@@ -67,26 +82,26 @@ class Map(models.Model):
     objects = models.GeoManager()
 
     def save(self, *args, **kwargs):
-        if self.pk is None:            
+        if self.pk is None:
             self.tilelayer = TileLayer.objects.all()[0]
             if not self.bucket:
                 self.bucket = Bucket.objects.create()
-            
+
 
         result = super(Map, self).save(*args, **kwargs)
-            
+
         # Add a data layer once saved
         if len(self.datalayers.all()) == 0:
             DataLayer.objects.create(map=self)
-            
-        return result 
+
+        return result
 
     def get_absolute_url(self):
         return reverse("map", kwargs={'slug': self.slug, 'username': self.owner.username})
 
     def __unicode__(self):
         return self.name or u"Unnamed map"
-        
+
 
 class DataLayer(models.Model):
     """
@@ -96,8 +111,8 @@ class DataLayer(models.Model):
 
     def __unicode__(self):
         return u"Datalayer for %s" % self.map
-    
-    
+
+
 class MarkerCategory(models.Model):
     """
     A category for a marker
@@ -109,7 +124,7 @@ class MarkerCategory(models.Model):
 
     def __unicode__(self):
         return self.name
-            
+
 class Marker(models.Model):
     """
     Point of interest.
@@ -128,13 +143,13 @@ class Marker(models.Model):
     subtitle = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     video_src = models.TextField(null=True, blank=True)
-    
+
     def marker_upload(instance, filename):
         return os.path.join(instance.id)
-    
+
     # is URLField really required here ?? that make it not usable for relative urls
     picture_url = models.CharField(max_length=255, blank=True)
-    
+
     objects = models.GeoManager()
 
     def __unicode__(self):
@@ -149,11 +164,10 @@ def allow_user_to_edit_maps(sender, instance, created, *args, **kwargs):
 
     assign_perm("view_bucket", user_or_group=instance.created_by, obj=instance.bucket)
     assign_perm("change_bucket", user_or_group=instance.created_by, obj=instance.bucket)
-    assign_perm("delete_bucket", user_or_group=instance.created_by, obj=instance.bucket)    
+    assign_perm("delete_bucket", user_or_group=instance.created_by, obj=instance.bucket)
 
 
 @receiver(post_save, sender=User)
 def allow_user_to_create_map_via_api(sender, instance, created, *args, **kwargs):
     if created:
         assign_perm("scout.add_map", instance)
-    

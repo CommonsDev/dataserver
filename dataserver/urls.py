@@ -9,10 +9,15 @@ from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerR
 from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+
 from projects.api import ProjectResource
 from projectsheet.api import ProjectSheetResource, ProjectSheetTemplateResource, ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource
 from commons.api import UsageResource, PertinenceResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
+
+from deal.api import DealResource
+
+import views
 
 admin.autodiscover()
 
@@ -62,6 +67,9 @@ api.register(PertinenceResource())
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
+# deal
+api.register(DealResource())
+
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api.urls)),
@@ -70,3 +78,4 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
