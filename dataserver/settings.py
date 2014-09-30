@@ -170,7 +170,6 @@ INSTALLED_APPS = (
     'sendfile',
     'django.contrib.admin',
 
-    'mptt',
     'menus',
     'sekizai',
     
