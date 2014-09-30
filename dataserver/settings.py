@@ -170,8 +170,6 @@ INSTALLED_APPS = (
     'sendfile',
     'django.contrib.admin',
 
-    'sekizai',
-    
     'autoslug',
     'taggit',
     'flipflop',    
