@@ -5,7 +5,8 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
-from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
+from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource,\
+    PostalAddressResource
 from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
@@ -30,6 +31,8 @@ api.register(TileLayerResource())
 api.register(MarkerResource())
 api.register(DataLayerResource())
 api.register(MarkerCategoryResource())
+api.register(PostalAddressResource())
+
 
 # Auth
 api.register(UserResource())
