@@ -18,8 +18,6 @@ from unisson.api import IngredientResource, EvaluationIngredientResource
 
 from deal.api import DealResource
 
-import views
-
 admin.autodiscover()
 
 # Build API
