@@ -1,6 +1,6 @@
 from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization
-
+from tastypie import fields
 from .models import Project, Usage, Pertinence
 
 class UsageResource(ModelResource):
@@ -10,7 +10,6 @@ class UsageResource(ModelResource):
         resource_name = 'usage'
         authorization = Authorization()
 
-
 class PertinenceResource(ModelResource):
     class Meta:
         queryset = Pertinence.objects.all()
@@ -18,3 +17,5 @@ class PertinenceResource(ModelResource):
         resource_name = 'pertinence'
         authorization = Authorization()
 
+    project = fields.ForeignKey('projects.api.ProjectResource', 'project')
+    usage = fields.ForeignKey('commons.api.UsageResource', 'usage')
