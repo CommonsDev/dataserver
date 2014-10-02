@@ -14,7 +14,7 @@ class ProjectSheetSuggestedItemInline(StackedInline):
     
 class ProjectSheetQuestionInline(StackedInline):
     model = ProjectSheetQuestion
-    extra = 1
+    extra = 0
     min_num = 1
 
 
@@ -27,3 +27,4 @@ class ProjectSheetAdmin(admin.ModelAdmin):
 
 admin.site.register(ProjectSheet, ProjectSheetAdmin)
 admin.site.register(ProjectSheetTemplate, ProjectSheetTemplateAdmin)
+admin.site.register(ProjectSheetQuestion, admin.ModelAdmin)
