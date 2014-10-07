@@ -69,6 +69,8 @@ class ProjectSheetResource(ModelResource):
         return bundle
     
     def hydrate(self, bundle):
-        bundle.obj.project = Project.objects.get(id=bundle.data["project_id"])
-        bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
+        if "project_id" in bundle.data:
+            bundle.obj.project = Project.objects.get(id=bundle.data["project_id"])
+        if "template_id" in bundle.data:
+            bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
         return bundle
