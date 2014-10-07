@@ -17,5 +17,5 @@ class PertinenceResource(ModelResource):
         resource_name = 'pertinence'
         authorization = Authorization()
 
-    project = fields.ForeignKey('projects.api.ProjectResource', 'project')
-    usage = fields.ForeignKey('commons.api.UsageResource', 'usage')
+    project = fields.ForeignKey('projects.api.ProjectResource', 'project', full=True)
+    usage = fields.ForeignKey('commons.api.UsageResource', 'usage', full=True)
