@@ -8,3 +8,4 @@ build/
 src/
 static/.sass-cache/
 static/css
+dataserver/site_settings.py
