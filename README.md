@@ -1,25 +1,22 @@
-Unisson Data Server
+Commons Data Server
 ===================
 
-A temporary space for experimenting with REST APIs.
-In a near future, the data server will become a framework for developing distributed web services.
-The is a technical companion to the [Unisson Method](http://unisson.co/fr/projectbc/)[FR].
+A sandbox where we experiment with [Commons](http://wealthofthecommons.org/about)[EN] through REST APIs.
+In a near future, the data server will become a framework for developing distributed Commons services.
+This server is inspired by the [Unisson Method](http://unisson.co/fr/projectbc/)[FR].
 
-Author: Guillaume Libersat. See COPYING for license.
+Author: Guillaume Libersat & all. See COPYING for license.
 
 API list :
 - Bucket (beta) : File manager
 - Flipflop (beta) : Kanban boards
 - Scout (beta) : Map
 - Transport/Vlille (beta) : Lille Public Bike Service
-- Groupbuying (pre-alpha) : Grouped buying system
 - Alambic (pre-alpha) : Room discussion
-- Projects : Project Information
+- Projects : anything that can be qualified as a Project
 - ProjectSheet : Project Description
-- Commons : Determine witch "commons project" use to answer an usage
-- Unisson : Evaluate "commons project" with Unisson methode
-
-
+- Commons : Determine wich "commons project" to use for a given usage
+- Unisson : Evaluate "commons project" with the Unisson method
 
 Roadmap
 =======
