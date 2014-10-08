@@ -92,7 +92,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     # 'djangular.finders.NamespacedAngularAppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',    
+    'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -113,15 +113,15 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    
+
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    
+
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',    
+    'cms.middleware.language.LanguageCookieMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -164,11 +164,11 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'reversion',
-    
+
     'compressor',
     'djangular',
     'django.contrib.gis',
-    
+
     'guardian',
     'userena',
     'accounts',
@@ -176,7 +176,7 @@ INSTALLED_APPS = (
 
     'tastypie',
     'sendfile',
-    
+
     'djangocms_admin_style',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
@@ -193,13 +193,14 @@ INSTALLED_APPS = (
     #'cms.plugins.twitter',
     'djangocms_picture',
     #'cms.plugins.googlemap',
-    
+
     'autoslug',
     'taggit',
-    'flipflop',    
+    'flipflop',
     'alambic',
     'bucket',
     'scout',
+    'deal',
     'multiuploader',
     'sorl.thumbnail',
     'haystack',
