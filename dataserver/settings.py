@@ -118,10 +118,6 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -148,7 +144,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
     'multiuploader.context_processors.booleans',
 )
@@ -160,6 +155,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.admin',
 
     'south',
     'corsheaders',
@@ -177,37 +174,17 @@ INSTALLED_APPS = (
     'tastypie',
     'sendfile',
 
-    'djangocms_admin_style',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
-
-    #= djangocms dependencies : see also 'djangocms_admin_style' that need to be above 'django.contrib.admin',
-    'djangocms_text_ckeditor',
-    'cms',
-    'mptt',
-    'menus',
-    'sekizai',
-    #'cms.plugins.video',
-    #'cms.plugins.twitter',
-    'djangocms_picture',
-    #'cms.plugins.googlemap',
-
     'autoslug',
     'taggit',
     'flipflop',
     'alambic',
     'bucket',
     'scout',
-    'deal',
+
+    'transport_vlille',
     'multiuploader',
     'sorl.thumbnail',
     'haystack',
-    #= djangocms custom plugins
-    'cms_news',
-    'cms_background_images',
-    'cms_carto'
 )
 
 # A sample logging configuration. The only tangible logging
@@ -277,36 +254,6 @@ HAYSTACK_CONNECTIONS = {
 }
 HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
-# CMS
-CMS_PERMISSION = True
-CMS_PUBLIC_FOR = 'all'
-PROJECT_PAGE_TEMPLATE = 'cms_project.html'
-CMS_TEMPLATES = (
-    ('cms_project.html', 'Project Page'),
-)
-# some CMS primitives do not work unless fallback for lang 'en' is defined
-CMS_LANGUAGES = {
-    1: [
-        {
-            'code': 'fr',
-            'name': 'French',
-            'fallbacks': ['en'],
-            'public': True,
-        },
-        {
-            'code': 'en',
-            'name': 'English',
-            'fallbacks': ['fr'],
-            'public': True,
-        }
-      ]
-      }
-
-CKEDITOR_SETTINGS = {
-    'language': 'fr',
-    'toolbar': 'HTMLField',
-    'skin': 'moono',
-}
 ## bucket
 BUCKET_FILES_FOLDER = 'bucket'
 

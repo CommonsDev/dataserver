@@ -6,7 +6,7 @@ South==0.8.4
 
 django-compressor==1.3
 django-cors-headers==0.10
-django-extensions==1.3.3
+django-extensions==1.4.0
 django-tastypie==0.11.0
 django-userena==1.2.4
 djangular==0.2.2 # still needed?
@@ -36,3 +36,6 @@ cmsplugin-filer==0.9.5
 django-reversion==1.7.1
 
 pygeocoder
+
+# vlille
+-e git+https://github.com/glibersat/python-vlille.git#egg=python-vlille
