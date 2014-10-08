@@ -9,7 +9,6 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-
 from site_settings import *
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -106,7 +105,6 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -150,6 +148,10 @@ INSTALLED_APPS = (
     'south',
     'corsheaders',
     'reversion',
+    'multiuploader',
+    'sorl.thumbnail',
+    'haystack',
+
 
     'compressor',
     'djangular',
@@ -166,14 +168,18 @@ INSTALLED_APPS = (
     'autoslug',
     'taggit',
     'flipflop',
-    'alambic',
+#    'alambic',
+
     'bucket',
     'scout',
 
     'transport_vlille',
-    'multiuploader',
-    'sorl.thumbnail',
-    'haystack',
+
+    'projects',
+    'projectsheet',
+    'commons',
+    'unisson',
+
 )
 
 # A sample logging configuration. The only tangible logging

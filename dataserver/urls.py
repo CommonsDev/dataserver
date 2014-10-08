@@ -5,13 +5,18 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
-from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
+from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource,\
+    PostalAddressResource
 from accounts.api import UserResource, GroupResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
-from deal.api import DealResource
 
 from transport_vlille.api import VlilleResource
+from projects.api import ProjectResource
+from projectsheet.api import ProjectSheetResource, ProjectSheetTemplateResource, ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource
+from commons.api import UsageResource, PertinenceResource
+from unisson.api import IngredientResource, EvaluationIngredientResource
+
 
 admin.autodiscover()
 
@@ -24,6 +29,8 @@ api.register(TileLayerResource())
 api.register(MarkerResource())
 api.register(DataLayerResource())
 api.register(MarkerCategoryResource())
+api.register(PostalAddressResource())
+
 
 # Auth
 api.register(UserResource())
@@ -46,29 +53,28 @@ api.register(BucketFileCommentResource())
 # Vlille
 api.register(VlilleResource())
 
+# Projects
+api.register(ProjectResource())
+
+# Project Sheets
+api.register(ProjectSheetResource())
+api.register(ProjectSheetTemplateResource())
+api.register(ProjectSheetSuggestedItemResource())
+api.register(ProjectSheetQuestionResource())
+
+# Commons
+api.register(UsageResource())
+api.register(PertinenceResource())
+
+# Unisson
+api.register(IngredientResource())
+api.register(EvaluationIngredientResource())
+
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'gup.views.home', name='home'),
-    # url(r'^gup/', include('gup.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    (r'^accounts/', include('userena.urls')),
-
-    (r'^api/', include(api.urls)),
-    (r'^api/', include('alambic.urls')),
-    (r'^flipflop/', include('flipflop.urls')),
-
-    url(r'^djangular/', include('djangular.urls')),
-
-    (r'^bucket/', include('bucket.urls')),
-
-#    url(r'^select2/', include('django_select2.urls')),
-
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include(api.urls)),
+
 )
 
 if settings.DEBUG:

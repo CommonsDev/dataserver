@@ -16,7 +16,7 @@ from pygeocoder import Geocoder
 from accounts.api import UserResource
 
 from bucket.models import Bucket
-from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory
+from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory, PostalAddress
 
 class MapAuthorization(GuardianAuthorization):
     def __init__(self):
@@ -110,4 +110,11 @@ class MarkerResource(GeoModelResource):
             bundle.data['address'] = geo_results[0]
             
         return bundle
-        
+
+class PostalAddressResource(ModelResource):
+    class Meta:
+        queryset = PostalAddress.objects.all()
+        resource_name = 'scout/postaladdress'
+        authorization = Authorization()
+        always_return_data = True
+
