@@ -27,6 +27,12 @@ class PostalAddress(models.Model):
     postal_code = models.CharField(max_length=30, null=True)
     street_address = models.TextField(null=True)
 
+    def __unicode__(self):
+        return "%s, %s - %s (%s)" % (self.post_office_box_number,
+                                     self.street_address,
+                                     self.address_locality,
+                                     self.country)
+
 class TileLayer(models.Model):
     """
     A Tile layer for a given map.
