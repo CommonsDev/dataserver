@@ -10,7 +10,7 @@ class ProjectResource(ModelResource):
      
     class Meta:
         queryset = Project.objects.all()
-        allowed_methods = ['get', 'post', 'put']
+        allowed_methods = ['get', 'post', 'put', 'patch']
         resource_name = 'project'
         authorization = Authorization()
         always_return_data = True
