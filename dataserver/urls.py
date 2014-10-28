@@ -17,6 +17,8 @@ from commons.api import UsageResource, PertinenceResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
 
 from deal.api import DealResource
+from graffiti.api import TagResource
+from alambic.api import RoomResource
 
 admin.autodiscover()
 
@@ -36,7 +38,7 @@ api.register(PostalAddressResource())
 api.register(UserResource())
 api.register(GroupResource())
 
-# Kanban
+# Flipflop (Kanban)
 api.register(BoardResource())
 api.register(ListResource())
 api.register(CardResource())
@@ -63,13 +65,18 @@ api.register(ProjectSheetQuestionResource())
 api.register(UsageResource())
 api.register(PertinenceResource())
 
-
 # Unisson
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
 # deal
 api.register(DealResource())
+
+#graffiti
+api.register(TagResource())
+
+#alambic
+api.register(RoomResource())
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
