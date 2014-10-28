@@ -152,38 +152,37 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.gis',
+    'django.contrib.admin',
+    
     'south',
     'corsheaders',
     'reversion',
-
     'compressor',
-    'djangular',
-    'django.contrib.gis',
-
+    'django_extensions',
+    'pyelasticsearch',
+    
     'guardian',
     'userena',
-    'accounts',
-    'django_extensions',
-
+        
     'tastypie',
-    'sendfile',
-    'django.contrib.admin',
-
     'autoslug',
     'taggit',
-    'flipflop',    
-#    'alambic',
-
-    'bucket',
-    'scout',
-    'deal',
     'multiuploader',
+    'sendfile',
     'sorl.thumbnail',
     'haystack',
     
+    #Dataserver
+    'accounts',
+    'bucket',
+    'scout',
+    'deal',
+    'flipflop',    
+    'alambic',
     'projects',
     'projectsheet',
+    'graffiti',
     'commons',
     'unisson',
 )
@@ -248,9 +247,11 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 # Haystack
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'bucket',
+#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+#         'URL': 'http://127.0.0.1:9200/',
+#         'INDEX_NAME': 'bucket',
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
     },
 }
 HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
