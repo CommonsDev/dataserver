@@ -2,9 +2,12 @@ from django.db import models
 from projects.models import Project
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext as _
+from django.db import models
+from autoslug.fields import AutoSlugField
 
 class ProjectSheetTemplate(models.Model):
     name = models.CharField(max_length=100)
+    slug = AutoSlugField(unique=True, populate_from="name", always_update=True)
     shortdesc = models.CharField(max_length=255, null=True, blank=True)
     
     def __unicode__(self):
