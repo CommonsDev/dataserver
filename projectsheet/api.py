@@ -12,12 +12,12 @@ from tastypie.constants import ALL_WITH_RELATIONS
 class ProjectSheetTemplateResource(ModelResource):
     class Meta:
         queryset = ProjectSheetTemplate.objects.all()
-        allowed_methods = ['post', 'get']
+        allowed_methods = ['get']
         resource_name = 'projectsheettemplate'
         authorization = Authorization()
         always_return_data = True
         filtering = { 
-            'id' : ('exact', )
+            'slug' : ('exact', )
         }
         
     def dehydrate(self, bundle):
