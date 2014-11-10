@@ -27,4 +27,3 @@ class ProjectSheetAdmin(admin.ModelAdmin):
 
 admin.site.register(ProjectSheet, ProjectSheetAdmin)
 admin.site.register(ProjectSheetTemplate, ProjectSheetTemplateAdmin)
-admin.site.register(ProjectSheetQuestion, admin.ModelAdmin)
