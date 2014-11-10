@@ -7,7 +7,7 @@ from tastypie.api import Api
 
 from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource,\
     PostalAddressResource
-from accounts.api import UserResource, GroupResource
+from accounts.api import UserResource, GroupResource, ProfileResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 
@@ -37,6 +37,7 @@ api.register(PostalAddressResource())
 # Auth
 api.register(UserResource())
 api.register(GroupResource())
+api.register(ProfileResource())
 
 # Flipflop (Kanban)
 api.register(BoardResource())

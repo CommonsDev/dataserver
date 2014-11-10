@@ -12,6 +12,8 @@ from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
+from .models import Profile
+
 class UserResource(ModelResource):
     class Meta:
         queryset = User.objects.exclude(pk=-1) # Exclude anonymous user
@@ -25,7 +27,10 @@ class UserResource(ModelResource):
     groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 
     def dehydrate(self, bundle):
-        bundle.data['mugshot'] = bundle.obj.profile.mugshot
+        try:
+            bundle.data['mugshot'] = bundle.obj.profile.mugshot
+        except Profile.DoesNotExist:
+            pass
         bundle.data['groups'] = [{"id" : group.id, "name":group.name} for group in bundle.obj.groups.all()]
         #bundle.data['first_name'] = bundle.obj.user.first_name
         #bundle.data['last_name'] = bundle.obj.user.last_name
@@ -150,3 +155,18 @@ class GroupResource(ModelResource):
     
 # Create API key for every new user
 models.signals.post_save.connect(create_api_key, sender=User)
+
+class ProfileResource(ModelResource):
+    user = fields.OneToOneField(UserResource, 'user')
+    
+    class Meta:
+        queryset = Profile.objects.all()
+        allowed_methods = ['get', 'post']
+        resource_name = 'account/profile'
+        authentication = Authentication()
+        authorization = Authorization()
+    
+    def dehydrate(self, bundle):
+        bundle.data["username"] = bundle.obj.username
+        return bundle
+    
