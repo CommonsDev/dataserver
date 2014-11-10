@@ -1,9 +1,11 @@
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
 from tastypie import fields
 
 from .models import Project
+
 from scout.api import PostalAddressResource
+from dataserver.authentication import AnonymousApiKeyAuthentication
+from tastypie.authorization import DjangoAuthorization
 
 class ProjectResource(ModelResource):
     location = fields.ToOneField(PostalAddressResource, 'location', null=True, blank=True)
@@ -12,10 +14,12 @@ class ProjectResource(ModelResource):
         queryset = Project.objects.all()
         allowed_methods = ['get', 'post', 'put', 'patch']
         resource_name = 'project'
-        authorization = Authorization()
         always_return_data = True
         
         filtering = {
             "slug": ('exact',),
             'id' : ('exact', )
         }
+        
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()

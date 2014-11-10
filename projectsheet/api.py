@@ -1,5 +1,5 @@
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, DjangoAuthorization
 from tastypie import fields
 
 from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetSuggestedItem, ProjectSheetQuestion
@@ -7,6 +7,7 @@ from projects.api import ProjectResource
 from projects.models import Project
 from django.core.urlresolvers import reverse
 from tastypie.constants import ALL_WITH_RELATIONS
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 
 class ProjectSheetTemplateResource(ModelResource):
@@ -53,7 +54,8 @@ class ProjectSheetResource(ModelResource):
         allowed_methods = ['get', 'post', 'put']
         default_format = "application/json"
         resource_name = 'projectsheet'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         always_return_data = True
         filtering = { 
             'project' : ALL_WITH_RELATIONS,
