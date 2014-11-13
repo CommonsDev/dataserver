@@ -22,7 +22,7 @@ class UserResource(ModelResource):
         resource_name = 'account/user'
         authentication = Authentication()
         authorization = Authorization()
-        fields = ['username', 'first_name', 'last_name', 'groups']
+        fields = ['username', 'first_name', 'last_name', 'groups', 'email']
 
     groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 

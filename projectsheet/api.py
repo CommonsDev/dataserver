@@ -15,7 +15,8 @@ class ProjectSheetTemplateResource(ModelResource):
         queryset = ProjectSheetTemplate.objects.all()
         allowed_methods = ['get']
         resource_name = 'projectsheettemplate'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         always_return_data = True
         filtering = { 
             'slug' : ('exact', )
@@ -32,7 +33,8 @@ class ProjectSheetQuestionResource(ModelResource):
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
         resource_name = 'projectsheetquestion'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         
     def hydrate(self, bundle):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
@@ -43,7 +45,8 @@ class ProjectSheetSuggestedItemResource(ModelResource):
         queryset = ProjectSheetSuggestedItem.objects.all()
         allowed_methods = ['get', 'patch']
         resource_name = 'projectsheetsuggesteditem'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
 
 class ProjectSheetResource(ModelResource):
     project = fields.ToOneField(ProjectResource, 'project')
