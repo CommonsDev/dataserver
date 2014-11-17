@@ -1,19 +1,21 @@
 from taggit.models import Tag, TaggedItem
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, DjangoAuthorization
 from tastypie import fields
 from django.conf.urls import url
 from tastypie.utils.urls import trailing_slash
 from django.contrib.contenttypes.models import ContentType
 from tastypie.constants import ALL_WITH_RELATIONS
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 class ContentTypeResource(ModelResource):
     class Meta:
         queryset = ContentType.objects.all()
         resource_name = 'contenttype' 
         allowed_methods = ['get']
-        authorization = Authorization()
-        always_return_data = True     
+        always_return_data = True 
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()    
 
 class TagResource(ModelResource):
     class Meta:
@@ -23,12 +25,15 @@ class TagResource(ModelResource):
             "name":"exact",
         }
         allowed_methods = ['get']
-        authorization = Authorization()
         always_return_data = True 
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         
 class TaggedItemResource(ModelResource):
     tag = fields.ToOneField(TagResource, 'tag')
     object_type = fields.CharField()
+    authentication = AnonymousApiKeyAuthentication()
+    authorization = DjangoAuthorization()
     
     class Meta:
         queryset = TaggedItem.objects.all()
