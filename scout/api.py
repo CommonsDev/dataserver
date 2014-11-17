@@ -3,7 +3,8 @@ import os
 import mimetypes
 
 from tastypie import fields
-from tastypie.authorization import Authorization, ReadOnlyAuthorization
+from tastypie.authorization import Authorization, ReadOnlyAuthorization,\
+    DjangoAuthorization
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
@@ -115,6 +116,7 @@ class PostalAddressResource(ModelResource):
     class Meta:
         queryset = PostalAddress.objects.all()
         resource_name = 'scout/postaladdress'
-        authorization = Authorization()
         always_return_data = True
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
 
