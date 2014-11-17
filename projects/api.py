@@ -23,3 +23,5 @@ class ProjectResource(ModelResource):
         
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
+
+    projecttools = fields.ForeignKey('projecttools.api.ProjectToolsResource', 'projecttools', full=True)
