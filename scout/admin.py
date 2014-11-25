@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from guardian.admin import GuardedModelAdmin
 
-from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory, PostalAddress
+from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory, Place, PostalAddress
 
 class MapAdmin(GuardedModelAdmin):
     pass
@@ -27,3 +27,4 @@ admin.site.register(DataLayer, DataLayerAdmin)
 admin.site.register(Marker, MarkerAdmin)
 admin.site.register(MarkerCategory, MarkerCategoryAdmin)
 admin.site.register(PostalAddress)
+admin.site.register(Place)
