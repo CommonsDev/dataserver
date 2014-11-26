@@ -13,7 +13,7 @@ from flipflop.api import BoardResource, ListResource, CardResource, TaskResource
 
 from projects.api import ProjectResource
 from projectsheet.api import ProjectSheetResource, ProjectSheetTemplateResource, ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource
-from projecttools.api import ProjectToolsResource
+from projecttools.api import ProjectToolsResource, ToolCategoryResource
 from commons.api import UsageResource, PertinenceResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
 
@@ -65,6 +65,7 @@ api.register(ProjectSheetQuestionResource())
 
 # Projects Tools
 api.register(ProjectToolsResource())
+api.register(ToolCategoryResource())
 
 # Commons
 api.register(UsageResource())
