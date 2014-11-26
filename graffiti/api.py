@@ -7,6 +7,8 @@ from tastypie.utils.urls import trailing_slash
 from django.contrib.contenttypes.models import ContentType
 from tastypie.constants import ALL_WITH_RELATIONS
 from dataserver.authentication import AnonymousApiKeyAuthentication
+from django.http.response import HttpResponse
+import json
 
 class ContentTypeResource(ModelResource):
     class Meta:
@@ -46,14 +48,21 @@ class TaggedItemResource(ModelResource):
     
     def prepend_urls(self):
         return [
-           url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\w+?)%s$" % (self._meta.resource_name, trailing_slash()),
+           url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
                self.wrap_view('dispatch_list'), 
                name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\w+?)/(?P<tag_id>\w+?)%s$" % (self._meta.resource_name, trailing_slash()),
+            url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\d+?)/similars%s$" % (self._meta.resource_name, trailing_slash()),
+               self.wrap_view('get_similars'), 
+               name="api_get_similars"),
+            url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\d+?)/(?P<tag_id>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
                self.wrap_view('dispatch_detail'), 
                name="api_dispatch_detail"),
         ]
       
+    def get_similars(self, request, **kwargs):  
+        obj = ContentType.objects.get(model=kwargs.pop('object_type')).get_object_for_this_type(id=kwargs["object_id"])
+        return HttpResponse(json.dumps([o.id for o in obj.tags.similar_objects()]))
+    
     def dispatch_list(self, request, **kwargs):
         if 'object_type' in kwargs :
             kwargs["content_type"] = ContentType.objects.get(model=kwargs.pop('object_type'))
