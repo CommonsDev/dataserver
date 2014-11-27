@@ -185,7 +185,7 @@ INSTALLED_APPS = (
     'graffiti',
     'commons',
     'unisson',
-    'projecttools',
+    'projecttool',
 )
 
 # A sample logging configuration. The only tangible logging
