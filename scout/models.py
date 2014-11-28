@@ -33,6 +33,18 @@ class PostalAddress(models.Model):
                                      self.address_locality,
                                      self.country)
 
+class Place(models.Model):
+    """
+    A place, from
+    http://schema.org/Place
+    """
+    address = models.ForeignKey(PostalAddress)
+    geo = models.PointField()
+    objects = models.GeoManager()
+
+    def __unicode__(self):
+        return u"%s" % self.address
+
 class TileLayer(models.Model):
     """
     A Tile layer for a given map.
@@ -114,6 +126,7 @@ class DataLayer(models.Model):
     A layer containing features (markers, polylines and polygons)
     """
     map = models.ForeignKey(Map, related_name='datalayers')
+    geojson = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return u"Datalayer for %s" % self.map

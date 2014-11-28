@@ -120,7 +120,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'sekizai.context_processors.sekizai',
     'multiuploader.context_processors.booleans',
 )
 
