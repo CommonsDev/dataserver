@@ -4,6 +4,9 @@ from taggit.managers import TaggableManager
 from scout.models import Place
 
 class Project(models.Model):
+    """
+    A project is any idea you can document
+    """
     title = models.CharField(max_length=100)
     slug = AutoSlugField(unique=True)
     baseline = models.CharField(max_length=250, null=True, blank=True)
