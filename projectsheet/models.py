@@ -1,8 +1,11 @@
 from django.db import models
-from projects.models import Project
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
+from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
+
+from projects.models import Project
 from autoslug.fields import AutoSlugField
+from bucket.models import Bucket, BucketFile
     
 
 class ProjectSheetTemplate(models.Model):
@@ -27,9 +30,18 @@ class ProjectSheetQuestion(models.Model):
 class ProjectSheet(models.Model):
     project = models.OneToOneField(Project)
     template = models.ForeignKey(ProjectSheetTemplate)
+    bucket = models.ForeignKey(Bucket, null=True, blank=True) 
+    cover = models.ForeignKey(BucketFile, null=True, blank=True)
     
     def __unicode__(self):
         return u"%s %s" % (_('Project sheet for '), self.project)
+
+def createProjectSheetBucket(sender, instance, **kwargs):
+    bucket_name = instance.project.slug
+    bucket_owner = User.objects.get(pk=-1) # FIXME : to whom should bucket projects belong ? default to Anonymous user by now
+    projectsheet_bucket = Bucket.objects.create(created_by=bucket_owner, 
+                                                name=bucket_name)
+    instance.bucket = projectsheet_bucket
     
 class ProjectSheetSuggestedItem(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet)
@@ -45,3 +57,4 @@ def createProjectSheetSuggestedItem(sender, instance, created, **kwargs):
                                                  question=question)
 
 post_save.connect(createProjectSheetSuggestedItem, ProjectSheet)
+pre_save.connect(createProjectSheetBucket, ProjectSheet)

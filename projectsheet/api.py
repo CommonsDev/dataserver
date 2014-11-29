@@ -8,7 +8,7 @@ from projects.models import Project
 from django.core.urlresolvers import reverse
 from tastypie.constants import ALL_WITH_RELATIONS
 from dataserver.authentication import AnonymousApiKeyAuthentication
-
+from bucket.api import BucketResource, BucketFileResource
 
 class ProjectSheetTemplateResource(ModelResource):
     class Meta:
@@ -51,10 +51,12 @@ class ProjectSheetSuggestedItemResource(ModelResource):
 class ProjectSheetResource(ModelResource):
     project = fields.ToOneField(ProjectResource, 'project')
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
-    
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
+    cover = fields.ToOneField(BucketFileResource, 'cover', null=True)
+
     class Meta:
         queryset = ProjectSheet.objects.all()
-        allowed_methods = ['get', 'post', 'put']
+        allowed_methods = ['get', 'post', 'put', 'patch']
         default_format = "application/json"
         resource_name = 'projectsheet'
         authentication = AnonymousApiKeyAuthentication()
