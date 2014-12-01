@@ -7,7 +7,7 @@ class ProjectToolResource(ModelResource):
     class Meta:
         queryset = ProjectTool.objects.all()
         allowed_methods = ['get', 'post', 'patch']
-        resource_name = 'project/tools'
+        resource_name = 'project/tool'
         authorization = Authorization()
 
     

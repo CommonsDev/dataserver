@@ -37,7 +37,7 @@ class ProjectResource(ModelResource):
     class Meta:
         queryset = Project.objects.all()
         allowed_methods = ['get', 'post', 'put', 'patch']
-        resource_name = 'project'
+        resource_name = 'project/project'
         always_return_data = True
         
         filtering = {
@@ -45,7 +45,6 @@ class ProjectResource(ModelResource):
             'id' : ('exact', )
         }
         
-        authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
 
-    projecttool = fields.ForeignKey('projecttool.api.ProjectToolResource', 'projecttool', full=True)
+    projecttool = fields.ForeignKey('projecttool.api.ProjectToolResource', 'projecttool', null=True, blank=True, full=True)
