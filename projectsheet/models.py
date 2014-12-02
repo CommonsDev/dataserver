@@ -39,7 +39,7 @@ class ProjectSheet(models.Model):
 def createProjectSheetBucket(sender, instance, **kwargs):
     bucket_name = instance.project.slug
     bucket_owner = User.objects.get(pk=-1) # FIXME : to whom should bucket projects belong ? default to Anonymous user by now
-    projectsheet_bucket = Bucket.objects.create(created_by=bucket_owner, 
+    projectsheet_bucket, created = Bucket.objects.get_or_create(created_by=bucket_owner, 
                                                 name=bucket_name)
     instance.bucket = projectsheet_bucket
     
