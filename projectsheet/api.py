@@ -51,7 +51,7 @@ class ProjectSheetSuggestedItemResource(ModelResource):
 class ProjectSheetResource(ModelResource):
     project = fields.ToOneField(ProjectResource, 'project')
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
-    bucket = fields.ToOneField(BucketResource, 'bucket', null=True)
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
 
     class Meta:
