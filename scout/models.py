@@ -136,6 +136,7 @@ class MarkerCategory(models.Model):
     """
     A category for a marker
     """
+    map = models.ForeignKey(Map, related_name='marker_categories')
     name = models.CharField(max_length=255)
     icon_name = models.CharField(max_length=255)
     icon_color = models.CharField(max_length=30)
