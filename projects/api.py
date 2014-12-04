@@ -1,12 +1,14 @@
-from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
 from tastypie import fields
+from tastypie.authorization import Authorization
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.resources import ModelResource
+
+from scout.api import PlaceResource
 
 from .models import Project
-from scout.api import PostalAddressResource
 
 class ProjectResource(ModelResource):
-    location = fields.ToOneField(PostalAddressResource, 'location', null=True, blank=True)
+    location = fields.ToOneField(PlaceResource, 'location', full=True, null=True, blank=True)
 
     class Meta:
         queryset = Project.objects.all()
@@ -17,5 +19,6 @@ class ProjectResource(ModelResource):
 
         filtering = {
             "slug": ('exact',),
-            'id' : ('exact', )
+            'id' : ('exact', ),
+            'location': ALL_WITH_RELATIONS,
         }
