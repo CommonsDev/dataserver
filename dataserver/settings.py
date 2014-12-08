@@ -153,15 +153,16 @@ INSTALLED_APPS = (
     # 'alambic',
     'accounts',
     'bucket',
-    'scout',
+    'commons',
     'deal',
     'flipflop',
+    'graffiti',
     'projects',
     'projectsheet',
-    'graffiti',
-    'commons',
-    'unisson',
+    'projecttool',
+    'scout',
     'transport_vlille',
+    'unisson',
 )
 
 # A sample logging configuration. The only tangible logging

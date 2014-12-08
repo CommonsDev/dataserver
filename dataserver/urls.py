@@ -13,9 +13,11 @@ from graffiti.api import TagResource
 from projects.api import ProjectResource
 from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
                               ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
+from projecttool.api import ProjectToolResource
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
 from transport_vlille.api import VlilleResource
+
 from unisson.api import IngredientResource, EvaluationIngredientResource
 
 admin.autodiscover()
@@ -63,6 +65,9 @@ api.register(ProjectSheetResource())
 api.register(ProjectSheetTemplateResource())
 api.register(ProjectSheetQuestionAnswerResource())
 api.register(ProjectSheetQuestionResource())
+
+# Projects Tools
+api.register(ProjectToolResource())
 
 # Commons
 api.register(UsageResource())
