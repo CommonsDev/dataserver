@@ -12,7 +12,7 @@ class Migration(SchemaMigration):
         db.create_table(u'projecttool_toolcategory', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('label', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('baseline', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
+            ('baseline', self.gf('django.db.models.fields.CharField')(max_length=250, null=True, blank=True)),
             ('description', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal(u'projecttool', ['ToolCategory'])
@@ -20,10 +20,10 @@ class Migration(SchemaMigration):
         # Adding model 'ProjectTool'
         db.create_table(u'projecttool_projecttool', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('project', self.gf('django.db.models.fields.related.OneToOneField')(related_name='project_tools', unique=True, to=orm['projects.Project'])),
-            ('category', self.gf('django.db.models.fields.related.OneToOneField')(related_name='project_categories', unique=True, to=orm['projecttool.ToolCategory'])),
+            ('project', self.gf('django.db.models.fields.related.ForeignKey')(related_name='tools', to=orm['projects.Project'])),
+            ('category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='tools', to=orm['projecttool.ToolCategory'])),
             ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('website', self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True)),
+            ('uri', self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True)),
         ))
         db.send_create_signal(u'projecttool', ['ProjectTool'])
 
@@ -44,7 +44,7 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'location': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['scout.PostalAddress']", 'null': 'True', 'blank': 'True'}),
+            'location': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['scout.Place']", 'null': 'True', 'blank': 'True'}),
             'progress': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['projects.ProjectProgress']", 'null': 'True', 'blank': 'True'}),
             'slug': ('autoslug.fields.AutoSlugField', [], {'unique': 'True', 'max_length': '50', 'populate_from': 'None', 'unique_with': '()'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
@@ -66,18 +66,24 @@ class Migration(SchemaMigration):
         },
         u'projecttool.projecttool': {
             'Meta': {'object_name': 'ProjectTool'},
-            'category': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'project_categories'", 'unique': 'True', 'to': u"orm['projecttool.ToolCategory']"}),
+            'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'tools'", 'to': u"orm['projecttool.ToolCategory']"}),
             'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'project': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'project_tools'", 'unique': 'True', 'to': u"orm['projects.Project']"}),
-            'website': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
+            'project': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'tools'", 'to': u"orm['projects.Project']"}),
+            'uri': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
         u'projecttool.toolcategory': {
             'Meta': {'object_name': 'ToolCategory'},
-            'baseline': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
+            'baseline': ('django.db.models.fields.CharField', [], {'max_length': '250', 'null': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+        },
+        u'scout.place': {
+            'Meta': {'object_name': 'Place'},
+            'address': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'place'", 'to': u"orm['scout.PostalAddress']"}),
+            'geo': ('django.contrib.gis.db.models.fields.PointField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         u'scout.postaladdress': {
             'Meta': {'object_name': 'PostalAddress'},
