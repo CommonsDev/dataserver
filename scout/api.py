@@ -5,7 +5,8 @@ import mimetypes
 from pygeocoder import Geocoder
 
 from tastypie import fields
-from tastypie.authorization import Authorization, ReadOnlyAuthorization
+from tastypie.authorization import Authorization, ReadOnlyAuthorization,\
+    DjangoAuthorization
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
@@ -117,8 +118,9 @@ class PostalAddressResource(ModelResource):
     class Meta:
         queryset = PostalAddress.objects.all()
         resource_name = 'scout/postaladdress'
-        authorization = Authorization()
         always_return_data = True
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
 
 
 class PlaceResource(GeoModelResource):

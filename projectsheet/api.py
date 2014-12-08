@@ -1,5 +1,5 @@
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, DjangoAuthorization
 from tastypie import fields
 
 from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetSuggestedItem, ProjectSheetQuestion
@@ -7,17 +7,19 @@ from projects.api import ProjectResource
 from projects.models import Project
 from django.core.urlresolvers import reverse
 from tastypie.constants import ALL_WITH_RELATIONS
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 
 class ProjectSheetTemplateResource(ModelResource):
     class Meta:
         queryset = ProjectSheetTemplate.objects.all()
-        allowed_methods = ['post', 'get']
+        allowed_methods = ['get']
         resource_name = 'project/sheet/template'
-        authorization = Authorization()
+        authorization = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
-            'id' : ('exact', )
+            'slug' : ('exact', )
         }
 
     def dehydrate(self, bundle):
@@ -31,7 +33,8 @@ class ProjectSheetQuestionResource(ModelResource):
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
         resource_name = 'project/sheet/question'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
 
     def hydrate(self, bundle):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
@@ -42,7 +45,9 @@ class ProjectSheetSuggestedItemResource(ModelResource):
         queryset = ProjectSheetSuggestedItem.objects.all()
         allowed_methods = ['get', 'patch']
         resource_name = 'project/sheet/suggesteditem'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
+
 
 class ProjectSheetResource(ModelResource):
     project = fields.ToOneField(ProjectResource, 'project')
@@ -52,7 +57,8 @@ class ProjectSheetResource(ModelResource):
         queryset = ProjectSheet.objects.all()
         allowed_methods = ['get', 'post', 'put']
         resource_name = 'project/sheet/projectsheet'
-        authorization = Authorization()
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
             'project' : ALL_WITH_RELATIONS,

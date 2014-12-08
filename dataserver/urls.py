@@ -5,19 +5,18 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
+from accounts.api import UserResource, GroupResource, ProfileResource
+from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
+from commons.api import UsageResource, PertinenceResource
+from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+from graffiti.api import TagResource
+from projects.api import ProjectResource
+from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
+                              ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource)
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
-
-from accounts.api import UserResource, GroupResource
-from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
-from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
-
 from transport_vlille.api import VlilleResource
-from projects.api import ProjectResource
-from projectsheet.api import ProjectSheetResource, ProjectSheetTemplateResource, ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource
-from commons.api import UsageResource, PertinenceResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
-
 
 admin.autodiscover()
 
@@ -37,8 +36,9 @@ api.register(PlaceResource())
 # Auth
 api.register(UserResource())
 api.register(GroupResource())
+api.register(ProfileResource())
 
-# Kanban
+# Flipflop (Kanban)
 api.register(BoardResource())
 api.register(ListResource())
 api.register(CardResource())
@@ -72,6 +72,12 @@ api.register(PertinenceResource())
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
+
+# Graffiti
+api.register(TagResource())
+
+# Alambic
+# api.register(RoomResource())
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),

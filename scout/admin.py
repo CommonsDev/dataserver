@@ -22,6 +22,8 @@ class MarkerAdmin(admin.ModelAdmin):
 class MarkerCategoryAdmin(admin.ModelAdmin):
     pass
 
+class PostalAddressAdmin(admin.ModelAdmin):
+    pass
 
 admin.site.register(Map, MapAdmin)
 admin.site.register(TileLayer, TileLayerAdmin)
