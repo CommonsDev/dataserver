@@ -1,21 +1,54 @@
-from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
 from tastypie import fields
+from tastypie.authorization import Authorization, DjangoAuthorization
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.resources import ModelResource
 
-from .models import Project
-from scout.api import PostalAddressResource
+from dataserver.authentication import AnonymousApiKeyAuthentication
+from scout.api import PostalAddressResource, PlaceResource
 
-class ProjectResource(ModelResource):
-    location = fields.ToOneField(PostalAddressResource, 'location', null=True, blank=True)
+from .models import Project, ProjectProgressRange, ProjectProgress
 
-    class Meta:
-        queryset = Project.objects.all()
-        allowed_methods = ['get', 'post', 'put']
-        resource_name = 'project/project'
+
+class ProjectProgressRangeResource(ModelResource):
+    class Meta :
+        queryset = ProjectProgressRange.objects.all()
+        allowed_methods = ['get']
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
-        always_return_data = True
 
         filtering = {
             "slug": ('exact',),
-            'id' : ('exact', )
         }
+
+class ProjectProgressResource(ModelResource):
+    class Meta:
+        queryset = ProjectProgress.objects.all()
+        allowed_methods = ['get']
+        always_return_data = True
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = Authorization()
+
+        filtering = {
+            "range": ALL_WITH_RELATIONS,
+        }
+
+    range = fields.ToOneField(ProjectProgressRangeResource, "progress_range")
+
+
+class ProjectResource(ModelResource):
+    class Meta:
+        queryset = Project.objects.all()
+        allowed_methods = ['get', 'post', 'put', 'patch']
+        resource_name = 'project/project'
+        always_return_data = True
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = Authorization()
+
+        filtering = {
+            'slug': ('exact',),
+            'id' : ('exact', ),
+            'location': ALL_WITH_RELATIONS,
+        }
+
+    location = fields.ToOneField(PlaceResource, 'location', full=True, null=True, blank=True)
+    progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)

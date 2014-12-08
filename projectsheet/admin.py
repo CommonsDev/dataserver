@@ -1,30 +1,25 @@
 from django.contrib import admin
+from django.contrib.admin.options import StackedInline
 from django import forms
 
-from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetSuggestedItem
-from django.contrib.admin.options import StackedInline
+from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer
 
-
-class ProjectSheetSuggestedItemInline(StackedInline):
-    model = ProjectSheetSuggestedItem
+class ProjectSheetQuestionAnswerInline(StackedInline):
+    model = ProjectSheetQuestionAnswer
     extra = 0
     min_num = 0
     can_delete = False
 
-    
 class ProjectSheetQuestionInline(StackedInline):
     model = ProjectSheetQuestion
     extra = 0
     min_num = 1
 
-
 class ProjectSheetTemplateAdmin(admin.ModelAdmin):
     inlines = [ProjectSheetQuestionInline]
 
-
 class ProjectSheetAdmin(admin.ModelAdmin):
-    inlines = [ProjectSheetSuggestedItemInline]
+    inlines = [ProjectSheetQuestionAnswerInline]
 
 admin.site.register(ProjectSheet, ProjectSheetAdmin)
 admin.site.register(ProjectSheetTemplate, ProjectSheetTemplateAdmin)
-admin.site.register(ProjectSheetQuestion, admin.ModelAdmin)
