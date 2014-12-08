@@ -21,8 +21,6 @@ class ProjectProgressRangeResource(ModelResource):
         }
 
 class ProjectProgressResource(ModelResource):
-    range = fields.ToOneField(ProjectProgressRangeResource, "progress_range")
-
     class Meta:
         queryset = ProjectProgress.objects.all()
         allowed_methods = ['get']
@@ -34,11 +32,10 @@ class ProjectProgressResource(ModelResource):
             "range": ALL_WITH_RELATIONS,
         }
 
+    range = fields.ToOneField(ProjectProgressRangeResource, "progress_range")
+
 
 class ProjectResource(ModelResource):
-    location = fields.ToOneField(PlaceResource, 'location', full=True, null=True, blank=True)
-    progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
-
     class Meta:
         queryset = Project.objects.all()
         allowed_methods = ['get', 'post', 'put', 'patch']
@@ -52,3 +49,6 @@ class ProjectResource(ModelResource):
             'id' : ('exact', ),
             'location': ALL_WITH_RELATIONS,
         }
+
+    location = fields.ToOneField(PlaceResource, 'location', full=True, null=True, blank=True)
+    progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)

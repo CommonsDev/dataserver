@@ -8,7 +8,7 @@ class ProjectProgressInline(StackedInline):
     extra = 0
     min_num = 2
     can_delete = False
-    
+
 class ProjectProgressRangeAdmin(admin.ModelAdmin):
     inlines = [ProjectProgressInline]
 

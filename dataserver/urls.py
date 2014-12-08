@@ -12,7 +12,7 @@ from flipflop.api import BoardResource, ListResource, CardResource, TaskResource
 from graffiti.api import TagResource
 from projects.api import ProjectResource
 from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
-                              ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource)
+                              ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
 from transport_vlille.api import VlilleResource
@@ -61,7 +61,7 @@ api.register(ProjectResource())
 # Project Sheets
 api.register(ProjectSheetResource())
 api.register(ProjectSheetTemplateResource())
-api.register(ProjectSheetSuggestedItemResource())
+api.register(ProjectSheetQuestionAnswerResource())
 api.register(ProjectSheetQuestionResource())
 
 # Commons

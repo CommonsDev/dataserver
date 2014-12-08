@@ -127,6 +127,7 @@ class PlaceResource(GeoModelResource):
     class Meta:
         queryset = Place.objects.all()
         resource_name = 'scout/place'
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
 

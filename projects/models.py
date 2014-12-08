@@ -7,6 +7,9 @@ class ProjectProgressRange(models.Model):
     name = models.CharField(max_length=100)
     slug = AutoSlugField(unique=True, populate_from="name", always_update=True)
 
+    def __unicode__(self):
+        return u"%s" % self.name
+
 class ProjectProgress(models.Model):
     progress_range = models.ForeignKey(ProjectProgressRange)
     order = models.PositiveIntegerField(default=0)
@@ -15,6 +18,9 @@ class ProjectProgress(models.Model):
 
     class Meta:
         ordering  = ['order',]
+
+    def __unicode__(self):
+        return u"%s - %s - %s" % (self.progress_range, self.order, self.label)
 
 class Project(models.Model):
     """

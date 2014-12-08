@@ -17,7 +17,7 @@ class ProjectSheetTemplate(models.Model):
         return self.name
 
 class ProjectSheetQuestion(models.Model):
-    template = models.ForeignKey(ProjectSheetTemplate)
+    template = models.ForeignKey(ProjectSheetTemplate, related_name='questions')
     order = models.PositiveIntegerField(default=0)
     text = models.CharField(max_length=255)
 
@@ -43,21 +43,24 @@ def createProjectSheetBucket(sender, instance, **kwargs):
                                                 name=bucket_name)
     instance.bucket = projectsheet_bucket
 
-class ProjectSheetSuggestedItem(models.Model):
+class ProjectSheetQuestionAnswer(models.Model):
     """
-    FIXME: What is this?
+    Answer to a question for a given project
     """
-    projectsheet = models.ForeignKey(ProjectSheet)
-    question = models.ForeignKey(ProjectSheetQuestion)
-    answer = models.TextField(blank=True)
-
     class Meta:
         ordering = ("question__order",)
 
-def createProjectSheetSuggestedItem(sender, instance, created, **kwargs):
-    for question in instance.template.projectsheetquestion_set.all():
-        ProjectSheetSuggestedItem.objects.create(projectsheet=instance,
-                                                 question=question)
+    projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
+    question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
+    answer = models.TextField(blank=True)
 
-post_save.connect(createProjectSheetSuggestedItem, ProjectSheet)
+    def __unicode__(self):
+        return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)
+
+def createProjectSheetQuestionAnswer(sender, instance, created, **kwargs):
+    for question in instance.template.questions.all():
+        ProjectSheetQuestionAnswer.objects.create(projectsheet=instance,
+                                                  question=question)
+
+post_save.connect(createProjectSheetQuestionAnswer, ProjectSheet)
 pre_save.connect(createProjectSheetBucket, ProjectSheet)
