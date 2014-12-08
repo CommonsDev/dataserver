@@ -34,7 +34,7 @@ class ProjectSheetQuestionResource(ModelResource):
         allowed_methods = ['post', 'get']
         resource_name = 'project/sheet/question'
         authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
 
     def hydrate(self, bundle):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
@@ -46,7 +46,7 @@ class ProjectSheetSuggestedItemResource(ModelResource):
         allowed_methods = ['get', 'patch']
         resource_name = 'project/sheet/suggesteditem'
         authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
 
 
 class ProjectSheetResource(ModelResource):
@@ -58,7 +58,7 @@ class ProjectSheetResource(ModelResource):
         allowed_methods = ['get', 'post', 'put']
         resource_name = 'project/sheet/projectsheet'
         authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authorization = Authorization()
         always_return_data = True
         filtering = {
             'project' : ALL_WITH_RELATIONS,
