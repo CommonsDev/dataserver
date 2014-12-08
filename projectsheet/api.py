@@ -8,7 +8,7 @@ from projects.models import Project
 from django.core.urlresolvers import reverse
 from tastypie.constants import ALL_WITH_RELATIONS
 from dataserver.authentication import AnonymousApiKeyAuthentication
-
+from bucket.api import BucketResource, BucketFileResource
 
 class ProjectSheetTemplateResource(ModelResource):
     class Meta:
@@ -50,13 +50,12 @@ class ProjectSheetSuggestedItemResource(ModelResource):
 
 
 class ProjectSheetResource(ModelResource):
-    project = fields.ToOneField(ProjectResource, 'project')
-    template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
 
     class Meta:
         queryset = ProjectSheet.objects.all()
-        allowed_methods = ['get', 'post', 'put']
+        allowed_methods = ['get', 'post', 'put', 'patch']
         resource_name = 'project/sheet/projectsheet'
+
         authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
@@ -65,13 +64,12 @@ class ProjectSheetResource(ModelResource):
             'template' : ALL_WITH_RELATIONS,
         }
 
-    def dehydrate(self, bundle):
-        bundle.data["items"] = []
-        for item in bundle.obj.projectsheetsuggesteditem_set.all().order_by("question__order"):
-            bundle.data["items"].append(reverse('api_dispatch_detail', kwargs={'api_name' : 'v0', #FIXME : hardcoded
-                                                                 'resource_name' : 'project/sheet/suggesteditem',
-                                                                 'pk' :item.id}))
-        return bundle
+
+    project = fields.ToOneField(ProjectResource, 'project')
+    template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
+    cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
+    suggested_items = fields.ToManyField(ProjectSheetSuggestedItemResource, 'projectsheetsuggesteditem_set', null=True)
 
     def hydrate(self, bundle):
         if "project_id" in bundle.data:
