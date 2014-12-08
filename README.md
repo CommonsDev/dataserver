@@ -1,6 +1,8 @@
 Commons Data Server
 ===================
 
+version 20141208 - projecter
+
 A sandbox where we experiment with [Commons](http://wealthofthecommons.org/about)[EN] through REST APIs.
 In a near future, the data server will become a framework for developing distributed Commons services.
 This server is inspired by the [Unisson Method](http://unisson.co/fr/projectbc/)[FR].
