@@ -3,14 +3,17 @@ from django.conf.urls import url
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
 from django.db import models
-from tastypie.http import HttpUnauthorized, HttpForbidden
 
 from tastypie import fields
+
 from tastypie.authentication import Authentication, BasicAuthentication, ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization, Authorization
+from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
+
+from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from .models import Profile
 
@@ -20,9 +23,9 @@ class UserResource(ModelResource):
         detail_uri_name = 'username'
         allowed_methods = ['get', 'post']
         resource_name = 'account/user'
-        authentication = Authentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
-        fields = ['username', 'first_name', 'last_name', 'groups', 'email']
+        fields = ['username', 'first_name', 'last_name', 'groups']
 
     groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 
@@ -35,8 +38,8 @@ class UserResource(ModelResource):
         #bundle.data['first_name'] = bundle.obj.user.first_name
         #bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
-    
-        
+
+
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/login%s$" %
@@ -57,8 +60,8 @@ class UserResource(ModelResource):
         """
         import httplib, urllib
         import simplejson
-        
-        self.method_check(request, allowed=['post'])        
+
+        self.method_check(request, allowed=['post'])
         data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
 
         oauth_token = data.get('access_token', '')
@@ -76,7 +79,7 @@ class UserResource(ModelResource):
                                                            last_name=data['family_name'])
 
         return self.login_to_apikey(request, user)
-        
+
     def login(self, request, **kwargs):
         """
         Login a user against a username/password.
@@ -89,7 +92,7 @@ class UserResource(ModelResource):
         username = data.get('username', '')
         password = data.get('password', '')
 
-        user = authenticate(username=username, password=password)        
+        user = authenticate(username=username, password=password)
         return self.login_to_apikey(request, user)
 
 
@@ -120,7 +123,7 @@ class UserResource(ModelResource):
                 return self.create_response(
                     request, {
                         'success': False,
-                        'reason': 'disabled',   
+                        'reason': 'disabled',
                     },
                     HttpForbidden,
                 )
@@ -152,21 +155,20 @@ class GroupResource(ModelResource):
 
     users = fields.ToManyField(UserResource, 'user_set', full=True)
 
-    
+
 # Create API key for every new user
 models.signals.post_save.connect(create_api_key, sender=User)
 
 class ProfileResource(ModelResource):
     user = fields.OneToOneField(UserResource, 'user')
-    
+
     class Meta:
         queryset = Profile.objects.all()
         allowed_methods = ['get', 'post']
         resource_name = 'account/profile'
         authentication = Authentication()
         authorization = Authorization()
-    
+
     def dehydrate(self, bundle):
         bundle.data["username"] = bundle.obj.username
         return bundle
-    
