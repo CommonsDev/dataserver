@@ -57,3 +57,4 @@ class ProjectResource(ModelResource):
     location = fields.ToOneField(PlaceResource, 'location', full=True, null=True, blank=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
     tools = fields.ForeignKey('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)
+    tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True)
