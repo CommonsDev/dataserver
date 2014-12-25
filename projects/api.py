@@ -58,4 +58,3 @@ class ProjectResource(ModelResource):
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
     tools = fields.ForeignKey('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)
     tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True)
-    unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)
