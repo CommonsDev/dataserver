@@ -6,7 +6,7 @@ from .models import Project, Usage, Pertinence
 class PertinenceResource(ModelResource):
     class Meta:
         queryset = Pertinence.objects.all()
-        allowed_methods = ['get', 'post', 'patch']
+        allowed_methods = ['get']
         resource_name = 'project/commons/pertinence'
         authorization = Authorization()
 
@@ -17,7 +17,7 @@ class PertinenceResource(ModelResource):
 class UsageResource(ModelResource):
     class Meta:
         queryset = Usage.objects.all()
-        allowed_methods = ['get', 'post', 'patch']
+        allowed_methods = ['get']
         resource_name = 'project/commons/usage'
         authorization = Authorization()
 
