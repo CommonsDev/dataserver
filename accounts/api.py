@@ -157,7 +157,7 @@ class GroupResource(ModelResource):
 models.signals.post_save.connect(create_api_key, sender=User)
 
 class ProfileResource(ModelResource):
-    user = fields.OneToOneField(UserResource, 'user')
+    user = fields.OneToOneField(UserResource, 'user', full=True)
     
     class Meta:
         queryset = Profile.objects.all()
