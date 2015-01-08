@@ -11,7 +11,7 @@ from haystack.query import SearchQuerySet
 from guardian.shortcuts import assign_perm
 from taggit.models import Tag
 from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, DjangoAuthorization
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
@@ -23,7 +23,7 @@ from .models import Bucket, BucketFile, BucketFileComment
 
 class BucketResource(ModelResource):
     class Meta:
-        authentication = ApiKeyAuthentication()
+        authentication = AnonymousApiKeyAuthentication()
         authorization = GuardianAuthorization(
             create_permission_code="add_bucket",
             view_permission_code="view_bucket",
@@ -81,7 +81,7 @@ class BucketTagResource(ModelResource):
         }
         allowed_methods = ['get', 'post', 'patch']
         authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization()  
+        authorization = DjangoAuthorization()  
     
     def hydrate(self, bundle, request=None):
         """
@@ -108,8 +108,8 @@ class BucketFileResource(ModelResource):
             "bucket":'exact', 
         }
 
-        authentication = ApiKeyAuthentication()
-        authorization = Authorization()        
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()        
     
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource', 'comments', full=True)
     tags = fields.ToManyField(BucketTagResource, 'tags', full=True)    
@@ -185,9 +185,8 @@ class BucketFileCommentResource(ModelResource):
         queryset = BucketFileComment.objects.all()
         always_return_data = True
         resource_name = 'bucket/filecomment'
-        # FIXME: deal with authentification and authorization
         authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization()
+        authorization = DjangoAuthorization()
         filtering = {
             "bucket_file":'exact', 
         }
