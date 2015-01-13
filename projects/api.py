@@ -34,7 +34,7 @@ class ProjectProgressResource(ModelResource):
 class ProjectResource(ModelResource):
     location = fields.ToOneField(PostalAddressResource, 'location', null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
-    team = fields.ToManyField("projects.api.ProjectTeamResource", "projectteam_set", full=True)
+    team = fields.ToManyField("projects.api.ProjectTeamResource", "projectteam_set", null=True, blank=True, full=True)
     
     class Meta:
         queryset = Project.objects.all()
