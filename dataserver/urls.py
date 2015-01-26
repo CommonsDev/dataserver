@@ -17,7 +17,7 @@ from projecttool.api import ProjectToolResource
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
 from transport_vlille.api import VlilleResource
-
+from wallet.api import WalletResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
 
 admin.autodiscover()
@@ -76,6 +76,10 @@ api.register(PertinenceResource())
 # Unisson
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
+
+
+# Wallet
+api.register(WalletResource())
 
 
 # Graffiti
