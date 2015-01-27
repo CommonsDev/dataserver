@@ -18,16 +18,16 @@ class ProjectSheetTemplateResource(ModelResource):
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
         always_return_data = True
-        filtering = { 
+        filtering = {
             'slug' : ('exact', )
         }
-        
+
     def dehydrate(self, bundle):
         bundle.data["questions"] = []
         for question in bundle.obj.projectsheetquestion_set.all():
             bundle.data["questions"].append(question.text)
         return bundle
-    
+
 class ProjectSheetQuestionResource(ModelResource):
     class Meta:
         queryset = ProjectSheetQuestion.objects.all()
@@ -35,7 +35,7 @@ class ProjectSheetQuestionResource(ModelResource):
         resource_name = 'projectsheetquestion'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
-        
+
     def hydrate(self, bundle):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
         return bundle
@@ -53,6 +53,7 @@ class ProjectSheetResource(ModelResource):
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
+    videos = fields.DictField(attribute='videos', null=True)
 
     class Meta:
         queryset = ProjectSheet.objects.all()
@@ -62,11 +63,11 @@ class ProjectSheetResource(ModelResource):
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
         always_return_data = True
-        filtering = { 
+        filtering = {
             'project' : ALL_WITH_RELATIONS,
             'template' : ALL_WITH_RELATIONS,
         }
-        
+
     def dehydrate(self, bundle):
         bundle.data["items"] = []
         for item in bundle.obj.projectsheetsuggesteditem_set.all().order_by("question__order"):
@@ -74,7 +75,7 @@ class ProjectSheetResource(ModelResource):
                                                                  'resource_name' : 'projectsheetsuggesteditem',
                                                                  'pk' :item.id}))
         return bundle
-    
+
     def hydrate(self, bundle):
         if "project_id" in bundle.data:
             bundle.obj.project = Project.objects.get(id=bundle.data["project_id"])
