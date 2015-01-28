@@ -8,7 +8,12 @@ from autoslug.fields import AutoSlugField
 from bucket.models import Bucket, BucketFile
 from jsonfield import JSONField
 
-import collections
+try:
+    # python >= 2.7
+    from collections import OrderedDict
+except:
+    # need to install ordereddict package
+    from ordereddict import OrderedDict
 
 class ProjectSheetTemplate(models.Model):
     name = models.CharField(max_length=100)
@@ -34,7 +39,7 @@ class ProjectSheet(models.Model):
     template = models.ForeignKey(ProjectSheetTemplate)
     bucket = models.ForeignKey(Bucket, null=True, blank=True)
     cover = models.ForeignKey(BucketFile, null=True, blank=True)
-    videos = JSONField(load_kwargs={'object_pairs_hook': collections.OrderedDict}, default=None, blank=True, null=True)
+    videos = JSONField(load_kwargs={'object_pairs_hook': OrderedDict}, default=None, blank=True, null=True)
 
     def __unicode__(self):
         return u"%s %s" % (_('Project sheet for '), self.project)
