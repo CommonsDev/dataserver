@@ -11,6 +11,8 @@ from dataserver.authentication import AnonymousApiKeyAuthentication
 from bucket.api import BucketResource, BucketFileResource
 
 class ProjectSheetTemplateResource(ModelResource):
+    questions = fields.ToManyField("projectsheet.api.ProjectSheetQuestionResource", 'projectsheetquestion_set', full=True, null=True)
+
     class Meta:
         queryset = ProjectSheetTemplate.objects.all()
         allowed_methods = ['get']
@@ -22,12 +24,6 @@ class ProjectSheetTemplateResource(ModelResource):
             'slug' : ('exact', )
         }
 
-    def dehydrate(self, bundle):
-        bundle.data["questions"] = []
-        for question in bundle.obj.projectsheetquestion_set.all():
-            bundle.data["questions"].append(question.text)
-        return bundle
-
 class ProjectSheetQuestionResource(ModelResource):
     class Meta:
         queryset = ProjectSheetQuestion.objects.all()
@@ -36,24 +32,25 @@ class ProjectSheetQuestionResource(ModelResource):
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
 
-    def hydrate(self, bundle):
-        bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
-        return bundle
-
 class ProjectSheetSuggestedItemResource(ModelResource):
+    question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
+    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
+
     class Meta:
         queryset = ProjectSheetSuggestedItem.objects.all()
-        allowed_methods = ['get', 'patch']
+        allowed_methods = ['get', 'post', 'patch']
         resource_name = 'projectsheetsuggesteditem'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
 
 class ProjectSheetResource(ModelResource):
     project = fields.ToOneField(ProjectResource, 'project')
-    template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
+    template = fields.ToOneField(ProjectSheetTemplateResource, 'template', full=True)
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
     videos = fields.DictField(attribute='videos', null=True)
+
+    items = fields.ToManyField(ProjectSheetSuggestedItemResource, 'projectsheetsuggesteditem_set', null=True, full=True)
 
     class Meta:
         queryset = ProjectSheet.objects.all()
@@ -67,18 +64,3 @@ class ProjectSheetResource(ModelResource):
             'project' : ALL_WITH_RELATIONS,
             'template' : ALL_WITH_RELATIONS,
         }
-
-    def dehydrate(self, bundle):
-        bundle.data["items"] = []
-        for item in bundle.obj.projectsheetsuggesteditem_set.all().order_by("question__order"):
-            bundle.data["items"].append(reverse('api_dispatch_detail', kwargs={'api_name' : 'v0', #FIXME : hardcoded
-                                                                 'resource_name' : 'projectsheetsuggesteditem',
-                                                                 'pk' :item.id}))
-        return bundle
-
-    def hydrate(self, bundle):
-        if "project_id" in bundle.data:
-            bundle.obj.project = Project.objects.get(id=bundle.data["project_id"])
-        if "template_id" in bundle.data:
-            bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
-        return bundle

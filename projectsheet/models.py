@@ -58,11 +58,11 @@ class ProjectSheetSuggestedItem(models.Model):
 
     class Meta:
         ordering = ("question__order",)
-
-def createProjectSheetSuggestedItem(sender, instance, created, **kwargs):
-    for question in instance.template.projectsheetquestion_set.all():
-        ProjectSheetSuggestedItem.objects.create(projectsheet=instance,
-                                                 question=question)
-
-post_save.connect(createProjectSheetSuggestedItem, ProjectSheet)
+# 
+# def createProjectSheetSuggestedItem(sender, instance, created, **kwargs):
+#     for question in instance.template.projectsheetquestion_set.all():
+#         ProjectSheetSuggestedItem.objects.create(projectsheet=instance,
+#                                                  question=question)
+#
+# # post_save.connect(createProjectSheetSuggestedItem, ProjectSheet)
 pre_save.connect(createProjectSheetBucket, ProjectSheet)
