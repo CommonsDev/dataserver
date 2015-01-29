@@ -19,6 +19,8 @@ from scout.api import (MapResource, TileLayerResource, DataLayerResource,
 from transport_vlille.api import VlilleResource
 
 from unisson.api import IngredientResource, EvaluationIngredientResource
+from prestation.api import PrestationResource, PrestationModuleResource, SelectedModulesResource
+
 
 admin.autodiscover()
 
@@ -77,6 +79,11 @@ api.register(PertinenceResource())
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
+
+# Prestation
+api.register(PrestationResource())
+api.register(PrestationModuleResource())
+api.register(SelectedModulesResource())
 
 # Graffiti
 api.register(TagResource())
