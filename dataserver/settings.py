@@ -163,7 +163,6 @@ INSTALLED_APPS = (
     'scout',
     'transport_vlille',
     'unisson',
-    'wallet'
 )
 
 # A sample logging configuration. The only tangible logging
