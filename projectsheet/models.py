@@ -39,7 +39,7 @@ class ProjectSheet(models.Model):
     template = models.ForeignKey(ProjectSheetTemplate)
     bucket = models.ForeignKey(Bucket, null=True, blank=True)
     cover = models.ForeignKey(BucketFile, null=True, blank=True)
-    videos = JSONField(load_kwargs={'object_pairs_hook': OrderedDict}, default=None, blank=True, null=True)
+    videos = JSONField(default=None, blank=True, null=True)
 
     def __unicode__(self):
         return u"%s %s" % (_('Project sheet for '), self.project)
@@ -58,7 +58,7 @@ class ProjectSheetSuggestedItem(models.Model):
 
     class Meta:
         ordering = ("question__order",)
-# 
+#
 # def createProjectSheetSuggestedItem(sender, instance, created, **kwargs):
 #     for question in instance.template.projectsheetquestion_set.all():
 #         ProjectSheetSuggestedItem.objects.create(projectsheet=instance,
