@@ -60,7 +60,7 @@ class TaggedItemResource(ModelResource):
 
     def get_similars(self, request, **kwargs):
         obj = ContentType.objects.get(model=kwargs.pop('object_type')).get_object_for_this_type(id=kwargs["object_id"])
-        return HttpResponse(json.dumps([o.id for o in obj.tags.similar_objects()]))
+        return HttpResponse(json.dumps([{'id' : o.id, 'type' : ContentType.objects.get_for_model(o).model} for o in obj.tags.similar_objects()]))
 
     def dispatch_list(self, request, **kwargs):
         if 'object_type' in kwargs :
