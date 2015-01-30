@@ -65,8 +65,6 @@ class TaggedItemResource(ModelResource):
     def dispatch_list(self, request, **kwargs):
         if 'object_type' in kwargs :
             kwargs["content_type"] = ContentType.objects.get(model=kwargs.pop('object_type'))
-        if 'tag_id' in kwargs:
-            kwargs["tag"] = Tag.objects.get(id=kwargs.pop('tag_id'))
         return ModelResource.dispatch_list(self, request, **kwargs)
 
     def dispatch_detail(self, request, **kwargs):
