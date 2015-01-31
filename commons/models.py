@@ -12,15 +12,15 @@ class Usage(models.Model):
 class Pertinence(models.Model):
    usage = models.ForeignKey(Usage)
    project = models.ForeignKey(Project)
+
    @property
    def unisson_score(self):
-   		score = 0
-   		for ingredient in self.project.unisson_ingredients.all()	:
-   			score += ingredient.score
+       score = 0
+       for ingredient in self.project.unisson_ingredients.all():
+           score += ingredient.score
+       return score
 
-		return score
-
-   comment = models.CharField(max_length=200)
+   comment = models.CharField(max_length=200, blank=True)
 
    def __unicode__(self):  # Python 3: def __str__(self):
-   		return self.comment
+       return u"%s - %s - %s" % (self.project, self.usage, self.comment)

@@ -130,7 +130,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.gis',
     'django.contrib.admin',
 
     'south',
@@ -139,35 +139,30 @@ INSTALLED_APPS = (
     'multiuploader',
     'sorl.thumbnail',
     'haystack',
-
-
-    'compressor',
-    'djangular',
-    'django.contrib.gis',
-
-    'guardian',
-    'userena',
-    'accounts',
-    'django_extensions',
-
-    'tastypie',
-    'sendfile',
-
     'autoslug',
     'taggit',
-    'flipflop',
-#    'alambic',
+    'sendfile',
+    'compressor',
+    'django_extensions',
+    'pyelasticsearch',
+    'guardian',
+    'userena',
+    'tastypie',
 
+    # Dataserver
+    # 'alambic',
+    'accounts',
     'bucket',
-    'scout',
-
-    'transport_vlille',
-
+    'commons',
+    # 'deal',
+    'flipflop',
+    'graffiti',
     'projects',
     'projectsheet',
-    'commons',
+    'projecttool',
+    'scout',
+    'transport_vlille',
     'unisson',
-
 )
 
 # A sample logging configuration. The only tangible logging
@@ -228,13 +223,15 @@ TASTYPIE_ALLOW_MISSING_SLASH=True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # Haystack
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'bucket',
-    },
-}
+# HAYSTACK_CONNECTIONS = {
+#    'default': {
+#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+#         'URL': 'http://127.0.0.1:9200/',
+#         'INDEX_NAME': 'bucket',
+#        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+#        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+#    },
+# }
 HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
 ## bucket

@@ -1,23 +1,25 @@
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization
+from tastypie.authorization import Authorization, DjangoAuthorization
 from tastypie import fields
 
-from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetSuggestedItem, ProjectSheetQuestion
+from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer
 from projects.api import ProjectResource
 from projects.models import Project
 from django.core.urlresolvers import reverse
 from tastypie.constants import ALL_WITH_RELATIONS
-
+from dataserver.authentication import AnonymousApiKeyAuthentication
+from bucket.api import BucketResource, BucketFileResource
 
 class ProjectSheetTemplateResource(ModelResource):
     class Meta:
         queryset = ProjectSheetTemplate.objects.all()
-        allowed_methods = ['post', 'get']
+        allowed_methods = ['get']
         resource_name = 'project/sheet/template'
-        authorization = Authorization()
+        authorization = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
-            'id' : ('exact', )
+            'slug' : ('exact', )
         }
 
     def dehydrate(self, bundle):
@@ -31,27 +33,29 @@ class ProjectSheetQuestionResource(ModelResource):
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
         resource_name = 'project/sheet/question'
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
 
     def hydrate(self, bundle):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
         return bundle
 
-class ProjectSheetSuggestedItemResource(ModelResource):
+class ProjectSheetQuestionAnswerResource(ModelResource):
     class Meta:
-        queryset = ProjectSheetSuggestedItem.objects.all()
+        queryset = ProjectSheetQuestionAnswer.objects.all()
         allowed_methods = ['get', 'patch']
-        resource_name = 'project/sheet/suggesteditem'
+        resource_name = 'project/sheet/question_answer'
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
 
-class ProjectSheetResource(ModelResource):
-    project = fields.ToOneField(ProjectResource, 'project')
-    template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
 
+class ProjectSheetResource(ModelResource):
     class Meta:
         queryset = ProjectSheet.objects.all()
-        allowed_methods = ['get', 'post', 'put']
+        allowed_methods = ['get', 'post', 'put', 'patch']
         resource_name = 'project/sheet/projectsheet'
+
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
         filtering = {
@@ -59,16 +63,15 @@ class ProjectSheetResource(ModelResource):
             'template' : ALL_WITH_RELATIONS,
         }
 
-    def dehydrate(self, bundle):
-        bundle.data["items"] = []
-        for item in bundle.obj.projectsheetsuggesteditem_set.all().order_by("question__order"):
-            bundle.data["items"].append(reverse('api_dispatch_detail', kwargs={'api_name' : 'v0', #FIXME : hardcoded
-                                                                 'resource_name' : 'project/sheet/suggesteditem',
-                                                                 'pk' :item.id}))
-        return bundle
+
+    project = fields.ToOneField(ProjectResource, 'project')
+    template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
+    cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
+    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True)
 
     def hydrate(self, bundle):
-        if "project_id" in bundle.data:
+        if "project_id" in bundle.data: # XXX: ???
             bundle.obj.project = Project.objects.get(id=bundle.data["project_id"])
         if "template_id" in bundle.data:
             bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])

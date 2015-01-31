@@ -1,3 +1,4 @@
+dataserver.egg-info/*
 /.settings/org.eclipse.core.resources.prefs
 /.pydevproject
 /.project

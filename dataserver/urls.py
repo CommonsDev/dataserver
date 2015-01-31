@@ -5,18 +5,20 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
-from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource,\
-    PostalAddressResource
-from accounts.api import UserResource, GroupResource
+from accounts.api import UserResource, GroupResource, ProfileResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
-from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
-
-from transport_vlille.api import VlilleResource
-from projects.api import ProjectResource
-from projectsheet.api import ProjectSheetResource, ProjectSheetTemplateResource, ProjectSheetSuggestedItemResource, ProjectSheetQuestionResource
 from commons.api import UsageResource, PertinenceResource
-from unisson.api import IngredientResource, EvaluationIngredientResource
+from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+from graffiti.api import TagResource
+from projects.api import ProjectResource
+from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
+                              ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
+from projecttool.api import ProjectToolResource
+from scout.api import (MapResource, TileLayerResource, DataLayerResource,
+                       MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
+from transport_vlille.api import VlilleResource
 
+from unisson.api import IngredientResource, EvaluationIngredientResource
 
 admin.autodiscover()
 
@@ -30,13 +32,15 @@ api.register(MarkerResource())
 api.register(DataLayerResource())
 api.register(MarkerCategoryResource())
 api.register(PostalAddressResource())
+api.register(PlaceResource())
 
 
 # Auth
 api.register(UserResource())
 api.register(GroupResource())
+api.register(ProfileResource())
 
-# Kanban
+# Flipflop (Kanban)
 api.register(BoardResource())
 api.register(ListResource())
 api.register(CardResource())
@@ -59,8 +63,11 @@ api.register(ProjectResource())
 # Project Sheets
 api.register(ProjectSheetResource())
 api.register(ProjectSheetTemplateResource())
-api.register(ProjectSheetSuggestedItemResource())
+api.register(ProjectSheetQuestionAnswerResource())
 api.register(ProjectSheetQuestionResource())
+
+# Projects Tools
+api.register(ProjectToolResource())
 
 # Commons
 api.register(UsageResource())
@@ -70,6 +77,12 @@ api.register(PertinenceResource())
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
+
+# Graffiti
+api.register(TagResource())
+
+# Alambic
+# api.register(RoomResource())
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),

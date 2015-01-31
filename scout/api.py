@@ -2,21 +2,24 @@ import base64
 import os
 import mimetypes
 
+from pygeocoder import Geocoder
+
 from tastypie import fields
-from tastypie.authorization import Authorization, ReadOnlyAuthorization
+from tastypie.authorization import Authorization, ReadOnlyAuthorization,\
+    DjangoAuthorization
 from tastypie.authentication import ApiKeyAuthentication
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 from tastypie.resources import ModelResource
 
 from dataserver.authorization import GuardianAuthorization
 from dataserver.authentication import AnonymousApiKeyAuthentication
 
-from pygeocoder import Geocoder
-
 from accounts.api import UserResource
-
 from bucket.models import Bucket
-from .models import Map, DataLayer, TileLayer, Marker, MarkerCategory, PostalAddress
+
+from .models import (Map, DataLayer, TileLayer, Marker,
+                     MarkerCategory, PostalAddress, Place)
 
 class MapAuthorization(GuardianAuthorization):
     def __init__(self):
@@ -116,5 +119,19 @@ class PostalAddressResource(ModelResource):
     class Meta:
         queryset = PostalAddress.objects.all()
         resource_name = 'scout/postaladdress'
+        always_return_data = True
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
+
+
+class PlaceResource(GeoModelResource):
+    class Meta:
+        queryset = Place.objects.all()
+        resource_name = 'scout/place'
+        authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
         always_return_data = True
+
+        filtering = {
+            "geo": ALL
+        }

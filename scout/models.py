@@ -21,11 +21,11 @@ class PostalAddress(models.Model):
     For the country codes, see http://en.wikipedia.org/wiki/ISO_3166-1
     """
     country = models.CharField(max_length=2)
-    address_locality = models.CharField(max_length=255, null=True)
-    address_region = models.CharField(max_length=50, null=True)
-    post_office_box_number = models.CharField(max_length=20, null=True)
-    postal_code = models.CharField(max_length=30, null=True)
-    street_address = models.TextField(null=True)
+    address_locality = models.CharField(max_length=255, blank=True)
+    address_region = models.CharField(max_length=50, blank=True)
+    post_office_box_number = models.CharField(max_length=20, blank=True)
+    postal_code = models.CharField(max_length=30, blank=True)
+    street_address = models.TextField(blank=True)
 
     def __unicode__(self):
         return "%s, %s - %s (%s)" % (self.post_office_box_number,
@@ -38,7 +38,7 @@ class Place(models.Model):
     A place, from
     http://schema.org/Place
     """
-    address = models.ForeignKey(PostalAddress)
+    address = models.ForeignKey(PostalAddress, related_name='place')
     geo = models.PointField()
     objects = models.GeoManager()
 
