@@ -9,6 +9,7 @@ from django.utils.translation import ugettext as _
 
 from autoslug import AutoSlugField
 from guardian.shortcuts import assign_perm
+from jsonfield import JSONField
 
 from bucket.models import Bucket
 
@@ -126,7 +127,8 @@ class DataLayer(models.Model):
     A layer containing features (markers, polylines and polygons)
     """
     map = models.ForeignKey(Map, related_name='datalayers')
-    geojson = models.TextField(null=True, blank=True)
+    json_uri = models.URLField(null=True, blank=True)
+    json_mapping = JSONField(blank=True)
 
     def __unicode__(self):
         return u"Datalayer for %s" % self.map
@@ -136,11 +138,22 @@ class MarkerCategory(models.Model):
     """
     A category for a marker
     """
+    ICON_COLOR_CHOICES = (
+        ("white", _("white")),
+        ("black", _("black")),
+    )
+
+    MARKER_COLOR_CHOICES = (
+        ("red", _("red")),
+        ("blue", _("blue")),
+        ("green", _("green")),
+    )
+
     map = models.ForeignKey(Map, related_name='marker_categories')
     name = models.CharField(max_length=255)
     icon_name = models.CharField(max_length=255)
-    icon_color = models.CharField(max_length=30)
-    marker_color = models.CharField(max_length=30)
+    icon_color = models.CharField(max_length=30, choices=ICON_COLOR_CHOICES)
+    marker_color = models.CharField(max_length=30, choices=MARKER_COLOR_CHOICES)
 
     def __unicode__(self):
         return self.name
