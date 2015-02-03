@@ -3,23 +3,19 @@ from tastypie.resources import ModelResource
 from tastypie.authorization import Authorization, DjangoAuthorization
 from tastypie import fields
 from django.conf.urls import url
-from tastypie.utils.urls import trailing_slash
+from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 from django.contrib.contenttypes.models import ContentType
 from tastypie.constants import ALL_WITH_RELATIONS
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from django.http.response import HttpResponse
+from tastypie import http
+from django.utils.text import slugify
 import json
 
-class ContentTypeResource(ModelResource):
-    class Meta:
-        queryset = ContentType.objects.all()
-        resource_name = 'contenttype'
-        allowed_methods = ['get']
-        always_return_data = True
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
-
 class TagResource(ModelResource):
+    name = fields.CharField(attribute='name')
+    slug = fields.CharField(attribute='slug')
+
     class Meta:
         queryset = Tag.objects.all()
         resource_name = 'tag'
@@ -32,18 +28,18 @@ class TagResource(ModelResource):
         authorization = DjangoAuthorization()
 
 class TaggedItemResource(ModelResource):
-    tag = fields.ToOneField(TagResource, 'tag')
-    object_type = fields.CharField()
+    tag = fields.ToOneField(TagResource, 'tag', full=True)
 
     class Meta:
         queryset = TaggedItem.objects.all()
         resource_name = 'taggeditem'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
+        default_format = "application/json"
         filtering = {
-            "object_id":"exact",
-            "tag" : ALL_WITH_RELATIONS
+                "tag" : ALL_WITH_RELATIONS
         }
+        always_return_data = True
 
     def prepend_urls(self):
         return [
@@ -53,9 +49,6 @@ class TaggedItemResource(ModelResource):
             url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\d+?)/similars%s$" % (self._meta.resource_name, trailing_slash()),
                self.wrap_view('get_similars'),
                name="api_get_similars"),
-            url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\d+?)/(?P<tag_id>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
-               self.wrap_view('dispatch_detail'),
-               name="api_dispatch_detail"),
         ]
 
     def get_similars(self, request, **kwargs):
@@ -63,17 +56,25 @@ class TaggedItemResource(ModelResource):
         return HttpResponse(json.dumps([{'id' : o.id, 'type' : ContentType.objects.get_for_model(o).model} for o in obj.tags.similar_objects()]))
 
     def dispatch_list(self, request, **kwargs):
-        if 'object_type' in kwargs :
-            kwargs["content_type"] = ContentType.objects.get(model=kwargs.pop('object_type'))
+        self.method_check(request, allowed=['get', 'post'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        if 'object_type' in kwargs and 'object_id' in kwargs and request.method=="POST":
+            data = json.loads(request.body)
+            if 'tag' in data:
+                tag_obj, created = Tag.objects.get_or_create(name=data['tag'], slug=slugify(data['tag']))
+                tagged_item, created = TaggedItem.objects.get_or_create(tag=tag_obj,
+                                                 content_type=ContentType.objects.get(model=kwargs['object_type']),
+                                                 object_id=kwargs['object_id'])
+
+                bundle = self.build_bundle(obj=tagged_item, request=request)
+                bundle = self.full_dehydrate(bundle)
+                bundle = self.alter_detail_data_to_serialize(request, bundle)
+
+                return self.create_response(request,
+                                            bundle,
+                                            response_class=http.HttpCreated,
+                                            location=self.get_resource_uri(bundle))
+
         return ModelResource.dispatch_list(self, request, **kwargs)
-
-    def dispatch_detail(self, request, **kwargs):
-        if 'object_type' in kwargs :
-            kwargs["content_type"] = ContentType.objects.get(model=kwargs.pop('object_type'))
-        if 'tag_id' in kwargs:
-            kwargs["tag"] = Tag.objects.get(id=kwargs.pop('tag_id'))
-        return ModelResource.dispatch_detail(self, request, **kwargs)
-
-    def dehydrate(self, bundle):
-        bundle.data["object_type"] = "%s" % bundle.obj.content_type.model
-        return bundle
