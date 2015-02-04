@@ -37,7 +37,7 @@ class TaggedItemResource(ModelResource):
         authorization = DjangoAuthorization()
         default_format = "application/json"
         filtering = {
-                "tag" : ALL_WITH_RELATIONS
+            "tag" : ALL_WITH_RELATIONS
         }
         always_return_data = True
 
