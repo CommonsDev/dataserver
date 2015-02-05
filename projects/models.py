@@ -9,13 +9,14 @@ from django.dispatch.dispatcher import receiver
 class ProjectProgressRange(models.Model):
     name = models.CharField(max_length=100)
     slug = AutoSlugField(unique=True, populate_from="name", always_update=True)
-    
+
 class ProjectProgress(models.Model):
     progress_range = models.ForeignKey(ProjectProgressRange)
     order = models.PositiveIntegerField(default=0)
     label = models.CharField(max_length=30)
+    description = models.CharField(max_length=500)
     icon = models.ImageField(upload_to='progress_icons')
-    
+
     class Meta:
         ordering  = ['order',]
 
@@ -30,14 +31,14 @@ class Project(models.Model):
     begin_date = models.DateField()
     end_date = models.DateField(null=True, blank=True)
     progress = models.ForeignKey(ProjectProgress, null=True, blank=True)
-    
+
     def __unicode__(self):
         return self.title
-    
+
 class ProjectTeam(models.Model):
     project = models.ForeignKey(Project)
     members = models.ManyToManyField(Profile)
-    
+
 
 @receiver(post_save, sender=Project)
 def create_project_team(sender, created, instance, **kwargs):
