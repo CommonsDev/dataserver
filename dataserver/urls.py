@@ -18,6 +18,7 @@ from unisson.api import IngredientResource, EvaluationIngredientResource
 
 from deal.api import DealResource
 from graffiti.api import TagResource
+from ucomment.api import CommentResource
 from alambic.api import RoomResource
 
 admin.autodiscover()
@@ -75,6 +76,9 @@ api.register(DealResource())
 
 #graffiti
 api.register(TagResource())
+
+#ucomment
+api.register(CommentResource())
 
 #alambic
 api.register(RoomResource())
