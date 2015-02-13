@@ -22,14 +22,15 @@ from accounts.models import Profile
 
 class CommentResource(ModelResource):
     comment = fields.CharField(attribute='comment')
-    content_type = fields.CharField(attribute='content_type')
     user = fields.ToOneField(UserResource, 'user', full='true')
 
     class Meta:
         queryset = Comment.objects.all()
         resource_name = 'comment'
         filtering = {
-            "user_name":"exact",
+            "comment": ALL_WITH_RELATIONS,
+            "content_type": "exact",
+            "object_pk": "exact"
         }
         allowed_methods = ['get', 'post']
         always_return_data = True
@@ -39,7 +40,7 @@ class CommentResource(ModelResource):
 
     def prepend_urls(self):
         return [
-           url(r"^(?P<resource_name>%s)/(?P<object_type>\w+?)/(?P<object_id>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
+           url(r"^(?P<resource_name>%s)/(?P<content_type>\w+?)/(?P<object_pk>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
                self.wrap_view('dispatch_list'),
                name="api_dispatch_list"),
                    ]
@@ -49,13 +50,13 @@ class CommentResource(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
-        if 'object_type' in kwargs and 'object_id' in kwargs and request.method=="POST":
+        if 'content_type' in kwargs and 'object_pk' in kwargs and request.method=="POST":
             data = json.loads(request.body)
             commented_item, created = Comment.objects.get_or_create(comment=data['comment_text'],
                                             user=request.user,
                                             user_name=request.user.username,
-                                            content_type=ContentType.objects.get(model=kwargs['object_type']),
-                                            object_pk=kwargs['object_id'],
+                                            content_type=ContentType.objects.get(model=kwargs['content_type']),
+                                            object_pk=kwargs['object_pk'],
                                             site_id=settings.SITE_ID,
                                             submit_date=datetime.datetime.now())
             bundle = self.build_bundle(obj=commented_item, request=request)
