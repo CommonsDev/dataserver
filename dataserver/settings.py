@@ -155,6 +155,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.admin',
     
+    'django_comments',
     'south',
     'corsheaders',
     'reversion',
