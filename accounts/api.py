@@ -6,6 +6,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.shortcuts import get_object_or_404
 
 from tastypie import fields
 from tastypie import http
@@ -177,12 +178,7 @@ class ProfileResource(ModelResource):
     
 class ObjectProfileLinkResource(ModelResource):
     """
-    Resource for linking profile with objects s.a Project, etc.
-    content_object = generic.GenericForeignKey('content_type', 'object_id', _("Linked object"))
-    profile = models.ForeignKey(Profile, verbose_name = _("Linked user profile"))
-    level = models.IntegerField(_("Implication level of the link"))
-    detail = models.CharField(max_length=200, blank=True)
-    isValidated = models.BooleanField(default=False)
+    Resource for linking profile with objects s.a a Project, a Category, etc.
     """
     profile = fields.OneToOneField(ProfileResource, 'profile', full=True)
     level = fields.IntegerField(attribute='level')
@@ -214,7 +210,11 @@ class ObjectProfileLinkResource(ModelResource):
 
         if 'content_type' in kwargs and 'object_id' in kwargs and request.method=="POST":
             data = json.loads(request.body)
-            objectprofilelink_item, created = ObjectProfileLink.objects.get_or_create(profile=request.user.profile,
+            if 'profile_id' in data:
+                profile = get_object_or_404(Profile, pk=data['profile_id'])
+            else: 
+                profile=request.user.profile
+            objectprofilelink_item, created = ObjectProfileLink.objects.get_or_create(profile=profile,
                                             content_type=ContentType.objects.get(model=kwargs['content_type']),
                                             object_id=kwargs['object_id'],
                                             level=data['level'],
