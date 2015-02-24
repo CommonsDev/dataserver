@@ -11,21 +11,34 @@ from django.http.response import HttpResponse
 from tastypie import http
 from django.utils.text import slugify
 import json
+from django.db.models import Count
 
 class TagResource(ModelResource):
     name = fields.CharField(attribute='name')
     slug = fields.CharField(attribute='slug')
 
     class Meta:
-        queryset = Tag.objects.all()
+        # queryset = Tag.objects.all()
+        queryset = Tag.objects.annotate(Count('taggit_taggeditem_items')).order_by('-taggit_taggeditem_items__count')
         resource_name = 'tag'
         filtering = {
-            "name":"exact",
+            "name": ["exact",],
+            "slug": ["exact",]
         }
         allowed_methods = ['get']
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
+
+    def dehydrate(self, bundle):
+        try:
+            bundle.data["weight"] = bundle.obj.taggit_taggeditem_items__count
+        except Exception, e:
+            # taggit_taggeditem_items__count may unfortunately not be found ... don't know why
+            pass
+
+        return bundle
+
 
 class TaggedItemResource(ModelResource):
     tag = fields.ToOneField(TagResource, 'tag', full=True)
@@ -61,7 +74,6 @@ class TaggedItemResource(ModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
-
         if 'content_type' in kwargs and 'object_id' in kwargs and request.method=="POST":
             data = json.loads(request.body)
             if 'tag' in data:
@@ -85,3 +97,7 @@ class TaggedItemResource(ModelResource):
                                             location=self.get_resource_uri(bundle))
 
         return ModelResource.dispatch_list(self, request, **kwargs)
+
+    def dehydrate(self, bundle):
+        bundle.data["object_type_name"] = bundle.obj.content_type.model
+        return bundle
