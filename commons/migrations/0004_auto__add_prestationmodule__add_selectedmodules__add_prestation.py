@@ -8,50 +8,86 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'PrestationModule.organization'
-        db.delete_column(u'prestation_prestationmodule', 'organization')
+        # Adding model 'PrestationModule'
+        db.create_table(u'commons_prestationmodule', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
+            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('provider', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('providerretribution', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('providersupport', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('commonsretribution', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+        ))
+        db.send_create_signal('commons', ['PrestationModule'])
+
+        # Adding M2M table for field commonsselected on 'PrestationModule'
+        m2m_table_name = db.shorten_name(u'commons_prestationmodule_commonsselected')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('prestationmodule', models.ForeignKey(orm['commons.prestationmodule'], null=False)),
+            ('project', models.ForeignKey(orm[u'projects.project'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['prestationmodule_id', 'project_id'])
+
+        # Adding model 'SelectedModules'
+        db.create_table(u'commons_selectedmodules', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('prestation', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['commons.Prestation'])),
+            ('modules', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['commons.PrestationModule'])),
+        ))
+        db.send_create_signal('commons', ['SelectedModules'])
+
+        # Adding model 'Prestation'
+        db.create_table(u'commons_prestation', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('title', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
+            ('description', self.gf('django.db.models.fields.TextField')()),
+            ('link', self.gf('django.db.models.fields.URLField')(max_length=200, null=True, blank=True)),
+            ('organization', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
+        ))
+        db.send_create_signal('commons', ['Prestation'])
 
 
     def backwards(self, orm):
-        # Adding field 'PrestationModule.organization'
-        db.add_column(u'prestation_prestationmodule', 'organization',
-                      self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True),
-                      keep_default=False)
+        # Deleting model 'PrestationModule'
+        db.delete_table(u'commons_prestationmodule')
+
+        # Removing M2M table for field commonsselected on 'PrestationModule'
+        db.delete_table(db.shorten_name(u'commons_prestationmodule_commonsselected'))
+
+        # Deleting model 'SelectedModules'
+        db.delete_table(u'commons_selectedmodules')
+
+        # Deleting model 'Prestation'
+        db.delete_table(u'commons_prestation')
 
 
     models = {
-        u'commons.pertinence': {
-            'Meta': {'object_name': 'Pertinence'},
-            'comment': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['projects.Project']"}),
-            'usage': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['commons.Usage']"})
-        },
-        u'commons.usage': {
-            'Meta': {'object_name': 'Usage'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'label': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'project': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['projects.Project']", 'through': u"orm['commons.Pertinence']", 'symmetrical': 'False'})
-        },
-        u'prestation.prestation': {
+        'commons.prestation': {
             'Meta': {'object_name': 'Prestation'},
             'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'link': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'}),
-            'module': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['prestation.PrestationModule']", 'symmetrical': 'False'}),
+            'module': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'modules'", 'symmetrical': 'False', 'through': "orm['commons.SelectedModules']", 'to': "orm['commons.PrestationModule']"}),
             'organization': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
         },
-        u'prestation.prestationmodule': {
+        'commons.prestationmodule': {
             'Meta': {'object_name': 'PrestationModule'},
-            'commons': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['commons.Usage']", 'symmetrical': 'False'}),
-            'commonsretribution': ('django.db.models.fields.TextField', [], {}),
-            'description': ('django.db.models.fields.TextField', [], {}),
+            'commonsretribution': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'commonsselected': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'prestation_module'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['projects.Project']"}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'provider': ('django.db.models.fields.TextField', [], {}),
-            'providerpayment': ('django.db.models.fields.TextField', [], {}),
-            'providersupport': ('django.db.models.fields.TextField', [], {}),
+            'provider': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'providerretribution': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'providersupport': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'})
+        },
+        'commons.selectedmodules': {
+            'Meta': {'object_name': 'SelectedModules'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'modules': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['commons.PrestationModule']"}),
+            'prestation': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['commons.Prestation']"})
         },
         u'projects.project': {
             'Meta': {'object_name': 'Project'},
@@ -99,4 +135,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['prestation']
+    complete_apps = ['commons']

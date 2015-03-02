@@ -13,6 +13,9 @@ class PrestationModule(models.Model):
 	commonsselected = models.ManyToManyField(Project,null=True, blank=True,verbose_name=("Choix du ou des communs"), related_name='prestation_module')
 	commonsretribution = models.TextField(null=True, blank=True, verbose_name=("Retribution du commun"))
 
+	class Meta:
+		app_label='commons'
+
 	def __unicode__(self):  # Python 3: def __str__(self):
 		return unicode(self.title)
 
@@ -26,9 +29,16 @@ class Prestation(models.Model):
 	def __unicode__(self):  # Python 3: def __str__(self):
 		return unicode(self.title)
 
-class SelectedModules(models.Model):
-   prestation = models.ForeignKey(Prestation)
-   modules = models.ForeignKey(PrestationModule)
+	class Meta:
+		app_label='commons'
 
-   def __unicode__(self):  # Python 3: def __str__(self):
-       return u"%s - %s" % (self.prestation, self.modules)
+
+class SelectedModules(models.Model):
+	prestation = models.ForeignKey(Prestation)
+	modules = models.ForeignKey(PrestationModule)
+	
+	class Meta:
+		app_label='commons'
+
+	def __unicode__(self):  # Python 3: def __str__(self):
+		return u"%s - %s" % (self.prestation, self.modules)
