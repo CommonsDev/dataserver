@@ -17,7 +17,7 @@ class ProjectTool(models.Model):
     Any external tool that a project can use
     """
     project = models.ForeignKey(Project, related_name='tools')
-    category = models.ForeignKey(ToolCategory, related_name='tools')
+    category = models.ForeignKey(ToolCategory, related_name='project_tools')
     description = models.TextField(blank=True, verbose_name=('tool description'))
     uri = models.URLField(null=True, blank=True, verbose_name=('link to the tool'))
 

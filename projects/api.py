@@ -1,5 +1,6 @@
 from tastypie import fields
 from tastypie.authorization import Authorization, DjangoAuthorization
+from tastypie.cache import SimpleCache
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.resources import ModelResource
 
@@ -15,6 +16,7 @@ class ProjectProgressRangeResource(ModelResource):
         allowed_methods = ['get']
         authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
+        cache = SimpleCache()
 
         filtering = {
             "slug": ('exact',),
@@ -27,6 +29,7 @@ class ProjectProgressResource(ModelResource):
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
+        cache = SimpleCache()
 
         filtering = {
             "range": ALL_WITH_RELATIONS,
@@ -43,6 +46,7 @@ class ProjectResource(ModelResource):
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = Authorization()
+        cache = SimpleCache()
 
         filtering = {
             'slug': ('exact',),
@@ -52,4 +56,6 @@ class ProjectResource(ModelResource):
 
     location = fields.ToOneField(PlaceResource, 'location', full=True, null=True, blank=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
-    tools = fields.ForeignKey('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)
+    tools = fields.ToManyField('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)
+    tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True)
+    unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)

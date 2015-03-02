@@ -33,9 +33,10 @@ class Project(models.Model):
     description = models.TextField(blank=True)
     location = models.ForeignKey(Place, null=True, blank=True)
     website = models.URLField(null=True, blank=True)
-    begin_date = models.DateField()
+    begin_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     progress = models.ForeignKey(ProjectProgress, null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return self.title

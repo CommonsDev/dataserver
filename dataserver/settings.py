@@ -154,7 +154,7 @@ INSTALLED_APPS = (
     'accounts',
     'bucket',
     'commons',
-    'deal',
+    # 'deal',
     'flipflop',
     'graffiti',
     'projects',
@@ -223,15 +223,15 @@ TASTYPIE_ALLOW_MISSING_SLASH=True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # Haystack
-HAYSTACK_CONNECTIONS = {
-    'default': {
+# HAYSTACK_CONNECTIONS = {
+#    'default': {
 #         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
 #         'URL': 'http://127.0.0.1:9200/',
 #         'INDEX_NAME': 'bucket',
-        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-    },
-}
+#        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+#        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
+#    },
+# }
 HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
 ## bucket
