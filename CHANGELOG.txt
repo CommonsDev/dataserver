@@ -20,10 +20,10 @@
                   thus `project.location.address` gives the previous value.
   	        - API resources names changes:
                 project → project/project
-                project/sheet/template → project/sheet/template
-                project/sheet/question → project/sheet/question
-                project/sheet/question_answer → project/sheet/question_answer
-                project/sheet/projectsheet → project/sheet/projectsheet
+                projectsheettemplate → project/sheet/template
+                projectsheetquestion → project/sheet/question
+                projectsheetsuggesteditem → project/sheet/question_answer
+                projectsheet → project/sheet/projectsheet
         + commons (@SimonSarazin):
             - models split into multiple files
             - new fields added to projects (this will be cleaned up in next release),
