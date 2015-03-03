@@ -1,0 +1,26 @@
+
+2015-03-02  Olivier Cortès  <contact@oliviercortes.com>
+
+    * first official release, versioned “1.0”
+    * refreshed `README.md` with tested installation from scratch.
+    * updated `dataserver/*settings.py*` to reflect installation needs, with
+      some more new comments for newcomers to (hopefully) understand better.
+    * removed apps : deal,
+    * deactivated apps : alambic (exact status to be cleared later)
+    * new apps :
+        + ucomments : REST API over django-comments (@freddylimpens)
+    * updated apps :
+        + scout (@glibersat) :
+      	    - add a new `Place` model (from http://schema.org/Place),
+              that contains the previously defined `PostalAddress`.
+        + projects (@atiberghien, @glibersat) :
+  	        - model changes :
+                * `ProjectSheetSuggestedItem` becomes `ProjectSheetQuestionAnswer`,
+                * `Project.location` is now a FK to `Place`, no more to `PostalAddress`,
+                  thus `project.location.address` gives the previous value.
+  	        - resources names changes:
+                project/sheet/template → project/sheet/template
+                project/sheet/question → project/sheet/question
+                project/sheet/question_answer → project/sheet/question_answer
+                project/sheet/projectsheet → project/sheet/projectsheet
+    * refreshed `requirements` with stable releases following, where possible.
