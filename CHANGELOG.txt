@@ -18,9 +18,14 @@
                 * `ProjectSheetSuggestedItem` becomes `ProjectSheetQuestionAnswer`,
                 * `Project.location` is now a FK to `Place`, no more to `PostalAddress`,
                   thus `project.location.address` gives the previous value.
-  	        - resources names changes:
+  	        - API resources names changes:
+                project → project/project
                 project/sheet/template → project/sheet/template
                 project/sheet/question → project/sheet/question
                 project/sheet/question_answer → project/sheet/question_answer
                 project/sheet/projectsheet → project/sheet/projectsheet
+        + commons (@SimonSarazin):
+            - models split into multiple files
+            - new fields added to projects (this will be cleaned up in next release),
+            - new `prestation` related models to commons method modelization.
     * refreshed `requirements` with stable releases following, where possible.
