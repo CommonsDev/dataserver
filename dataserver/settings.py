@@ -67,19 +67,19 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
     # 'djangular.finders.NamespacedAngularAppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'xs&qnebso4$9leua)7xqpyf&9ilf&3g$4$vhxyftt%tsgz1haf'
+SECRET_KEY = 'lf&3g$4$vhxyfttxs&q$9leua)7xqnebso4pyf&9i%tsgz1haf'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -202,12 +202,10 @@ LEAFLET_CONFIG = {
 ANONYMOUS_USER_ID = -1
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
-#LOGIN_URL = '/login/'
+# LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
 AUTH_PROFILE_MODULE = 'accounts.Profile'
-
-
 
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
@@ -219,7 +217,7 @@ COMPRESS_PRECOMPILERS = (
 CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
-TASTYPIE_ALLOW_MISSING_SLASH=True
+TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # Haystack
@@ -234,16 +232,16 @@ TASTYPIE_DEFAULT_FORMATS = ['json']
 # }
 HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
-## bucket
+# bucket
 BUCKET_FILES_FOLDER = 'bucket'
 
-## multiuploader
+# multiuploader
 MULTIUPLOADER_FILE_EXPIRATION_TIME = 3600
 
 MULTIUPLOADER_FORMS_SETTINGS = {
     'default': {
-        'FILE_TYPES' : ["txt","zip","jpg","jpeg","flv","png"],
-        'CONTENT_TYPES' : [
+        'FILE_TYPES': ["txt", "zip", "jpg", "jpeg", "flv", "png"],
+        'CONTENT_TYPES': [
             'image/jpeg',
             'image/png',
             'application/msword',
@@ -259,7 +257,7 @@ MULTIUPLOADER_FORMS_SETTINGS = {
             'text/rtf',
         ],
         'MAX_FILE_SIZE': 10485760,
-        'MAX_FILE_NUMBER':5,
+        'MAX_FILE_NUMBER': 5,
         'AUTO_UPLOAD': True,
     },
 }
@@ -268,5 +266,6 @@ MULTIUPLOADER_FORMS_SETTINGS = {
 SENDFILE_BACKEND = 'sendfile.backends.development'
 
 # SORL
-THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine' # Needed for Pdf conv
+# Needed for Pdf conv
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'
 THUMBNAIL_CONVERT = 'gm convert'
