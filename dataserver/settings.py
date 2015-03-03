@@ -1,6 +1,6 @@
 # Django settings for dataserver project.
 
-from site_settings import *
+from .site_settings import *
 
 MANAGERS = ADMINS
 
