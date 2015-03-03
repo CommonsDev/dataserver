@@ -1,8 +1,34 @@
 
 
 Hello Unisson/Commons developpers. 
-To easily release new data-server versions, 
-include the following snippet in your shell .RC file:
+
+
+## Git-flow
+
+The config is all by default, except `versiontag` which is `dataserver-`, to get nice versions numbers (eg `git flow release … 1.2.3` produces a tag/version named `dataserver-1.2.3`).
+
+```
+[gitflow "prefix"]
+        feature = feature/
+        release = release/
+        hotfix = hotfix/
+        support = support/
+        versiontag = dataserver-
+```
+
+If you already released a version without this configuration, you can always rename a tag before pushing, with the following `git` alias in you `~/.gitconfig`:
+
+```
+mvtag = !sh -c 'git tag $1 $0 && git tag -d $0 && git push origin :refs/tags/$0'
+```
+
+And then `git mvtag old_version dataserver-old_version`
+
+
+
+## Release management
+
+To easily release new data-server versions, include the following snippet in your shell .RC file:
 
 ```
 function dataserver_release() {
