@@ -1,9 +1,9 @@
 dj-database-url==0.3.0
 Django>=1.6,<1.7
 Pillow==2.7.0
-South>=1.0.3
+South>=1.0.2
 
-sorl-thumbnail==12.2
+django-autoslug==1.7.2
 django-classy-tags==0.5.2
 django-compressor==1.4
 django-contrib-comments==1.5
@@ -13,8 +13,6 @@ django-guardian==1.2.5
 django-tastypie==0.12.1
 django-userena==1.4.0
 
-django-autoslug==1.7.2
-django-classy-tags==0.5.2
 psycopg2==2.5.4
 python-dateutil==2.1
 django-taggit==0.12.2
@@ -27,6 +25,8 @@ jsonfield==1.0.0
 
 django-reversion==1.8.5
 pygeocoder==1.2.5
+
+sorl-thumbnail==12.2
 
 # vlille
 -e git+https://github.com/glibersat/python-vlille.git#egg=python-vlille
