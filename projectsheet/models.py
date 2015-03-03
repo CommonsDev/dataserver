@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 from projects.models import Project
 from autoslug.fields import AutoSlugField
 from bucket.models import Bucket, BucketFile
-
+from jsonfield import JSONField
 
 class ProjectSheetTemplate(models.Model):
     name = models.CharField(max_length=100)
@@ -32,6 +32,7 @@ class ProjectSheet(models.Model):
     template = models.ForeignKey(ProjectSheetTemplate)
     bucket = models.ForeignKey(Bucket, null=True, blank=True)
     cover = models.ForeignKey(BucketFile, null=True, blank=True)
+    videos = JSONField(default=None, blank=True, null=True)
 
     def __unicode__(self):
         return u"%s %s" % (_('Project sheet for '), self.project)

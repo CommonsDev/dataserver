@@ -6,8 +6,10 @@ from django.contrib import admin
 from tastypie.api import Api
 
 from accounts.api import UserResource, GroupResource, ProfileResource
+from alambic.api import RoomResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from commons.api import UsageResource, PertinenceResource
+from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from graffiti.api import TagResource
 from projects.api import ProjectResource
@@ -17,8 +19,9 @@ from projecttool.api import ProjectToolResource
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
 from transport_vlille.api import VlilleResource
-
+from ucomment.api import CommentResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
+
 
 admin.autodiscover()
 
@@ -77,9 +80,14 @@ api.register(PertinenceResource())
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
+# deal
+# api.register(DealResource())
 
 # Graffiti
 api.register(TagResource())
+
+# ucomment
+api.register(CommentResource())
 
 # Alambic
 # api.register(RoomResource())

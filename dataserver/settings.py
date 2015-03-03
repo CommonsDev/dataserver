@@ -1,4 +1,3 @@
-#-*- coding: utf-8 -*-
 # Django settings for dataserver project.
 
 from .site_settings import *
@@ -133,7 +132,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.admin',
-
+    'django_comments',
     'south',
     'corsheaders',
     'reversion',
@@ -148,7 +147,6 @@ INSTALLED_APPS = (
     'guardian',
     'userena',
     'tastypie',
-
     'accounts',
     'haystack',
 
@@ -166,6 +164,7 @@ INSTALLED_APPS = (
     'projects',
     'projectsheet',
     'projecttool',
+    'graffiti',
     'commons',
     'transport_vlille',
     'unisson',
@@ -226,17 +225,6 @@ APPEND_SLASH = False
 TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
-# Haystack
-# HAYSTACK_CONNECTIONS = {
-#    'default': {
-#         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-#         'URL': 'http://127.0.0.1:9200/',
-#         'INDEX_NAME': 'bucket',
-#        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
-#        'PATH': os.path.join(os.path.dirname(__file__), 'whoosh_index'),
-#    },
-# }
-HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
 # bucket
 BUCKET_FILES_FOLDER = 'bucket'
