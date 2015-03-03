@@ -19,8 +19,9 @@ simplejson
 pysendfile==2.0.0
 django-sendfile==0.3.6
 django-haystack==2.3.1
-pyelasticsearch==0.7.1 # Still needed ? Haystack wants elasticsearch…
-elasticsearch==1.4.0
+pyelasticsearch==0.7.1
+django-jsonfield==0.9.13
+
 django-reversion==1.8.4
 
 pygeocoder==1.2.5

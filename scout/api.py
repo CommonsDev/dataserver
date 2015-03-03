@@ -51,6 +51,7 @@ class MapResource(GeoModelResource):
     data_layers = fields.ToManyField('scout.api.DataLayerResource', 'datalayers', full=True, null=True)
     tile_layer = fields.ForeignKey('scout.api.TileLayerResource', 'tilelayer', full=True)
     bucket = fields.ForeignKey('bucket.api.BucketResource', 'bucket', null=True, full=True)
+    marker_categories = fields.ToManyField('scout.api.MarkerCategoryResource', 'marker_categories', null=True, full=True)
 
     def obj_create(self, bundle, **kwargs):
         bundle.obj = Map(bucket=Bucket.objects.create(created_by=bundle.request.user), created_by=bundle.request.user)
