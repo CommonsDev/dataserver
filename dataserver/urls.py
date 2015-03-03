@@ -6,10 +6,10 @@ from django.contrib import admin
 from tastypie.api import Api
 
 from accounts.api import UserResource, GroupResource, ProfileResource
-from alambic.api import RoomResource
+# from alambic.api import RoomResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from commons.api import UsageResource, PertinenceResource
-from deal.api import DealResource
+# from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from graffiti.api import TagResource
 from projects.api import ProjectResource
