@@ -7,7 +7,6 @@ from tastypie.api import Api
 
 from accounts.api import UserResource, GroupResource, ProfileResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
-from commons.api import UsageResource, PertinenceResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from graffiti.api import TagResource
 from projects.api import ProjectResource
@@ -19,6 +18,8 @@ from scout.api import (MapResource, TileLayerResource, DataLayerResource,
 from transport_vlille.api import VlilleResource
 
 from unisson.api import IngredientResource, EvaluationIngredientResource
+from commons.api.usage import UsageResource, PertinenceResource
+from commons.api.prestation import PrestationResource, PrestationModuleResource, SelectedModulesResource
 
 admin.autodiscover()
 
@@ -77,6 +78,11 @@ api.register(PertinenceResource())
 api.register(IngredientResource())
 api.register(EvaluationIngredientResource())
 
+
+# Prestation
+api.register(PrestationResource())
+api.register(PrestationModuleResource())
+api.register(SelectedModulesResource())
 
 # Graffiti
 api.register(TagResource())

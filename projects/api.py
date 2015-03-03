@@ -59,3 +59,4 @@ class ProjectResource(ModelResource):
     tools = fields.ToManyField('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)
     tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True)
     unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)
+    prestation = fields.ToManyField('commons.api.prestation.SelectedModulesResource', 'prestation_module', null=True, blank=True, full=True)
