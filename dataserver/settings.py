@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 # Django settings for dataserver project.
 
 from .site_settings import *
@@ -138,7 +139,6 @@ INSTALLED_APPS = (
     'reversion',
     'multiuploader',
     'sorl.thumbnail',
-    'haystack',
     'autoslug',
     'taggit',
     'sendfile',
@@ -149,18 +149,24 @@ INSTALLED_APPS = (
     'userena',
     'tastypie',
 
-    # Dataserver
-    # 'alambic',
     'accounts',
+    'haystack',
+
+    # Dataserver
+    # WARNING: order matters:
+    # notably scout → projects → commons (for migrations)
+    #
+    # 'alambic',
+
     'bucket',
-    'commons',
     # 'deal',
     'flipflop',
     'graffiti',
+    'scout',
     'projects',
     'projectsheet',
     'projecttool',
-    'scout',
+    'commons',
     'transport_vlille',
     'unisson',
 )

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 
 import os
 import dj_database_url
@@ -26,11 +27,12 @@ DATABASES = {
 }
 
 # Haystack (for bucket module)
-# HAYSTACK_CONNECTIONS = {
-#   'default': {
-#       'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-#       'URL': 'http://127.0.0.1:9200/',
-#       'INDEX_NAME': 'bucket',
-#   },
-# }
-# HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'bucket',
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
