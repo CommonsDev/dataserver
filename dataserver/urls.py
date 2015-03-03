@@ -8,7 +8,8 @@ from tastypie.api import Api
 from accounts.api import UserResource, GroupResource, ProfileResource
 # from alambic.api import RoomResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
-from commons.api import UsageResource, PertinenceResource
+from commons.api.usage import UsageResource, PertinenceResource
+from commons.api.prestation import PrestationResource, PrestationModuleResource, SelectedModulesResource
 # from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from graffiti.api import TagResource
@@ -82,6 +83,11 @@ api.register(EvaluationIngredientResource())
 
 # deal
 # api.register(DealResource())
+
+# Prestation
+api.register(PrestationResource())
+api.register(PrestationModuleResource())
+api.register(SelectedModulesResource())
 
 # Graffiti
 api.register(TagResource())

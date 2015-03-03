@@ -3,7 +3,7 @@ from tastypie import fields
 
 from .models import Project, ProjectProgressRange, ProjectProgress, ProjectTeam
 
-from scout.api import PostalAddressResource
+from scout.api import PlaceResource
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL_WITH_RELATIONS
@@ -32,8 +32,9 @@ class ProjectProgressResource(ModelResource):
         
 
 class ProjectResource(ModelResource):
-    location = fields.ToOneField(PostalAddressResource, 'location', null=True, blank=True, full=True)
+    location = fields.ToOneField(PlaceResource, 'location', null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
+    tools = fields.ToManyField('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)    
     team = fields.ToManyField("projects.api.ProjectTeamResource", "projectteam_set", null=True, blank=True, full=True)
 
     # TODO: 20150302 keep ?
@@ -41,11 +42,12 @@ class ProjectResource(ModelResource):
     
     # TODO: 20150302 will migrate to elsewhere
     unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)    
+    prestation = fields.ToManyField('commons.api.prestation.SelectedModulesResource', 'prestation_module', null=True, blank=True, full=True)
 
     class Meta:
         queryset = Project.objects.all()
         allowed_methods = ['get', 'post', 'put', 'patch']
-        resource_name = 'project'
+        resource_name = 'project/project'
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
