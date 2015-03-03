@@ -13,8 +13,8 @@ API list:
 - Flipflop (beta) : Kanban boards
 - Scout (beta) : Map
 - Transport/Vlille (beta) : Lille Public Bike Service
-- Groupbuying (pre-alpha) : Grouped buying system
 - Alambic (pre-alpha) : Room discussion- Projects : anything that can be qualified as a Project
+- Graffiti: Tags (from `taggit`) & Django content types ressources
 - ProjectSheet : Project Description
 - Commons : Determine wich "commons project" to use for a given usage
 - Unisson : Evaluate "commons project" with the Unisson method
