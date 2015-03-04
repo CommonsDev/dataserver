@@ -2,20 +2,21 @@
 from django.conf.urls import url
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.shortcuts import get_object_or_404
 
 from tastypie import fields
-
+from tastypie import http
+from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.authentication import Authentication, BasicAuthentication, ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization, Authorization
-from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
 from dataserver.authentication import AnonymousApiKeyAuthentication
-
-from .models import Profile
+from .models import Profile, ObjectProfileLink
 
 class UserResource(ModelResource):
     class Meta:
@@ -23,9 +24,9 @@ class UserResource(ModelResource):
         detail_uri_name = 'username'
         allowed_methods = ['get', 'post']
         resource_name = 'account/user'
-        authentication = AnonymousApiKeyAuthentication()
+        authentication = Authentication()
         authorization = Authorization()
-        fields = ['username', 'first_name', 'last_name', 'groups']
+        fields = ['username', 'first_name', 'last_name', 'groups', 'email']
 
     groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 
@@ -160,7 +161,7 @@ class GroupResource(ModelResource):
 models.signals.post_save.connect(create_api_key, sender=User)
 
 class ProfileResource(ModelResource):
-    user = fields.OneToOneField(UserResource, 'user')
+    user = fields.OneToOneField(UserResource, 'user', full=True)
 
     class Meta:
         queryset = Profile.objects.all()
@@ -172,3 +173,58 @@ class ProfileResource(ModelResource):
     def dehydrate(self, bundle):
         bundle.data["username"] = bundle.obj.username
         return bundle
+    
+class ObjectProfileLinkResource(ModelResource):
+    """
+    Resource for linking profile with objects s.a a Project, a Category, etc.
+    """
+    profile = fields.OneToOneField(ProfileResource, 'profile', full=True)
+    level = fields.IntegerField(attribute='level')
+    detail = fields.CharField(attribute='detail')
+    isValidated = fields.BooleanField(attribute='isValidated')
+
+    class Meta:
+        queryset = ObjectProfileLink.objects.all()
+        resource_name = 'objectprofilelink'
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
+        default_format = "application/json"
+        filtering = {
+            "object_id" : ['exact', ]
+        }
+        always_return_data = True
+
+    def prepend_urls(self):
+        return [
+           url(r"^(?P<resource_name>%s)/(?P<content_type>\w+?)/(?P<object_id>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
+               self.wrap_view('dispatch_list'),
+               name="api_dispatch_list"),
+            ]
+
+    def dispatch_list(self, request, **kwargs):
+        self.method_check(request, allowed=['get', 'post'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        if 'content_type' in kwargs and 'object_id' in kwargs and request.method=="POST":
+            data = json.loads(request.body)
+            if 'profile_id' in data:
+                profile = get_object_or_404(Profile, pk=data['profile_id'])
+            else: 
+                profile=request.user.profile
+            objectprofilelink_item, created = ObjectProfileLink.objects.get_or_create(profile=profile,
+                                            content_type=ContentType.objects.get(model=kwargs['content_type']),
+                                            object_id=kwargs['object_id'],
+                                            level=data['level'],
+                                            detail=data['detail'],
+                                            isValidated=data['isValidated'])
+            bundle = self.build_bundle(obj=objectprofilelink_item, request=request)
+            bundle = self.full_dehydrate(bundle)
+            bundle = self.alter_detail_data_to_serialize(request, bundle)
+
+            return self.create_response(request,
+                                        bundle,
+                                        response_class=http.HttpCreated,
+                                        location=self.get_resource_uri(bundle))
+
+        return ModelResource.dispatch_list(self, request, **kwargs)
