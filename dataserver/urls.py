@@ -5,12 +5,24 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
-from scout.api import MapResource, TileLayerResource, DataLayerResource, MarkerResource, MarkerCategoryResource
-from accounts.api import UserResource, GroupResource
+from accounts.api import UserResource, GroupResource, ProfileResource
+# from alambic.api import RoomResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
+from commons.api.usage import UsageResource, PertinenceResource
+from commons.api.prestation import PrestationResource, PrestationModuleResource, SelectedModulesResource
+# from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
+from graffiti.api import TagResource
+from projects.api import ProjectResource
+from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
+                              ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
+from projecttool.api import ProjectToolResource
+from scout.api import (MapResource, TileLayerResource, DataLayerResource,
+                       MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
+from transport_vlille.api import VlilleResource
+from ucomment.api import CommentResource
+from unisson.api import IngredientResource, EvaluationIngredientResource
 
-import views
 
 admin.autodiscover()
 
@@ -23,12 +35,16 @@ api.register(TileLayerResource())
 api.register(MarkerResource())
 api.register(DataLayerResource())
 api.register(MarkerCategoryResource())
+api.register(PostalAddressResource())
+api.register(PlaceResource())
+
 
 # Auth
 api.register(UserResource())
 api.register(GroupResource())
+api.register(ProfileResource())
 
-# Kanban
+# Flipflop (Kanban)
 api.register(BoardResource())
 api.register(ListResource())
 api.register(CardResource())
@@ -42,37 +58,51 @@ api.register(BucketTagResource())
 api.register(BucketFileResource())
 api.register(BucketFileCommentResource())
 
+# Vlille
+api.register(VlilleResource())
+
+# Projects
+api.register(ProjectResource())
+
+# Project Sheets
+api.register(ProjectSheetResource())
+api.register(ProjectSheetTemplateResource())
+api.register(ProjectSheetQuestionAnswerResource())
+api.register(ProjectSheetQuestionResource())
+
+# Projects Tools
+api.register(ProjectToolResource())
+
+# Commons
+api.register(UsageResource())
+api.register(PertinenceResource())
+
+# Unisson
+api.register(IngredientResource())
+api.register(EvaluationIngredientResource())
+
+# deal
+# api.register(DealResource())
+
+# Prestation
+api.register(PrestationResource())
+api.register(PrestationModuleResource())
+api.register(SelectedModulesResource())
+
+# Graffiti
+api.register(TagResource())
+
+# ucomment
+api.register(CommentResource())
+
+# Alambic
+# api.register(RoomResource())
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'gup.views.home', name='home'),
-    # url(r'^gup/', include('gup.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    (r'^accounts/', include('userena.urls')),
-  
-    (r'^api/', include(api.urls)),
-    (r'^api/', include('alambic.urls')),
-    (r'^flipflop/', include('flipflop.urls')),
-                       
-    url(r'^djangular/', include('djangular.urls')),
-
-    (r'^bucket/', include('bucket.urls')),
-
-#    url(r'^select2/', include('django_select2.urls')),
-                       
-    # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api/', include(api.urls)),
+
 )
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-#CMS
-urlpatterns += patterns('',
-    url(r'^mapage/$', views.CMSRedirectView.as_view(), name='cmsredirect'),
-    url(r'^', include('cms.urls')),
-)
-
