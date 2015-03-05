@@ -79,10 +79,11 @@ fetch the dependencies using::
 
 
 
-## Configuring the database
+## Configuring the database / cache
 
 You have the choice to install a Postgis or Sqlite database. Sqlite is easier to get a test environment.
 
+You should have redis running on 127.0.0.1 for automatic configuration. Else, define the environment variable `DATASERVER_REDIS_CACHE_DB`. The default value is `'127.0.0.1:6379:2'`. Please always specify the *port*, even if it's the default one (6379).
 
 
 ### PostGis DB
