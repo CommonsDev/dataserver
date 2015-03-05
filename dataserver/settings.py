@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     'tastypie',
     'accounts',
     'haystack',
+    'cacheops',
 
     # Dataserver
     # WARNING: order matters:
@@ -265,3 +266,53 @@ SENDFILE_BACKEND = 'sendfile.backends.development'
 # Needed for Pdf conv
 THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'
 THUMBNAIL_CONVERT = 'gm convert'
+
+# ———————————————————————————————————————————————————————————————————— Cacheops
+
+DATASERVER_REDIS_CACHE_DB = os.environ.get('DATASERVER_REDIS_CACHE_DB',
+                                           u'127.0.0.1:6379:2')
+
+CACHE_HOST, CACHE_PORT, CACHE_DB_NUM = DATASERVER_REDIS_CACHE_DB.split(':', 3)
+
+CACHEOPS_REDIS = {
+    'host': CACHE_HOST,
+    'port': int(CACHE_PORT),
+    'db': int(CACHE_DB_NUM),
+    'socket_timeout': 5,
+}
+
+# Not necessary until https://github.com/Suor/django-cacheops/pull/134 is integrated  # NOQA
+CACHEOPS_USE_LOCK = False
+
+CACHE_ONE_HOUR = 60 * 60
+CACHE_ONE_DAY = CACHE_ONE_HOUR * 24
+CACHE_ONE_WEEK = CACHE_ONE_DAY * 7
+CACHE_ONE_MONTH = CACHE_ONE_DAY * 31
+
+try:
+    CACHEOPS
+
+except NameError:
+    CACHEOPS = {
+        # Automatically cache any User.objects.get() calls
+        # for 30 minutes. This includes request.user or
+        # post.author access, where Post.author is a foreign
+        # key to auth.User.
+        'auth.user': {'ops': 'get', 'timeout': CACHE_ONE_WEEK},
+
+        # Automatically cache all gets and queryset fetches
+        # to other django.contrib.auth and oneflow.base models
+        # for an hour.
+        'auth.*': {'ops': ('fetch', 'get'), 'timeout': CACHE_ONE_DAY},
+
+        # Cache gets, fetches, counts and exists to Permission
+        # 'all' is just an alias for ('get', 'fetch', 'count', 'exists')
+        'auth.permission': {'ops': 'all', 'timeout': CACHE_ONE_DAY},
+
+        'contenttypes.contenttype': {'ops': 'all', 'timeout': CACHE_ONE_WEEK},
+
+        # Everything is automatically cached for one day.
+        # Override CACHEOPS in site_settings if you
+        # need a more granular configuration.
+        '*.*': {'ops': 'all', 'timeout': CACHE_ONE_DAY},
+    }
