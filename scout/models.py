@@ -138,21 +138,22 @@ class MarkerCategory(models.Model):
     """
     A category for a marker
     """
-    ICON_COLOR_CHOICES = (
-        ("white", _("white")),
-        ("black", _("black")),
-    )
-
     MARKER_COLOR_CHOICES = (
         ("red", _("red")),
-        ("blue", _("blue")),
+        ("darkred", _("dark red")),
+        ("orange", _("orange")),
         ("green", _("green")),
+        ("darkgreen", _("dark green")),
+        ("blue", _("blue")),
+        ("purple", _("purple")),
+        ("darkpurple", _("dark purple")),
+        ("cadetblue", _("cadet blue")),
     )
 
     map = models.ForeignKey(Map, related_name='marker_categories')
     name = models.CharField(max_length=255)
     icon_name = models.CharField(max_length=255)
-    icon_color = models.CharField(max_length=30, choices=ICON_COLOR_CHOICES)
+    icon_color = models.CharField(max_length=30)
     marker_color = models.CharField(max_length=30, choices=MARKER_COLOR_CHOICES)
 
     def __unicode__(self):
