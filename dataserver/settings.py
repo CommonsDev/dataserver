@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Django settings for dataserver project.
+""" Django settings for dataserver project. """
 
-from .site_settings import *
+from .site_settings import *  # NOQA
 
 MANAGERS = ADMINS
 
@@ -109,7 +109,8 @@ ROOT_URLCONF = 'dataserver.urls'
 WSGI_APPLICATION = 'dataserver.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates"
+    # or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(PROJECT_DIR, '..', 'templates'),
@@ -240,11 +241,11 @@ MULTIUPLOADER_FORMS_SETTINGS = {
             'image/jpeg',
             'image/png',
             'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # NOQA
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'application/vnd.ms-powerpoint',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',  # NOQA
             'application/vnd.oasis.opendocument.text',
             'application/vnd.oasis.opendocument.spreadsheet',
             'application/vnd.oasis.opendocument.presentation',
