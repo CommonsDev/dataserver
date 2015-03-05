@@ -10,6 +10,7 @@ from tastypie.authorization import Authorization, ReadOnlyAuthorization,\
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
+from tastypie.fields import DictField
 from tastypie.resources import ModelResource
 
 from dataserver.authorization import GuardianAuthorization
@@ -47,7 +48,7 @@ class MapResource(GeoModelResource):
         always_return_data = True
         detail_uri_name = 'slug'
 
-    # created_by = fields.ToOneField('accounts.api.UserResource', 'created_by', readonly=True)
+    created_by = fields.ToOneField('accounts.api.UserResource', 'created_by', readonly=True)
     data_layers = fields.ToManyField('scout.api.DataLayerResource', 'datalayers', full=True, null=True)
     tile_layer = fields.ForeignKey('scout.api.TileLayerResource', 'tilelayer', full=True)
     bucket = fields.ForeignKey('bucket.api.BucketResource', 'bucket', null=True, full=True)
@@ -67,8 +68,7 @@ class MarkerCategoryResource(ModelResource):
         resource_name = 'scout/marker_category'
 
         authentication = AnonymousApiKeyAuthentication()
-        authorization = ReadOnlyAuthorization()
-
+        authorization = Authorization() # FIXME
 
 class TileLayerResource(GeoModelResource):
     class Meta:
@@ -90,6 +90,7 @@ class DataLayerResource(ModelResource):
 
     markers = fields.ToManyField('scout.api.MarkerResource', 'markers', null=True, full=True)
     map = fields.ToOneField('scout.api.MapResource', 'map')
+    json_mapping = fields.DictField(attribute='json_mapping')
 
 class MarkerResource(GeoModelResource):
     class Meta:
