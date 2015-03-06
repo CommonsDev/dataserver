@@ -29,7 +29,9 @@ class UserResource(ModelResource):
         resource_name = 'account/user'
         authentication = Authentication()
         authorization = Authorization()
-        fields = ['username', 'first_name', 'last_name', 'groups', 'email']
+        filtering = {
+            "id" : ['exact',],
+        }
 
     groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 
@@ -173,7 +175,8 @@ class ProfileResource(ModelResource):
         authentication = Authentication()
         authorization = Authorization()
         filtering = {
-            "id" : ['exact',]
+            "id" : ['exact',],
+            "user" : ALL_WITH_RELATIONS,
         }
 
     def dehydrate(self, bundle):
