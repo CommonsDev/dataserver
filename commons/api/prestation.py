@@ -11,6 +11,8 @@ class PrestationModuleResource(ModelResource):
         resource_name = 'project/commons/prestationmodules'
         authorization = Authorization()
 
+    project = fields.ToManyField('projects.api.ProjectResource', 'commonsselected', use_in='title', null=True, blank=True, full=True)
+
 class PrestationResource(ModelResource):
     class Meta:
         queryset = Prestation.objects.all()
