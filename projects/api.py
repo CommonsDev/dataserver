@@ -42,7 +42,6 @@ class ProjectResource(ModelResource):
     
     # TODO: 20150302 will migrate to elsewhere
     unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)    
-    prestation = fields.ToManyField('commons.api.prestation.SelectedModulesResource', 'prestation_module', null=True, blank=True, full=True)
 
     class Meta:
         queryset = Project.objects.all()
