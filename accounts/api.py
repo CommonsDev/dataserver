@@ -29,6 +29,7 @@ class UserResource(ModelResource):
         resource_name = 'account/user'
         authentication = Authentication()
         authorization = Authorization()
+        fields = ['username', 'first_name', 'last_name', 'groups', 'email']
         filtering = {
             "id" : ['exact',],
         }
@@ -41,8 +42,6 @@ class UserResource(ModelResource):
         except Profile.DoesNotExist:
             pass
         bundle.data['groups'] = [{"id" : group.id, "name":group.name} for group in bundle.obj.groups.all()]
-        #bundle.data['first_name'] = bundle.obj.user.first_name
-        #bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
 
 
@@ -200,8 +199,8 @@ class ObjectProfileLinkResource(ModelResource):
         authorization = DjangoAuthorization()
         default_format = "application/json"
         filtering = {
-            "content_type" : ['exact', ],
             "object_id" : ['exact', ],
+            "content_type" : ['exact', ],
             "profile" : ALL_WITH_RELATIONS,
 
         }
