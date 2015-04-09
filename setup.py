@@ -24,4 +24,3 @@ config = {
 }
 
 setup(**config)
-
