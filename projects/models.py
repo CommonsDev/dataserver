@@ -49,9 +49,3 @@ class Project(models.Model):
 class ProjectTeam(models.Model):
     project = models.ForeignKey(Project)
     members = models.ManyToManyField(Profile)
-
-
-@receiver(post_save, sender=Project)
-def create_project_team(sender, created, instance, **kwargs):
-    if created:
-        ProjectTeam.objects.create(project=instance)

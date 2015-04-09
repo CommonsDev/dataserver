@@ -30,6 +30,19 @@ class TagResource(ModelResource):
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
 
+    def build_filters(self, filters=None):
+        if filters is None:
+            filters = {}
+
+        orm_filters = super(TagResource, self).build_filters(filters)
+
+        if "content_type" in filters:
+            qs = Tag.objects.filter(taggit_taggeditem_items__content_type__model=filters['content_type'])
+
+            orm_filters["pk__in"] = [i.pk for i in qs]
+
+        return orm_filters
+
     def dehydrate(self, bundle):
         try:
             bundle.data["weight"] = bundle.obj.taggit_taggeditem_items__count
