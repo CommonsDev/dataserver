@@ -1,7 +1,7 @@
 from tastypie.resources import ModelResource
 from tastypie import fields
 
-from .models import Project, ProjectProgressRange, ProjectProgress, ProjectTeam
+from .models import Project, ProjectProgressRange, ProjectProgress
 
 from scout.api import PlaceResource
 from dataserver.authentication import AnonymousApiKeyAuthentication
@@ -13,23 +13,23 @@ class ProjectProgressRangeResource(ModelResource):
     class Meta :
         queryset = ProjectProgressRange.objects.all()
         allowed_methods = ['get']
-    
+
         filtering = {
             "slug": ('exact',),
         }
-        
+
 class ProjectProgressResource(ModelResource):
     range = fields.ToOneField(ProjectProgressRangeResource, "progress_range")
-    
+
     class Meta:
         queryset = ProjectProgress.objects.all()
         allowed_methods = ['get']
         always_return_data = True
-    
+
         filtering = {
             "range": ALL_WITH_RELATIONS,
         }
-        
+
 
 class ProjectResource(ModelResource):
     location = fields.ToOneField(PlaceResource, 'location', null=True, blank=True, full=True)
@@ -48,15 +48,12 @@ class ProjectResource(ModelResource):
         allowed_methods = ['get', 'post', 'put', 'patch']
         resource_name = 'project/project'
         always_return_data = True
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
-
         filtering = {
             'slug': ('exact',),
             'id' : ('exact', ),
             'location': ALL_WITH_RELATIONS,
         }
-        
+
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
 
@@ -74,3 +71,4 @@ class ProjectTeamResource(ModelResource):
         filtering = {
             "project": ALL_WITH_RELATIONS,
         }
+
