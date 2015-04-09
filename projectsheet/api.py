@@ -26,7 +26,7 @@ class ProjectSheetTemplateResource(ModelResource):
 
     def dehydrate(self, bundle):
         bundle.data["questions"] = []
-        for question in bundle.obj.projectsheetquestion_set.all():
+        for question in bundle.obj.questions.all():
             bundle.data["questions"].append(question.text)
         return bundle
 

@@ -35,10 +35,9 @@ class ProjectResource(ModelResource):
     location = fields.ToOneField(PlaceResource, 'location', null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
     tools = fields.ToManyField('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)    
-    team = fields.ToManyField("projects.api.ProjectTeamResource", "projectteam_set", null=True, blank=True, full=True)
 
     # TODO: 20150302 keep ?
-    tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True)
+    tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True, null=True)
     
     # TODO: 20150302 will migrate to elsewhere
     unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)    
@@ -50,15 +49,12 @@ class ProjectResource(ModelResource):
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
-
         filtering = {
             'slug': ('exact',),
             'id' : ('exact', ),
             'location': ALL_WITH_RELATIONS,
         }
         
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
 
 
 # XXX/TODO: obsolete this class in favor of ObjectProfileLink
