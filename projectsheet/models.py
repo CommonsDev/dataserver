@@ -58,10 +58,4 @@ class ProjectSheetQuestionAnswer(models.Model):
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)
 
-def createProjectSheetQuestionAnswer(sender, instance, created, **kwargs):
-    for question in instance.template.questions.all():
-        ProjectSheetQuestionAnswer.objects.create(projectsheet=instance,
-                                                  question=question)
-
-post_save.connect(createProjectSheetQuestionAnswer, ProjectSheet)
 pre_save.connect(createProjectSheetBucket, ProjectSheet)

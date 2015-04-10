@@ -56,16 +56,16 @@ class ProjectResource(ModelResource):
         }
 
 # XXX/TODO: obsolete this class in favor of ObjectProfileLink
-class ProjectTeamResource(ModelResource):
-    project = fields.ToOneField(ProjectResource, "project")
-    members = fields.ToManyField(ProfileResource, "members", full=True)
+# class ProjectTeamResource(ModelResource):
+#     project = fields.ToOneField(ProjectResource, "project")
+#     members = fields.ToManyField(ProfileResource, "members", full=True)
     
-    class Meta:
-        queryset = ProjectTeam.objects.all()
-        allowed_methods = ['get',]
-        always_return_data = True
+#     class Meta:
+#         queryset = ProjectTeam.objects.all()
+#         allowed_methods = ['get',]
+#         always_return_data = True
     
-        filtering = {
-            "project": ALL_WITH_RELATIONS,
-        }
+#         filtering = {
+#             "project": ALL_WITH_RELATIONS,
+#         }
 
