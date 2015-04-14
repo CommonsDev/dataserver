@@ -10,25 +10,6 @@ from tastypie.constants import ALL_WITH_RELATIONS
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from bucket.api import BucketResource, BucketFileResource
 
-class ProjectSheetTemplateResource(ModelResource):
-    questions = fields.ToManyField("projectsheet.api.ProjectSheetQuestionResource", 'projectsheetquestion_set', full=True, null=True)
-
-    class Meta:
-        queryset = ProjectSheetTemplate.objects.all()
-        allowed_methods = ['get']
-        resource_name = 'project/sheet/template'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
-        always_return_data = True
-        filtering = {
-            'slug' : ('exact', )
-        }
-
-    def dehydrate(self, bundle):
-        bundle.data["questions"] = []
-        for question in bundle.obj.questions.all():
-            bundle.data["questions"].append(question.text)
-        return bundle
 
 class ProjectSheetQuestionResource(ModelResource):
     class Meta:
@@ -42,21 +23,40 @@ class ProjectSheetQuestionResource(ModelResource):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
         return bundle
 
+
+class ProjectSheetTemplateResource(ModelResource):
+    questions = fields.ToManyField(ProjectSheetQuestionResource, 'questions', full=True, null=True)
+
+    class Meta:
+        queryset = ProjectSheetTemplate.objects.all()
+        allowed_methods = ['get']
+        resource_name = 'project/sheet/template'
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
+        always_return_data = True
+        filtering = {
+            'slug' : ('exact', )
+        }
+
+
 class ProjectSheetQuestionAnswerResource(ModelResource):
+    question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
+    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
+
     class Meta:
         queryset = ProjectSheetQuestionAnswer.objects.all()
-        allowed_methods = ['get', 'patch']
+        allowed_methods = ['get', 'patch', 'post']
         resource_name = 'project/sheet/question_answer'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
 
 
 class ProjectSheetResource(ModelResource):
-    project = fields.ToOneField(ProjectResource, 'project')
+    project = fields.ToOneField(ProjectResource, 'project', full=True)
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
-    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True)
+    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True, full=True)
     videos = fields.DictField(attribute='videos', null=True)
 
 
