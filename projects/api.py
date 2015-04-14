@@ -1,7 +1,7 @@
 from tastypie.resources import ModelResource
 from tastypie import fields
 
-from .models import Project, ProjectProgressRange, ProjectProgress
+from .models import Project, ProjectProgressRange, ProjectProgress, ProjectTeam
 
 from scout.api import PlaceResource
 from dataserver.authentication import AnonymousApiKeyAuthentication
