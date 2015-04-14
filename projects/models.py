@@ -1,6 +1,7 @@
 """ Projects and related models. """
 
 from django.db import models
+from django.contrib.auth.models import Group
 from autoslug.fields import AutoSlugField
 from taggit.managers import TaggableManager
 from scout.models import Place
@@ -56,6 +57,7 @@ class Project(models.Model):
     end_date = models.DateField(null=True, blank=True)
     progress = models.ForeignKey(ProjectProgress, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+    groups = models.ManyToManyField(Group, null=True, blank=True)
 
     def __unicode__(self):
         """ pep257, you know I love you. """
@@ -69,6 +71,7 @@ class ProjectTeam(models.Model):
 
     .. todo:: this model is probably obsolete.
         Someones knowing the truth checks it?
+        Does the project group replaces it ?
     """
 
     project = models.ForeignKey(Project)
