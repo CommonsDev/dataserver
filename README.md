@@ -23,7 +23,7 @@ API list:
 Authors / contributors:
   - Guillaume Libersat
   - Simon Sarrazin
-  - Alban Tiberghen
+  - Alban Tiberghien
   - Freddy Limpens
   - Olivier Cortès
 
