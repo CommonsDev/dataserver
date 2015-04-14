@@ -10,8 +10,8 @@ class PertinenceResource(ModelResource):
         resource_name = 'project/commons/pertinence'
         authorization = Authorization()
 
-    project = fields.ForeignKey('projects.api.ProjectResource', 'project', null=True, blank=True, full=True)
-    usage = fields.ForeignKey('commons.api.usage.UsageResource', 'usage', full=True, null=True, blank=True)
+    project = fields.ForeignKey('projects.api.ProjectResource', 'project', use_in='detail', null=True, blank=True, full=True)
+    usage = fields.ForeignKey('commons.api.usage.UsageResource', 'usage', use_in='detail', full=True, null=True, blank=True)
 
 
 class UsageResource(ModelResource):
@@ -21,4 +21,4 @@ class UsageResource(ModelResource):
         resource_name = 'project/commons/usage'
         authorization = Authorization()
 
-    project = fields.ToManyField('projects.api.ProjectResource', 'project', null=True, blank=True, full=True)
+    project = fields.ToManyField('projects.api.ProjectResource', 'project', use_in='detail', null=True, blank=True, full=True)

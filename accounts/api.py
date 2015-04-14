@@ -11,6 +11,7 @@ from tastypie import http
 from tastypie.http import HttpUnauthorized, HttpForbidden
 from tastypie.authentication import Authentication, BasicAuthentication, ApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization, Authorization
+from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
@@ -27,6 +28,10 @@ class UserResource(ModelResource):
         authentication = Authentication()
         authorization = Authorization()
         fields = ['username', 'first_name', 'last_name', 'groups', 'email']
+        filtering = {
+            "id" : ['exact',],
+            "username": ALL_WITH_RELATIONS,
+        }
 
     groups = fields.ToManyField('accounts.api.GroupResource', 'groups', null=True, full=False)
 
@@ -36,8 +41,6 @@ class UserResource(ModelResource):
         except Profile.DoesNotExist:
             pass
         bundle.data['groups'] = [{"id" : group.id, "name":group.name} for group in bundle.obj.groups.all()]
-        #bundle.data['first_name'] = bundle.obj.user.first_name
-        #bundle.data['last_name'] = bundle.obj.user.last_name
         return bundle
 
 
@@ -169,15 +172,20 @@ class ProfileResource(ModelResource):
         resource_name = 'account/profile'
         authentication = Authentication()
         authorization = Authorization()
+        filtering = {
+            "id" : ['exact',],
+            "user" : ALL_WITH_RELATIONS,
+        }
 
     def dehydrate(self, bundle):
         bundle.data["username"] = bundle.obj.username
         return bundle
-    
+
 class ObjectProfileLinkResource(ModelResource):
     """
     Resource for linking profile with objects s.a a Project, a Category, etc.
     """
+    content_type = fields.CharField(attribute='content_type__model')
     profile = fields.OneToOneField(ProfileResource, 'profile', full=True)
     level = fields.IntegerField(attribute='level')
     detail = fields.CharField(attribute='detail')
@@ -190,7 +198,10 @@ class ObjectProfileLinkResource(ModelResource):
         authorization = DjangoAuthorization()
         default_format = "application/json"
         filtering = {
-            "object_id" : ['exact', ]
+            "object_id" : ['exact', ],
+            "content_type" : ['exact', ],
+            "profile" : ALL_WITH_RELATIONS,
+
         }
         always_return_data = True
 
@@ -210,7 +221,7 @@ class ObjectProfileLinkResource(ModelResource):
             data = json.loads(request.body)
             if 'profile_id' in data:
                 profile = get_object_or_404(Profile, pk=data['profile_id'])
-            else: 
+            else:
                 profile=request.user.profile
             objectprofilelink_item, created = ObjectProfileLink.objects.get_or_create(profile=profile,
                                             content_type=ContentType.objects.get(model=kwargs['content_type']),
