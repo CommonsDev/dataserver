@@ -59,6 +59,7 @@ class TaggedItemResource(ModelResource):
     class Meta:
         queryset = TaggedItem.objects.all()
         resource_name = 'taggeditem'
+        allowed_methods = ['get', 'post', 'patch', 'delete']
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
         default_format = "application/json"

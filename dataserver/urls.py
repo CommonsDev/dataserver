@@ -12,7 +12,7 @@ from commons.api.usage import UsageResource, PertinenceResource
 from commons.api.prestation import PrestationResource, PrestationModuleResource, SelectedModulesResource
 # from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
-from graffiti.api import TagResource
+from graffiti.api import TagResource, TaggedItemResource
 from projects.api import ProjectResource
 from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
                               ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
@@ -91,6 +91,7 @@ api.register(SelectedModulesResource())
 
 # Graffiti
 api.register(TagResource())
+api.register(TaggedItemResource())
 
 # ucomment
 api.register(CommentResource())
