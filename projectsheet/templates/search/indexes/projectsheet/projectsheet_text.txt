@@ -1,0 +1,9 @@
+{{ object.project.title }}
+{{ object.project.description }}
+{{ object.project.baseline }}
+{% for tag in object.project.tags.all %}
+    {{ tag.name }}
+{% endfor %}
+{% for qa in object.question_answers.all %}
+    {{ qa.answer }}
+{% endfor %}
