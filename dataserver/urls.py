@@ -5,7 +5,7 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
-from accounts.api import UserResource, GroupResource, ProfileResource
+from accounts.api import UserResource, GroupResource, ProfileResource, ObjectProfileLinkResource
 # from alambic.api import RoomResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from commons.api.usage import UsageResource, PertinenceResource
@@ -43,6 +43,7 @@ api.register(PlaceResource())
 api.register(UserResource())
 api.register(GroupResource())
 api.register(ProfileResource())
+api.register(ObjectProfileLinkResource())
 
 # Flipflop (Kanban)
 api.register(BoardResource())

@@ -1,4 +1,6 @@
 # -*- encoding: utf-8 -*-
+import json
+
 from django.conf.urls import url
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
