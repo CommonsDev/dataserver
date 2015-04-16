@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, logout
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.shortcuts import get_object_or_404
+from django.db import IntegrityError
 
 from tastypie import fields
 from tastypie import http
@@ -43,6 +44,14 @@ class UserResource(ModelResource):
         bundle.data['groups'] = [{"id" : group.id, "name":group.name} for group in bundle.obj.groups.all()]
         return bundle
 
+    def obj_create(self, bundle, request=None, **kwargs):
+        try:
+            bundle = super(UserResource, self).obj_create(bundle, **kwargs)
+            bundle.obj.set_password(bundle.data.get('password'))
+            bundle.obj.save() 
+        except IntegrityError:
+            raise BadRequest('That username already exists')
+        return bundle
 
     def prepend_urls(self):
         return [
