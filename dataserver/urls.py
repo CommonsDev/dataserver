@@ -103,6 +103,7 @@ api.register(CommentResource())
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api.urls)),
+    url(r'^bucket/', include('bucket.urls'))
 
 )
 
