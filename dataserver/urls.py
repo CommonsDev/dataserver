@@ -5,14 +5,14 @@ from django.contrib import admin
 
 from tastypie.api import Api
 
-from accounts.api import UserResource, GroupResource, ProfileResource
+from accounts.api import UserResource, GroupResource, ProfileResource, ObjectProfileLinkResource
 # from alambic.api import RoomResource
 from bucket.api import BucketResource, BucketFileResource, BucketTagResource, BucketFileCommentResource
 from commons.api.usage import UsageResource, PertinenceResource
 from commons.api.prestation import PrestationResource, PrestationModuleResource, SelectedModulesResource
 # from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
-from graffiti.api import TagResource
+from graffiti.api import TagResource, TaggedItemResource
 from projects.api import ProjectResource
 from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
                               ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
@@ -43,6 +43,7 @@ api.register(PlaceResource())
 api.register(UserResource())
 api.register(GroupResource())
 api.register(ProfileResource())
+api.register(ObjectProfileLinkResource())
 
 # Flipflop (Kanban)
 api.register(BoardResource())
@@ -91,6 +92,7 @@ api.register(SelectedModulesResource())
 
 # Graffiti
 api.register(TagResource())
+api.register(TaggedItemResource())
 
 # ucomment
 api.register(CommentResource())
@@ -101,6 +103,7 @@ api.register(CommentResource())
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(api.urls)),
+    url(r'^bucket/', include('bucket.urls'))
 
 )
 
