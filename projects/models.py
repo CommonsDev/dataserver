@@ -6,8 +6,6 @@ from autoslug.fields import AutoSlugField
 from taggit.managers import TaggableManager
 from scout.models import Place
 from accounts.models import Profile
-# from django.db.models.signals import post_save
-# from django.dispatch.dispatcher import receiver
 
 
 class ProjectProgressRange(models.Model):
@@ -76,9 +74,3 @@ class ProjectTeam(models.Model):
 
     project = models.ForeignKey(Project)
     members = models.ManyToManyField(Profile)
-
-
-@receiver(post_save, sender=Project)
-def create_project_team(sender, created, instance, **kwargs):
-    if created:
-        ProjectTeam.objects.create(project=instance)
