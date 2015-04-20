@@ -1,31 +1,9 @@
-# Django settings for dataserver project.
+# -*- coding: utf-8 -*-
+""" Django settings for dataserver project. """
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
+from .site_settings import *  # NOQA
 
 MANAGERS = ADMINS
-
-CARTO_BASE_URL = "http://gup.extra-muros.coop/carte/"
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'gup',                      # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': 'gup',
-        'PASSWORD': 'gup',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.s
-    }
-}
-
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['api.gup.extra-muros.coop', 'gup.extra-muros.coop']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -90,19 +68,19 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
     # 'djangular.finders.NamespacedAngularAppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',    
+    'compressor.finders.CompressorFinder',
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = 'xs&qnebso4$9leua)7xqpyf&9ilf&3g$4$vhxyftt%tsgz1haf'
+SECRET_KEY = 'lf&3g$4$vhxyfttxs&q$9leua)7xqnebso4pyf&9i%tsgz1haf'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -113,15 +91,10 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',
-    
+
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    
-    'cms.middleware.page.CurrentPageMiddleware',
-    'cms.middleware.user.CurrentUserMiddleware',
-    'cms.middleware.toolbar.ToolbarMiddleware',
-    'cms.middleware.language.LanguageCookieMiddleware',    
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -136,7 +109,8 @@ ROOT_URLCONF = 'dataserver.urls'
 WSGI_APPLICATION = 'dataserver.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Put strings here, like "/home/html/django_templates"
+    # or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     os.path.join(PROJECT_DIR, '..', 'templates'),
@@ -148,8 +122,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'cms.context_processors.media',
-    'sekizai.context_processors.sekizai',
     'multiuploader.context_processors.booleans',
 )
 
@@ -160,53 +132,45 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.gis',
+    'django.contrib.admin',
+    'django_comments',
     'south',
     'corsheaders',
     'reversion',
-    
-    'compressor',
-    'djangular',
-    'django.contrib.gis',
-    
-    'guardian',
-    'userena',
-    'accounts',
-    'django_extensions',
-
-    'tastypie',
-    'sendfile',
-    
-    'djangocms_admin_style',
-    # Uncomment the next line to enable the admin:
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
-
-    #= djangocms dependencies : see also 'djangocms_admin_style' that need to be above 'django.contrib.admin',
-    'djangocms_text_ckeditor',
-    'cms',
-    'mptt',
-    'menus',
-    'sekizai',
-    #'cms.plugins.video',
-    #'cms.plugins.twitter',
-    'djangocms_picture',
-    #'cms.plugins.googlemap',
-    
-    'autoslug',
-    'taggit',
-    'flipflop',    
-    'alambic',
-    'bucket',
-    'scout',
     'multiuploader',
     'sorl.thumbnail',
+    'autoslug',
+    'taggit',
+    'sendfile',
+    'compressor',
+    'django_extensions',
+    'pyelasticsearch',
+    'guardian',
+    'userena',
+    'tastypie',
+    'accounts',
     'haystack',
-    #= djangocms custom plugins
-    'cms_news',
-    'cms_background_images',
-    'cms_carto'
+    'cacheops',
+
+    # Dataserver
+    # WARNING: order matters:
+    # notably scout → projects → commons (for migrations)
+    #
+    # 'alambic',
+
+    'bucket',
+    # 'deal',
+    'flipflop',
+    'graffiti',
+    'scout',
+    'projects',
+    'projectsheet',
+    'projecttool',
+    'graffiti',
+    'commons',
+    'transport_vlille',
+    'unisson',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -246,12 +210,10 @@ LEAFLET_CONFIG = {
 ANONYMOUS_USER_ID = -1
 LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
 LOGIN_URL = '/accounts/signin/'
-#LOGIN_URL = '/login/'
+# LOGIN_URL = '/login/'
 LOGOUT_URL = '/accounts/signout/'
 
 AUTH_PROFILE_MODULE = 'accounts.Profile'
-
-
 
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
@@ -263,67 +225,28 @@ COMPRESS_PRECOMPILERS = (
 CORS_ORIGIN_ALLOW_ALL = True
 TASTYPIE_FULL_DEBUG = DEBUG
 APPEND_SLASH = False
-TASTYPIE_ALLOW_MISSING_SLASH=True
+TASTYPIE_ALLOW_MISSING_SLASH = True
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
-# Haystack
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
-        'INDEX_NAME': 'bucket',
-    },
-}
-HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
 
-# CMS
-CMS_PERMISSION = True
-CMS_PUBLIC_FOR = 'all'
-PROJECT_PAGE_TEMPLATE = 'cms_project.html'
-CMS_TEMPLATES = (
-    ('cms_project.html', 'Project Page'),
-)
-# some CMS primitives do not work unless fallback for lang 'en' is defined
-CMS_LANGUAGES = {
-    1: [
-        {
-            'code': 'fr',
-            'name': 'French',
-            'fallbacks': ['en'],
-            'public': True,
-        },
-        {
-            'code': 'en',
-            'name': 'English',
-            'fallbacks': ['fr'],
-            'public': True,
-        }
-      ]
-      }
-
-CKEDITOR_SETTINGS = {
-    'language': 'fr',
-    'toolbar': 'HTMLField',
-    'skin': 'moono',
-}
-## bucket
+# bucket
 BUCKET_FILES_FOLDER = 'bucket'
 
-## multiuploader
+# multiuploader
 MULTIUPLOADER_FILE_EXPIRATION_TIME = 3600
 
 MULTIUPLOADER_FORMS_SETTINGS = {
     'default': {
-        'FILE_TYPES' : ["txt","zip","jpg","jpeg","flv","png"],
-        'CONTENT_TYPES' : [
+        'FILE_TYPES': ["txt", "zip", "jpg", "jpeg", "flv", "png"],
+        'CONTENT_TYPES': [
             'image/jpeg',
             'image/png',
             'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',  # NOQA
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'application/vnd.ms-powerpoint',
-            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',  # NOQA
             'application/vnd.oasis.opendocument.text',
             'application/vnd.oasis.opendocument.spreadsheet',
             'application/vnd.oasis.opendocument.presentation',
@@ -331,7 +254,7 @@ MULTIUPLOADER_FORMS_SETTINGS = {
             'text/rtf',
         ],
         'MAX_FILE_SIZE': 10485760,
-        'MAX_FILE_NUMBER':5,
+        'MAX_FILE_NUMBER': 5,
         'AUTO_UPLOAD': True,
     },
 }
@@ -340,5 +263,56 @@ MULTIUPLOADER_FORMS_SETTINGS = {
 SENDFILE_BACKEND = 'sendfile.backends.development'
 
 # SORL
-THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine' # Needed for Pdf conv
+# Needed for Pdf conv
+THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'
 THUMBNAIL_CONVERT = 'gm convert'
+
+# ———————————————————————————————————————————————————————————————————— Cacheops
+
+DATASERVER_REDIS_CACHE_DB = os.environ.get('DATASERVER_REDIS_CACHE_DB',
+                                           u'127.0.0.1:6379:2')
+
+CACHE_HOST, CACHE_PORT, CACHE_DB_NUM = DATASERVER_REDIS_CACHE_DB.split(':', 3)
+
+CACHEOPS_REDIS = {
+    'host': CACHE_HOST,
+    'port': int(CACHE_PORT),
+    'db': int(CACHE_DB_NUM),
+    'socket_timeout': 5,
+}
+
+# Not necessary until https://github.com/Suor/django-cacheops/pull/134 is integrated  # NOQA
+CACHEOPS_USE_LOCK = False
+
+CACHE_ONE_HOUR = 60 * 60
+CACHE_ONE_DAY = CACHE_ONE_HOUR * 24
+CACHE_ONE_WEEK = CACHE_ONE_DAY * 7
+CACHE_ONE_MONTH = CACHE_ONE_DAY * 31
+
+try:
+    CACHEOPS
+
+except NameError:
+    CACHEOPS = {
+        # Automatically cache any User.objects.get() calls
+        # for 30 minutes. This includes request.user or
+        # post.author access, where Post.author is a foreign
+        # key to auth.User.
+        'auth.user': {'ops': 'get', 'timeout': CACHE_ONE_WEEK},
+
+        # Automatically cache all gets and queryset fetches
+        # to other django.contrib.auth and oneflow.base models
+        # for an hour.
+        'auth.*': {'ops': ('fetch', 'get'), 'timeout': CACHE_ONE_DAY},
+
+        # Cache gets, fetches, counts and exists to Permission
+        # 'all' is just an alias for ('get', 'fetch', 'count', 'exists')
+        'auth.permission': {'ops': 'all', 'timeout': CACHE_ONE_DAY},
+
+        'contenttypes.contenttype': {'ops': 'all', 'timeout': CACHE_ONE_WEEK},
+
+        # Everything is automatically cached for one day.
+        # Override CACHEOPS in site_settings if you
+        # need a more granular configuration.
+        '*.*': {'ops': 'all', 'timeout': CACHE_ONE_DAY},
+    }

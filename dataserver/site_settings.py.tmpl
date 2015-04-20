@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+
+import os
+import dj_database_url
+
+
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+ADMINS = (
+    # ('Your Name', 'your_email@example.com'),
+)
+
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = ['YOUR.HOST.YOUR.DOMAIN', ]
+
+DATABASES = {
+    'default':
+        dj_database_url.parse(
+            os.environ.get(
+                'UNISSON_DATA_SERVER_DATABASE',
+
+                # default value for database is `dataserver` × 3
+                'postgis://dataserver:dataserver@localhost/dataserver')
+        )
+}
+
+# Haystack (for bucket module)
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200/',
+        'INDEX_NAME': 'bucket',
+    },
+}
+
+HAYSTACK_SIGNAL_PROCESSOR = 'bucket.signals.RelatedRealtimeSignalProcessor'
