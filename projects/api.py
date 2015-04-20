@@ -49,6 +49,7 @@ class ProjectResource(ModelResource):
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
+
         filtering = {
             'slug': ('exact',),
             'id' : ('exact', ),

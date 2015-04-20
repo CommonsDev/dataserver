@@ -6,8 +6,6 @@ from autoslug.fields import AutoSlugField
 from taggit.managers import TaggableManager
 from scout.models import Place
 from accounts.models import Profile
-# from django.db.models.signals import post_save
-# from django.dispatch.dispatcher import receiver
 
 
 class ProjectProgressRange(models.Model):
