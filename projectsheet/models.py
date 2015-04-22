@@ -27,6 +27,11 @@ class ProjectSheetQuestion(models.Model):
     class Meta:
         ordering = ('order',)
 
+class QuestionChoice(models.Model):
+    question = models.ForeignKey(ProjectSheetQuestion, related_name='choices')
+    text = models.CharField(max_length=255)
+    value = models.PositiveIntegerField(default=0)
+
 class ProjectSheet(models.Model):
     project = models.OneToOneField(Project)
     template = models.ForeignKey(ProjectSheetTemplate)
@@ -54,6 +59,7 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
+    selected_choices = models.CommaSeparatedIntegerField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)

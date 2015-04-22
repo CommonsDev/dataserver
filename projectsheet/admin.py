@@ -1,8 +1,19 @@
 from django.contrib import admin
 from django.contrib.admin.options import StackedInline
 from django import forms
+from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 
-from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer
+from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer, QuestionChoice
+
+class EditLinkToInlineObject(object):
+    def edit_link(self, instance):
+        url = reverse('admin:%s_%s_change' % (
+            instance._meta.app_label,  instance._meta.module_name),  args=[instance.pk] )
+        if instance.pk:
+            return mark_safe(u'<a href="{u}">edit</a>'.format(u=url))
+        else:
+            return ''
 
 class ProjectSheetQuestionAnswerInline(StackedInline):
     model = ProjectSheetQuestionAnswer
@@ -10,10 +21,26 @@ class ProjectSheetQuestionAnswerInline(StackedInline):
     min_num = 0
     can_delete = False
 
-class ProjectSheetQuestionInline(StackedInline):
+class QuestionChoiceInline(StackedInline):
+    model = QuestionChoice
+    min_num = 0
+
+class ProjectSheetQuestionInline(EditLinkToInlineObject, StackedInline):
     model = ProjectSheetQuestion
     extra = 0
     min_num = 1
+    readonly_fields = ('get_choices', 'edit_link' )
+
+    def get_choices(self, obj):
+        choices_string = ""
+        for choice in obj.choices.all():
+            choices_string += choice.text+', '
+        return choices_string
+
+    get_choices.short_description = 'Choix'
+
+class ProjectSheetQuestionAdmin(admin.ModelAdmin):
+    inlines = [QuestionChoiceInline]
 
 class ProjectSheetTemplateAdmin(admin.ModelAdmin):
     inlines = [ProjectSheetQuestionInline]
@@ -23,3 +50,4 @@ class ProjectSheetAdmin(admin.ModelAdmin):
 
 admin.site.register(ProjectSheet, ProjectSheetAdmin)
 admin.site.register(ProjectSheetTemplate, ProjectSheetTemplateAdmin)
+admin.site.register(ProjectSheetQuestion, ProjectSheetQuestionAdmin)
