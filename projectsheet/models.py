@@ -71,7 +71,7 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
-    select_choices = models.ManyToManyField(QuestionChoice, null=True, blank=True) 
+    selected_choices = models.ManyToManyField(QuestionChoice, null=True, blank=True) 
 
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)
