@@ -3,20 +3,24 @@ from tastypie import fields
 
 from .models import Project, ProjectProgressRange, ProjectProgress
 
+from base.api import HistorizedModelResource
 from scout.api import PlaceResource
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL_WITH_RELATIONS
-from accounts.api import ProfileResource
+
+# from accounts.api import ProfileResource
+
 
 class ProjectProgressRangeResource(ModelResource):
-    class Meta :
+    class Meta:
         queryset = ProjectProgressRange.objects.all()
         allowed_methods = ['get']
 
         filtering = {
             "slug": ('exact',),
         }
+
 
 class ProjectProgressResource(ModelResource):
     range = fields.ToOneField(ProjectProgressRangeResource, "progress_range")
@@ -31,12 +35,22 @@ class ProjectProgressResource(ModelResource):
         }
 
 
-class ProjectResource(ModelResource):
-    location = fields.ToOneField(PlaceResource, 'location', null=True, blank=True, full=True)
-    progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
+class ProjectHistoryResource(ModelResource):
+
+    class Meta:
+        queryset = Project.history.all()
+        filtering = {'id': ALL_WITH_RELATIONS}
+
+
+class ProjectResource(HistorizedModelResource):
+    location = fields.ToOneField(PlaceResource, 'location',
+                                 null=True, blank=True, full=True)
+    progress = fields.ToOneField(ProjectProgressResource, 'progress',
+                                 null=True, blank=True, full=True)
 
     # TODO: 20150302 keep ?
-    # tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True, null=True)
+    # tags = fields.ToManyField('graffiti.api.TagResource', 'tags',
+    #                           full=True, null=True)
 
     class Meta:
         queryset = Project.objects.all()
@@ -45,9 +59,9 @@ class ProjectResource(ModelResource):
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
-
+        history_resource_class = ProjectHistoryResource
         filtering = {
             'slug': ('exact',),
-            'id' : ('exact', ),
+            'id': ('exact', ),
             'location': ALL_WITH_RELATIONS,
         }

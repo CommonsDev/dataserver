@@ -91,7 +91,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',
-
+    'simple_history.middleware.HistoryRequestMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -126,6 +126,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 )
 
 INSTALLED_APPS = (
+    'south',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -135,7 +136,6 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'django.contrib.admin',
     'django_comments',
-    'south',
     'corsheaders',
     'reversion',
     'multiuploader',
@@ -149,7 +149,6 @@ INSTALLED_APPS = (
     'guardian',
     'userena',
     'tastypie',
-    'accounts',
     'haystack',
     'cacheops',
 
@@ -159,6 +158,7 @@ INSTALLED_APPS = (
     #
     # 'alambic',
 
+    'accounts',
     'bucket',
     # 'deal',
     'flipflop',
@@ -171,6 +171,9 @@ INSTALLED_APPS = (
     'commons',
     'transport_vlille',
     'unisson',
+
+    'simple_history',
+
 )
 
 # A sample logging configuration. The only tangible logging
