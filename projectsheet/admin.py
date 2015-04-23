@@ -23,7 +23,9 @@ class ProjectSheetQuestionAnswerInline(StackedInline):
 
 class QuestionChoiceInline(StackedInline):
     model = QuestionChoice
-    min_num = 0
+    min_num = 1
+    extra = 1
+    readonly_fields = ('value',)
 
 class ProjectSheetQuestionInline(EditLinkToInlineObject, StackedInline):
     model = ProjectSheetQuestion
