@@ -1,20 +1,26 @@
 from django.core.urlresolvers import reverse
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url  # , patterns, include
 
 from haystack.query import SearchQuerySet
 from tastypie.resources import ModelResource
-from tastypie.authorization import Authorization, DjangoAuthorization
+from tastypie.authorization import DjangoAuthorization  # , Authorization,
 from tastypie import fields
 from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie.paginator import Paginator
 from tastypie.utils import trailing_slash
 
 from dataserver.authentication import AnonymousApiKeyAuthentication
+from base.api import HistorizedModelResource
 from bucket.api import BucketResource, BucketFileResource
 from projects.api import ProjectResource
 from projects.models import Project
 
-from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer
+from .models import (
+    ProjectSheet,
+    ProjectSheetTemplate,
+    ProjectSheetQuestion,
+    ProjectSheetQuestionAnswer,
+)
 
 
 class ProjectSheetQuestionResource(ModelResource):
@@ -26,12 +32,14 @@ class ProjectSheetQuestionResource(ModelResource):
         authorization = DjangoAuthorization()
 
     def hydrate(self, bundle):
-        bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
+        bundle.obj.template = ProjectSheetTemplate.objects.get(
+            id=bundle.data["template_id"])
         return bundle
 
 
 class ProjectSheetTemplateResource(ModelResource):
-    questions = fields.ToManyField(ProjectSheetQuestionResource, 'questions', full=True, null=True)
+    questions = fields.ToManyField(ProjectSheetQuestionResource,
+                                   'questions', full=True, null=True)
 
     class Meta:
         queryset = ProjectSheetTemplate.objects.all()
@@ -41,13 +49,15 @@ class ProjectSheetTemplateResource(ModelResource):
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
-            'slug' : ('exact', )
+            'slug': ('exact', )
         }
 
 
 class ProjectSheetQuestionAnswerResource(ModelResource):
-    question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
-    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
+    question = fields.ToOneField(ProjectSheetQuestionResource,
+                                 'question', full=True)
+    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource",
+                                     'projectsheet')
 
     class Meta:
         queryset = ProjectSheetQuestionAnswer.objects.all()
@@ -57,14 +67,22 @@ class ProjectSheetQuestionAnswerResource(ModelResource):
         authorization = DjangoAuthorization()
 
 
-class ProjectSheetResource(ModelResource):
+class ProjectSheetHistoryResource(ModelResource):
+
+    class Meta:
+        queryset = ProjectSheet.history.all()
+        filtering = {'id': ALL_WITH_RELATIONS}
+
+
+class ProjectSheetResource(HistorizedModelResource):
     project = fields.ToOneField(ProjectResource, 'project', full=True)
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
-    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True, full=True)
+    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource,
+                                          'question_answers', null=True,
+                                          full=True)
     videos = fields.DictField(attribute='videos', null=True)
-
 
     class Meta:
         object_class = ProjectSheet
@@ -72,32 +90,37 @@ class ProjectSheetResource(ModelResource):
         allowed_methods = ['get', 'post', 'put', 'patch']
         default_format = "application/json"
         resource_name = 'project/sheet/projectsheet'
-
+        history_resource_class = ProjectSheetHistoryResource
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
         always_return_data = True
         filtering = {
-            'project' : ALL_WITH_RELATIONS,
-            'template' : ALL_WITH_RELATIONS,
+            'project': ALL_WITH_RELATIONS,
+            'template': ALL_WITH_RELATIONS,
         }
 
     def hydrate(self, bundle):
-        if "project_id" in bundle.data: # XXX: ???
-            bundle.obj.project = Project.objects.get(id=bundle.data["project_id"])
+        if "project_id" in bundle.data:  # XXX: ???
+            bundle.obj.project = Project.objects.get(
+                id=bundle.data["project_id"])
+
         if "template_id" in bundle.data:
-            bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
+            bundle.obj.template = ProjectSheetTemplate.objects.get(
+                id=bundle.data["template_id"])
+
         return bundle
 
     def prepend_urls(self):
-        """
-        URL override for permissions and search specials
-        """
-        return [
-           
-           url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
-                                trailing_slash()), self.wrap_view('projectsheet_search'), name="api_projectsheet_search"),
-        ]
+        """ URL override for permissions and search specials. """
 
+        # get the one from HistorizedModelResource
+        urls = super(ProjectSheetResource, self).prepend_urls()
+
+        return urls + [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
+                trailing_slash()), self.wrap_view('projectsheet_search'),
+                name="api_projectsheet_search"),
+        ]
 
     def projectsheet_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
@@ -117,8 +140,10 @@ class ProjectSheetResource(ModelResource):
         # launch query
         if query != "":
             sqs = sqs.auto_query(query)
-        
-        uri = reverse('api_projectsheet_search', kwargs={'api_name':self.api_name,'resource_name': self._meta.resource_name})
+
+        uri = reverse('api_projectsheet_search',
+                      kwargs={'api_name': self.api_name,
+                              'resource_name': self._meta.resource_name})
         paginator = Paginator(request.GET, sqs, resource_uri=uri)
 
         objects = []
