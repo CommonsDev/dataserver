@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import pre_save  # , post_save
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
@@ -8,6 +8,7 @@ from autoslug.fields import AutoSlugField
 from bucket.models import Bucket, BucketFile
 from jsonfield import JSONField
 
+
 class ProjectSheetTemplate(models.Model):
     name = models.CharField(max_length=100)
     slug = AutoSlugField(unique=True, populate_from="name", always_update=True)
@@ -15,6 +16,7 @@ class ProjectSheetTemplate(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class ProjectSheetQuestion(models.Model):
     template = models.ForeignKey(ProjectSheetTemplate, related_name='questions')
@@ -27,6 +29,7 @@ class ProjectSheetQuestion(models.Model):
     class Meta:
         ordering = ('order',)
 
+
 class ProjectSheet(models.Model):
     project = models.OneToOneField(Project)
     template = models.ForeignKey(ProjectSheetTemplate)
@@ -37,17 +40,21 @@ class ProjectSheet(models.Model):
     def __unicode__(self):
         return u"%s %s" % (_('Project sheet for '), self.project)
 
+
 def createProjectSheetBucket(sender, instance, **kwargs):
     bucket_name = instance.project.slug
-    bucket_owner = User.objects.get(pk=-1) # FIXME : to whom should bucket projects belong ? default to Anonymous user by now
-    projectsheet_bucket, created = Bucket.objects.get_or_create(created_by=bucket_owner,
-                                                name=bucket_name)
+    # FIXME : to whom should bucket projects belong ?
+    #         default to Anonymous user by now.
+    bucket_owner = User.objects.get(pk=-1)
+    projectsheet_bucket, created = Bucket.objects.get_or_create(
+        created_by=bucket_owner, name=bucket_name)
     instance.bucket = projectsheet_bucket
 
+
 class ProjectSheetQuestionAnswer(models.Model):
-    """
-    Answer to a question for a given project
-    """
+
+    """ Answer to a question for a given project. """
+
     class Meta:
         ordering = ("question__order",)
 
@@ -57,5 +64,6 @@ class ProjectSheetQuestionAnswer(models.Model):
 
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)
+
 
 pre_save.connect(createProjectSheetBucket, ProjectSheet)
