@@ -29,7 +29,7 @@ class ProjectSheetQuestion(models.Model):
 
 class QuestionChoice(models.Model):
     question = models.ForeignKey(ProjectSheetQuestion, related_name='choices')
-    text = models.CharField(max_length=255)
+    text = models.CharField(max_length=255, verbose_name="Choice text")
     value = models.PositiveIntegerField(default=0)
     
     def save(self, *args, **kwargs):
@@ -71,7 +71,7 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
-    selected_choices = models.CommaSeparatedIntegerField(max_length=255, null=True, blank=True)
+    select_choices = models.ManyToManyField(QuestionChoice, null=True, blank=True) 
 
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)

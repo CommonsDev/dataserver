@@ -14,10 +14,19 @@ from bucket.api import BucketResource, BucketFileResource
 from projects.api import ProjectResource
 from projects.models import Project
 
-from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer
+from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer, QuestionChoice
 
+
+class QuestionChoiceResource(ModelResource):
+    class Meta:
+        queryset = QuestionChoice.objects.all()
+        allowed_methods = ['get']
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
+        always_return_data = True
 
 class ProjectSheetQuestionResource(ModelResource):
+    choices = fields.ToManyField(QuestionChoiceResource, 'choices', full=True, null=True)
     class Meta:
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
@@ -29,6 +38,9 @@ class ProjectSheetQuestionResource(ModelResource):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
         return bundle
 
+    # def dehydrate(self, bundle):
+    #     bundle.data["choices"] = bundle.obj.choices
+    #     return bundle
 
 class ProjectSheetTemplateResource(ModelResource):
     questions = fields.ToManyField(ProjectSheetQuestionResource, 'questions', full=True, null=True)
