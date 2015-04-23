@@ -43,6 +43,11 @@ class ProjectSheetQuestionInline(EditLinkToInlineObject, StackedInline):
 
 class ProjectSheetQuestionAdmin(admin.ModelAdmin):
     inlines = [QuestionChoiceInline]
+    list_display = [ '__unicode__', 'related_template']
+
+    def related_template(self, obj):
+        return '%s'%(obj.template.name)
+    related_template.short_description = 'Template'
 
 class ProjectSheetTemplateAdmin(admin.ModelAdmin):
     inlines = [ProjectSheetQuestionInline]
