@@ -30,7 +30,7 @@ class UserResource(ModelResource):
         resource_name = 'account/user'
         authentication = Authentication()
         authorization = Authorization()
-        fields = ['username', 'first_name', 'last_name', 'groups', 'email']
+        fields = ['id', 'username', 'first_name', 'last_name', 'groups', 'email']
         filtering = {
             "id" : ['exact',],
             "username": ALL_WITH_RELATIONS,
@@ -50,7 +50,7 @@ class UserResource(ModelResource):
         try:
             bundle = super(UserResource, self).obj_create(bundle, **kwargs)
             bundle.obj.set_password(bundle.data.get('password'))
-            bundle.obj.save() 
+            bundle.obj.save()
         except IntegrityError:
             raise BadRequest('That username already exists')
         return bundle
