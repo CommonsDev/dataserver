@@ -10,6 +10,7 @@ from tastypie.paginator import Paginator
 from tastypie.utils import trailing_slash
 
 from dataserver.authentication import AnonymousApiKeyAuthentication
+from base.api import HistorizedModelResource
 from bucket.api import BucketResource, BucketFileResource
 from projects.api import ProjectResource
 from projects.models import Project
@@ -66,7 +67,14 @@ class ProjectSheetQuestionAnswerResource(ModelResource):
         authorization = DjangoAuthorization()
 
 
-class ProjectSheetResource(ModelResource):
+class ProjectSheetHistoryResource(ModelResource):
+
+    class Meta:
+        queryset = ProjectSheet.history.all()
+        filtering = {'id': ALL_WITH_RELATIONS}
+
+
+class ProjectSheetResource(HistorizedModelResource):
     project = fields.ToOneField(ProjectResource, 'project', full=True)
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
@@ -82,7 +90,7 @@ class ProjectSheetResource(ModelResource):
         allowed_methods = ['get', 'post', 'put', 'patch']
         default_format = "application/json"
         resource_name = 'project/sheet/projectsheet'
-
+        history_resource_class = ProjectSheetHistoryResource
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
         always_return_data = True
@@ -103,15 +111,16 @@ class ProjectSheetResource(ModelResource):
         return bundle
 
     def prepend_urls(self):
-        """
-        URL override for permissions and search specials
-        """
-        return [
-           
-           url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
-                                trailing_slash()), self.wrap_view('projectsheet_search'), name="api_projectsheet_search"),
-        ]
+        """ URL override for permissions and search specials. """
 
+        # get the one from HistorizedModelResource
+        urls = super(ProjectSheetResource, self).prepend_urls()
+
+        return urls + [
+            url(r"^(?P<resource_name>%s)/search%s$" % (self._meta.resource_name,
+                trailing_slash()), self.wrap_view('projectsheet_search'),
+                name="api_projectsheet_search"),
+        ]
 
     def projectsheet_search(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
