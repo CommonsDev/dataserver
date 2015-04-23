@@ -149,7 +149,6 @@ INSTALLED_APPS = (
     'guardian',
     'userena',
     'tastypie',
-    'accounts',
     'haystack',
     'cacheops',
 
@@ -159,6 +158,7 @@ INSTALLED_APPS = (
     #
     # 'alambic',
 
+    'accounts',
     'bucket',
     # 'deal',
     'flipflop',
