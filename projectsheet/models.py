@@ -3,6 +3,8 @@ from django.db.models.signals import pre_save  # , post_save
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext as _
 
+from simple_history.models import HistoricalRecords
+
 from projects.models import Project
 from autoslug.fields import AutoSlugField
 from bucket.models import Bucket, BucketFile
@@ -37,6 +39,8 @@ class ProjectSheet(models.Model):
     cover = models.ForeignKey(BucketFile, null=True, blank=True)
     videos = JSONField(default=None, blank=True, null=True)
 
+    history = HistoricalRecords()
+
     def __unicode__(self):
         return u"%s %s" % (_('Project sheet for '), self.project)
 
@@ -61,6 +65,8 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
+
+    history = HistoricalRecords()
 
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)

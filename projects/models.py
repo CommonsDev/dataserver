@@ -2,6 +2,8 @@
 
 from django.db import models
 # from django.contrib.auth.models import Group
+from simple_history.models import HistoricalRecords
+
 from autoslug.fields import AutoSlugField
 from taggit.managers import TaggableManager
 from scout.models import Place
@@ -57,6 +59,8 @@ class Project(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
     # groups = models.ManyToManyField(Group, null=True, blank=True)
+
+    history = HistoricalRecords()
 
     def __unicode__(self):
         """ pep257, you know I love you. """
