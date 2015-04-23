@@ -266,7 +266,7 @@ SENDFILE_BACKEND = 'sendfile.backends.development'
 # Needed for Pdf conv
 THUMBNAIL_ENGINE = 'sorl.thumbnail.engines.convert_engine.Engine'
 THUMBNAIL_CONVERT = 'gm convert'
-
+THUMBNAIL_IDENTIFY = 'gm identify'
 # ———————————————————————————————————————————————————————————————————— Cacheops
 
 DATASERVER_REDIS_CACHE_DB = os.environ.get('DATASERVER_REDIS_CACHE_DB',
