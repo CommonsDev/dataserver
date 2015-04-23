@@ -3,6 +3,7 @@ from tastypie import fields
 
 from .models import Project, ProjectProgressRange, ProjectProgress
 
+from base.api import HistorizedModelResource
 from scout.api import PlaceResource
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
@@ -34,7 +35,14 @@ class ProjectProgressResource(ModelResource):
         }
 
 
-class ProjectResource(ModelResource):
+class ProjectHistoryResource(ModelResource):
+
+    class Meta:
+        queryset = Project.history.all()
+        filtering = {'id': ALL_WITH_RELATIONS}
+
+
+class ProjectResource(HistorizedModelResource):
     location = fields.ToOneField(PlaceResource, 'location',
                                  null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress',
@@ -51,7 +59,7 @@ class ProjectResource(ModelResource):
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
-
+        history_resource_class = ProjectHistoryResource
         filtering = {
             'slug': ('exact',),
             'id': ('exact', ),
