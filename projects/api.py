@@ -34,13 +34,9 @@ class ProjectProgressResource(ModelResource):
 class ProjectResource(ModelResource):
     location = fields.ToOneField(PlaceResource, 'location', null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress', null=True, blank=True, full=True)
-    tools = fields.ToManyField('projecttool.api.ProjectToolResource', 'tools', null=True, blank=True, full=True)
 
     # TODO: 20150302 keep ?
-    tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True, null=True)
-
-    # TODO: 20150302 will migrate to elsewhere
-    unisson = fields.ToManyField('unisson.api.EvaluationIngredientResource', 'unisson_ingredients', null=True, blank=True, full=True)
+    # tags = fields.ToManyField('graffiti.api.TagResource', 'tags', full=True, null=True)
 
     class Meta:
         queryset = Project.objects.all()
@@ -55,16 +51,3 @@ class ProjectResource(ModelResource):
             'id' : ('exact', ),
             'location': ALL_WITH_RELATIONS,
         }
-
-# XXX/TODO: obsolete this class in favor of ObjectProfileLink
-# class ProjectTeamResource(ModelResource):
-#     project = fields.ToOneField(ProjectResource, "project")
-#     members = fields.ToManyField(ProfileResource, "members", full=True)
-#     class Meta:
-#         queryset = ProjectTeam.objects.all()
-#         allowed_methods = ['get',]
-#         always_return_data = True
-#         filtering = {
-#             "project": ALL_WITH_RELATIONS,
-#         }
-
