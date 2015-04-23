@@ -38,9 +38,6 @@ class ProjectSheetQuestionResource(ModelResource):
         bundle.obj.template = ProjectSheetTemplate.objects.get(id=bundle.data["template_id"])
         return bundle
 
-    # def dehydrate(self, bundle):
-    #     bundle.data["choices"] = bundle.obj.choices
-    #     return bundle
 
 class ProjectSheetTemplateResource(ModelResource):
     questions = fields.ToManyField(ProjectSheetQuestionResource, 'questions', full=True, null=True)
@@ -60,6 +57,7 @@ class ProjectSheetTemplateResource(ModelResource):
 class ProjectSheetQuestionAnswerResource(ModelResource):
     question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
     projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
+    selected_choices = fields.ToManyField(QuestionChoiceResource, 'selected_choices', full=True, null=True, use_in='detail')
 
     class Meta:
         queryset = ProjectSheetQuestionAnswer.objects.all()
@@ -74,7 +72,7 @@ class ProjectSheetResource(ModelResource):
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
-    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True, full=True)
+    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True, full=True, use_in='detail')
     videos = fields.DictField(attribute='videos', null=True)
 
 
