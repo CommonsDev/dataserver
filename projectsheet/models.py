@@ -66,7 +66,7 @@ class ProjectSheetQuestionAnswer(models.Model):
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
 
-    history = HistoricalRecords()
+    # history = HistoricalRecords()
 
     def __unicode__(self):
         return u"Answer to question <%s> for <%s>" % (self.question, self.projectsheet)
