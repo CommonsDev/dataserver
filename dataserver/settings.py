@@ -91,7 +91,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.doc.XViewMiddleware',
-
+    'simple_history.middleware.HistoryRequestMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     'accounts',
     'haystack',
     'cacheops',
+    'simple_history',
 
     # Dataserver
     # WARNING: order matters:

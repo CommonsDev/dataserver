@@ -11,6 +11,7 @@ django-contrib-comments==1.5
 django-cors-headers==1.0.0
 django-extensions==1.4.9
 django-guardian==1.2.5
+django-simple-history==1.5.4
 django-tastypie==0.12.1
 django-userena==1.4.0
 
