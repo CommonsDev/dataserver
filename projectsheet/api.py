@@ -58,7 +58,7 @@ class ProjectSheetTemplateResource(ModelResource):
 class ProjectSheetQuestionAnswerResource(ModelResource):
     question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
     projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
-    selected_choices = fields.ToManyField(QuestionChoiceResource, 'selected_choices', full=True, null=True, use_in='detail')
+    selected_choices_id = fields.DictField(attribute='selected_choices_id', null=True)
 
     class Meta:
         queryset = ProjectSheetQuestionAnswer.objects.all()

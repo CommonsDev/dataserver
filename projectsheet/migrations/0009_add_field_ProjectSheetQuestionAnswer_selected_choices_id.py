@@ -8,21 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        
-        # Adding M2M table for field selected_choices on 'ProjectSheetQuestionAnswer'
-        m2m_table_name = db.shorten_name(u'projectsheet_projectsheetquestionanswer_selected_choices')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('projectsheetquestionanswer', models.ForeignKey(orm[u'projectsheet.projectsheetquestionanswer'], null=False)),
-            ('questionchoice', models.ForeignKey(orm[u'projectsheet.questionchoice'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['projectsheetquestionanswer_id', 'questionchoice_id'])
+        # Adding field 'ProjectSheetQuestionAnswer.selected_choices_id'
+        db.add_column(u'projectsheet_projectsheetquestionanswer', 'selected_choices_id',
+                      self.gf('jsonfield.fields.JSONField')(default=None, null=True, blank=True),
+                      keep_default=False)
 
 
     def backwards(self, orm):
-        
-        # Removing M2M table for field selected_choices on 'ProjectSheetQuestionAnswer'
-        db.delete_table(db.shorten_name(u'projectsheet_projectsheetquestionanswer_selected_choices'))
+        # Deleting field 'ProjectSheetQuestionAnswer.selected_choices_id'
+        db.delete_column(u'projectsheet_projectsheetquestionanswer', 'selected_choices_id')
 
 
     models = {
@@ -133,7 +127,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'projectsheet': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'question_answers'", 'to': u"orm['projectsheet.ProjectSheet']"}),
             'question': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'answers'", 'to': u"orm['projectsheet.ProjectSheetQuestion']"}),
-            'selected_choices': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['projectsheet.QuestionChoice']", 'null': 'True', 'blank': 'True'})
+            'selected_choices_id': ('jsonfield.fields.JSONField', [], {'default': 'None', 'null': 'True', 'blank': 'True'})
         },
         u'projectsheet.projectsheettemplate': {
             'Meta': {'object_name': 'ProjectSheetTemplate'},
