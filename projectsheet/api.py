@@ -21,6 +21,7 @@ class QuestionChoiceResource(ModelResource):
     class Meta:
         queryset = QuestionChoice.objects.all()
         allowed_methods = ['get']
+        resource_name = 'project/sheet/question_choice'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
         always_return_data = True
