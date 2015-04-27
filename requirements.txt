@@ -31,4 +31,4 @@ pygeocoder==1.2.5
 sorl-thumbnail==12.2
 
 # vlille
--e git+https://github.com/glibersat/python-vlille.git#egg=python-vlille
+#-e git+https://github.com/glibersat/python-vlille.git#egg=python-vlille
