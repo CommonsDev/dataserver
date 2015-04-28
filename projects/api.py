@@ -4,6 +4,7 @@ from tastypie import fields
 from .models import Project, ProjectProgressRange, ProjectProgress
 
 from base.api import HistorizedModelResource
+from graffiti.api import TaggedItemResource
 from scout.api import PlaceResource
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from tastypie.authorization import DjangoAuthorization
@@ -47,7 +48,7 @@ class ProjectResource(HistorizedModelResource):
                                  null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress',
                                  null=True, blank=True, full=True)
-
+    tags = fields.ToManyField(TaggedItemResource, 'tagged_items', full=True, null=True)
     # TODO: 20150302 keep ?
     # tags = fields.ToManyField('graffiti.api.TagResource', 'tags',
     #                           full=True, null=True)
