@@ -73,7 +73,7 @@ class ProjectSheetResource(ModelResource):
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
     cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
-    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True, full=True, use_in='detail')
+    question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource, 'question_answers', null=True, full=True)
     videos = fields.DictField(attribute='videos', null=True)
 
 
