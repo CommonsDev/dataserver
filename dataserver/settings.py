@@ -150,7 +150,7 @@ INSTALLED_APPS = (
     'userena',
     'tastypie',
     'haystack',
-    'cacheops',
+    # 'cacheops',
 
     # Dataserver
     # WARNING: order matters:
