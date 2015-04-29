@@ -71,7 +71,6 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
-    #selected_choices = models.ManyToManyField(QuestionChoice, null=True, blank=True) 
     selected_choices_id = JSONField(default=None, blank=True, null=True) 
 
     def __unicode__(self):
