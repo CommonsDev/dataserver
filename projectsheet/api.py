@@ -65,6 +65,7 @@ class ProjectSheetQuestionAnswerResource(ModelResource):
         resource_name = 'project/sheet/question_answer'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
+        always_return_data = True
 
 
 class ProjectSheetHistoryResource(ModelResource):
