@@ -32,4 +32,14 @@ class RelatedRealtimeSignalProcessor(RealtimeSignalProcessor):
                 'sender': instance.content_object.__class__,
                 'instance': instance.content_object
         })
+            # hack to have projectsheets also indexed with newly added tags
+            from projects.models import Project
+            if instance.content_object.__class__ == Project:
+                try:
+                    related.append({
+                    'sender': instance.content_object.projectsheet.__class__,
+                    'instance': instance.content_object.projectsheet
+                })
+                except Exception, e:
+                    pass
         return related
