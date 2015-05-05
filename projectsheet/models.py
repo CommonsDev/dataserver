@@ -32,6 +32,24 @@ class ProjectSheetQuestion(models.Model):
         ordering = ('order',)
 
 
+class QuestionChoice(models.Model):
+    question = models.ForeignKey(ProjectSheetQuestion, related_name='choices')
+    text = models.CharField(max_length=255, verbose_name="Choice text")
+    value = models.PositiveIntegerField(default=0)
+    
+    def save(self, *args, **kwargs):
+        if self.question.choices.all().count() == 0:
+            self.value = 1
+        else:
+            max_val = 0
+            for choice in self.question.choices.all():
+                if choice.value > max_val:
+                    max_val = choice.value
+            self.value = max_val + 1
+            
+        super(QuestionChoice, self).save(*args, **kwargs)
+
+
 class ProjectSheet(models.Model):
     project = models.OneToOneField(Project)
     template = models.ForeignKey(ProjectSheetTemplate)
@@ -65,6 +83,7 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
+    selected_choices_id = JSONField(default=None, blank=True, null=True) 
 
     # history = HistoricalRecords()
 
