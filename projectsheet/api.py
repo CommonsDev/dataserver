@@ -15,15 +15,20 @@ from bucket.api import BucketResource, BucketFileResource
 from projects.api import ProjectResource
 from projects.models import Project
 
-from .models import (
-    ProjectSheet,
-    ProjectSheetTemplate,
-    ProjectSheetQuestion,
-    ProjectSheetQuestionAnswer,
-)
+from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer, QuestionChoice
 
+
+class QuestionChoiceResource(ModelResource):
+    class Meta:
+        queryset = QuestionChoice.objects.all()
+        allowed_methods = ['get']
+        resource_name = 'project/sheet/question_choice'
+        authentication = AnonymousApiKeyAuthentication()
+        authorization = DjangoAuthorization()
+        always_return_data = True
 
 class ProjectSheetQuestionResource(ModelResource):
+    choices = fields.ToManyField(QuestionChoiceResource, 'choices', full=True, null=True)
     class Meta:
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
@@ -54,10 +59,9 @@ class ProjectSheetTemplateResource(ModelResource):
 
 
 class ProjectSheetQuestionAnswerResource(ModelResource):
-    question = fields.ToOneField(ProjectSheetQuestionResource,
-                                 'question', full=True)
-    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource",
-                                     'projectsheet')
+    question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
+    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
+    selected_choices_id = fields.ListField(attribute='selected_choices_id', null=True)
 
     class Meta:
         queryset = ProjectSheetQuestionAnswer.objects.all()

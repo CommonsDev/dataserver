@@ -15,7 +15,7 @@ from flipflop.api import BoardResource, ListResource, CardResource, TaskResource
 from graffiti.api import TagResource, TaggedItemResource
 from projects.api import ProjectResource
 from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
-                              ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource)
+                              ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource, QuestionChoiceResource)
 from projecttool.api import ProjectToolResource
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
@@ -70,6 +70,7 @@ api.register(ProjectSheetResource())
 api.register(ProjectSheetTemplateResource())
 api.register(ProjectSheetQuestionAnswerResource())
 api.register(ProjectSheetQuestionResource())
+api.register(QuestionChoiceResource())
 
 # Projects Tools
 api.register(ProjectToolResource())
