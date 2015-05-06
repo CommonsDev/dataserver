@@ -6,15 +6,17 @@
 from pygeocoder import Geocoder
 
 from tastypie import fields
-from tastypie.authorization import Authorization, ReadOnlyAuthorization,\
-    DjangoAuthorization
-from tastypie.authentication import ApiKeyAuthentication
 from tastypie.constants import ALL
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 # from tastypie.fields import DictField
 from tastypie.resources import ModelResource
 
-from dataserver.authorization import GuardianAuthorization
+from tastypie.authentication import (
+    MultiAuthentication, BasicAuthentication,
+)
+from dataserver.authorization import (
+    GuardianAuthorization, AdminOrDjangoAuthorization,
+)
 from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from accounts.api import UserResource
@@ -56,7 +58,8 @@ class MapResource(GeoModelResource):
     class Meta:
         queryset = Map.objects.all()
         resource_name = 'scout/map'
-        authentication = AnonymousApiKeyAuthentication()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
         authorization = MapAuthorization()
 
         always_return_data = True
@@ -94,8 +97,10 @@ class MarkerCategoryResource(ModelResource):
         queryset = MarkerCategory.objects.all()
         resource_name = 'scout/marker_category'
 
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization() # FIXME
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
+
 
 class TileLayerResource(GeoModelResource):
 
@@ -104,10 +109,9 @@ class TileLayerResource(GeoModelResource):
     class Meta:
         queryset = TileLayer.objects.all()
         resource_name = 'scout/tilelayer'
-
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization() # FIXME
-
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
     maps = fields.ToManyField(MapResource, 'maps', null=True)
 
@@ -119,9 +123,10 @@ class DataLayerResource(ModelResource):
     class Meta:
         queryset = DataLayer.objects.all()
         resource_name = 'scout/datalayer'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization()
 
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
     markers = fields.ToManyField('scout.api.MarkerResource', 'markers',
                                  null=True, full=True)
@@ -136,8 +141,9 @@ class MarkerResource(GeoModelResource):
     class Meta:
         queryset = Marker.objects.all()
         resource_name = 'scout/marker'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         always_return_data = True
 
     data_layer = fields.ToOneField(DataLayerResource, 'datalayer')
@@ -167,8 +173,9 @@ class PostalAddressResource(ModelResource):
         queryset = PostalAddress.objects.all()
         resource_name = 'scout/postaladdress'
         always_return_data = True
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
 
 class PlaceResource(GeoModelResource):
@@ -178,8 +185,9 @@ class PlaceResource(GeoModelResource):
     class Meta:
         queryset = Place.objects.all()
         resource_name = 'scout/place'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         always_return_data = True
 
         filtering = {
