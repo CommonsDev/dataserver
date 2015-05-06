@@ -2,6 +2,7 @@
 
 import logging
 
+from django.conf import settings
 from tastypie.authorization import DjangoAuthorization
 from tastypie.http import HttpForbidden, HttpApplicationError
 from guardian.shortcuts import get_objects_for_user
@@ -123,3 +124,75 @@ class GuardianAuthorization(DjangoAuthorization):
 
     def delete_detail(self, object_list, bundle):
         return self.generic_item_check(object_list, bundle, self.delete_permission_code)
+
+
+class AdminOrDjangoAuthorization(DjangoAuthorization):
+
+    """ Always return ``True`` if request user is superuser.
+
+    Else, use :class:`DjangoAuthorization` to get the user authorization.
+    """
+
+    def read_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).read_list(self, object_list, bundle)
+
+    def read_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).read_detail(self, object_list, bundle)
+
+    def create_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if settings.DEBUG:
+            logger.debug('%s: %s', bundle.request.user,
+                         bundle.request.user.is_superuser)
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).create_list(self, object_list, bundle)
+
+    def create_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if settings.DEBUG:
+            logger.debug('%s: %s', bundle.request.user,
+                         bundle.request.user.is_superuser)
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).create_detail(self, object_list, bundle)
+
+    def update_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).update_list(self, object_list, bundle)
+
+    def update_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).update_detail(self, object_list, bundle)
+
+    def delete_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).delete_list(self, object_list, bundle)
+
+    def delete_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        return bundle.request.user.is_superuser \
+            or super(AdminOrDjangoAuthorization,
+                     self).delete_detail(self, object_list, bundle)
