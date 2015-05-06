@@ -70,7 +70,7 @@ class ProjectSheetTemplateResource(ModelResource):
 
     class Meta:
         queryset = ProjectSheetTemplate.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get', 'post']
         resource_name = 'project/sheet/template'
         authentication = AnonymousApiKeyAuthentication()
         authorization = DjangoAuthorization()
