@@ -184,6 +184,8 @@ class UserResource(ModelResource):
             )
 
     def logout(self, request, **kwargs):
+        """ Logout the current user. """
+
         self.method_check(request, allowed=['get'])
         if request.user and request.user.is_authenticated():
             logout(request)
@@ -194,6 +196,9 @@ class UserResource(ModelResource):
 
 
 class GroupResource(ModelResource):
+
+    """ Django's group API resource. """
+
     class Meta:
         queryset = Group.objects.all()
         resource_name = 'account/group'
@@ -228,6 +233,8 @@ class ProfileResource(ModelResource):
         }
 
     def dehydrate(self, bundle):
+        """ Dehydrate the user on the fly. """
+
         bundle.data["username"] = bundle.obj.username
         return bundle
 
@@ -257,6 +264,8 @@ class ObjectProfileLinkResource(ModelResource):
         always_return_data = True
 
     def prepend_urls(self):
+        """ prepend the dispatch_list() URL. """
+
         return [
             url(r"^(?P<resource_name>%s)/(?P<content_type>\w+?)/(?P<object_id>\d+?)%s$"  # NOQA
                 % (self._meta.resource_name, trailing_slash()),
@@ -265,6 +274,8 @@ class ObjectProfileLinkResource(ModelResource):
         ]
 
     def dispatch_list(self, request, **kwargs):
+        """ Handle the dispatching of GFKs. """
+
         self.method_check(request, allowed=['get', 'post'])
         self.is_authenticated(request)
         self.throttle_check(request)
