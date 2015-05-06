@@ -1,3 +1,5 @@
+""" Project sheets API resources. """
+
 from django.core.urlresolvers import reverse
 from django.conf.urls import url  # , patterns, include
 
@@ -15,10 +17,19 @@ from bucket.api import BucketResource, BucketFileResource
 from projects.api import ProjectResource
 from projects.models import Project
 
-from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer, QuestionChoice
+from .models import (
+    ProjectSheet,
+    ProjectSheetTemplate,
+    ProjectSheetQuestion,
+    ProjectSheetQuestionAnswer,
+    QuestionChoice,
+)
 
 
 class QuestionChoiceResource(ModelResource):
+
+    """ Question choice API resource. """
+
     class Meta:
         queryset = QuestionChoice.objects.all()
         allowed_methods = ['get']
@@ -27,8 +38,14 @@ class QuestionChoiceResource(ModelResource):
         authorization = DjangoAuthorization()
         always_return_data = True
 
+
 class ProjectSheetQuestionResource(ModelResource):
-    choices = fields.ToManyField(QuestionChoiceResource, 'choices', full=True, null=True)
+
+    """ Project shee question API resource. """
+
+    choices = fields.ToManyField(QuestionChoiceResource, 'choices',
+                                 full=True, null=True)
+
     class Meta:
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
@@ -37,12 +54,17 @@ class ProjectSheetQuestionResource(ModelResource):
         authorization = DjangoAuthorization()
 
     def hydrate(self, bundle):
+        """ Hydrate template on the fly. """
+
         bundle.obj.template = ProjectSheetTemplate.objects.get(
             id=bundle.data["template_id"])
         return bundle
 
 
 class ProjectSheetTemplateResource(ModelResource):
+
+    """ Project sheet template API resource. """
+
     questions = fields.ToManyField(ProjectSheetQuestionResource,
                                    'questions', full=True, null=True)
 
@@ -55,13 +77,20 @@ class ProjectSheetTemplateResource(ModelResource):
         always_return_data = True
         filtering = {
             'slug': ('exact', )
+
         }
 
 
 class ProjectSheetQuestionAnswerResource(ModelResource):
-    question = fields.ToOneField(ProjectSheetQuestionResource, 'question', full=True)
-    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource", 'projectsheet')
-    selected_choices_id = fields.ListField(attribute='selected_choices_id', null=True)
+
+    """ Project sheet question answer. """
+
+    question = fields.ToOneField(ProjectSheetQuestionResource,
+                                 'question', full=True)
+    projectsheet = fields.ToOneField("projectsheet.api.ProjectSheetResource",
+                                     'projectsheet')
+    selected_choices_id = fields.ListField(attribute='selected_choices_id',
+                                           null=True)
 
     class Meta:
         queryset = ProjectSheetQuestionAnswer.objects.all()
@@ -74,12 +103,17 @@ class ProjectSheetQuestionAnswerResource(ModelResource):
 
 class ProjectSheetHistoryResource(ModelResource):
 
+    """ Project sheet history API resource. """
+
     class Meta:
         queryset = ProjectSheet.history.all()
         filtering = {'id': ALL_WITH_RELATIONS}
 
 
 class ProjectSheetResource(HistorizedModelResource):
+
+    """ Project Sheet API resource. """
+
     project = fields.ToOneField(ProjectResource, 'project', full=True)
     template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
     bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
@@ -105,6 +139,8 @@ class ProjectSheetResource(HistorizedModelResource):
         }
 
     def hydrate(self, bundle):
+        """ Hydrate project & template on the fly. """
+
         if "project_id" in bundle.data:  # XXX: ???
             bundle.obj.project = Project.objects.get(
                 id=bundle.data["project_id"])
@@ -128,6 +164,8 @@ class ProjectSheetResource(HistorizedModelResource):
         ]
 
     def projectsheet_search(self, request, **kwargs):
+        """ Search project sheets. """
+
         self.method_check(request, allowed=['get'])
         self.throttle_check(request)
         self.is_authenticated(request)
