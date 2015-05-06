@@ -64,6 +64,10 @@ class ProjectResource(HistorizedModelResource):
     tags = fields.ToManyField(TaggedItemResource, 'tagged_items',
                               full=True, null=True)
 
+    related_projects = fields.ToManyField('ProjectResource',
+                                          'related_projects',
+                                          full=True, null=True)
+
     class Meta:
         queryset = Project.objects.all()
         allowed_methods = ['get', 'post', 'put', 'patch']

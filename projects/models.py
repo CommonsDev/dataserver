@@ -57,6 +57,7 @@ class Project(models.Model):
     end_date = models.DateField(null=True, blank=True)
     progress = models.ForeignKey(ProjectProgress, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
+    related_projects = models.ManyToManyField('Project', null=True, blank=True)
 
     # groups = models.ManyToManyField(Group, null=True, blank=True)
 
