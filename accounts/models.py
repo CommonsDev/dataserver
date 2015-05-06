@@ -1,5 +1,7 @@
 """ User accounts related models. """
 
+import logging
+
 from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.contenttypes import generic
@@ -14,6 +16,7 @@ from guardian.shortcuts import assign_perm
 from userena.models import UserenaBaseProfile
 from userena.utils import get_profile_model
 
+LOGGER = logging.getLogger(__name__)
 
 
 class Profile(UserenaBaseProfile):
@@ -74,8 +77,13 @@ def assign_to_authenticated_users_group(sender, instance, created,
     group, created = Group.objects.get_or_create(name='authenticated_users')
 
     # assign perms to group
-    permissions = getattr(settings, 'AUTHENTICATED_USERS_PERMISSIONS')
-    print "assigning permisions %s" % (permissions.__str__())
+
+    permissions = getattr(settings, 'AUTHENTICATED_USERS_PERMISSIONS', [])
+
+    if not bool(permissions):
+        LOGGER.warning('settings.AUTHENTICATED_USERS_PERMISSIONS seems empty. '
+                       'Did you create it in site_settings ?')
+
     for permission in permissions:
         assign_perm(permission, group)
 
