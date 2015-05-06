@@ -41,7 +41,8 @@ class BucketFile(models.Model):
     description = models.TextField(null=True, blank=True)
     filename = models.CharField(max_length=2048, null=True, blank=True)
     uploaded_by = models.ForeignKey(User, related_name='uploader_of')
-    being_edited_by = models.ForeignKey(User, related_name='editor_of', null = True)
+    being_edited_by = models.ForeignKey(User, null=True,
+                                        related_name='editor_of')
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
@@ -54,7 +55,7 @@ class BucketFile(models.Model):
         hash = sha1(str(time.time())).hexdigest()
         fullname = os.path.join(upload_path, "%s%s" % (hash, ext))
         return fullname
-    
+
     file = models.FileField(upload_to=_upload_to, max_length=255)
     thumbnail_url = models.CharField(max_length=2048)
 
@@ -85,4 +86,3 @@ def allow_user_to_edit_buckets(sender, instance, created, *args, **kwargs):
 def allow_user_to_create_bucket_via_api(sender, instance, created, *args, **kwargs):
     if created:
         assign_perm("bucket.add_bucket", instance)
-    
