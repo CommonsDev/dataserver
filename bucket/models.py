@@ -44,6 +44,8 @@ class BucketFile(models.Model):
     uploaded_by = models.ForeignKey(User, related_name='uploader_of')
     being_edited_by = models.ForeignKey(User, null=True,
                                         related_name='editor_of')
+    license = models.CharField(max_length=128, null=True, blank=True)
+    author = models.CharField(max_length=256, null=True, blank=True)
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')
