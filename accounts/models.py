@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """ User accounts related models. """
 
 import logging

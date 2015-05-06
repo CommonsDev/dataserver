@@ -1,36 +1,43 @@
+""" Dataserver authorization classes. """
+
 import logging
 
 from tastypie.authorization import DjangoAuthorization
-from tastypie.http import HttpGone, HttpForbidden, HttpNoContent, HttpMultipleChoices, HttpApplicationError, HttpNotImplemented
+from tastypie.http import HttpForbidden, HttpApplicationError
 from guardian.shortcuts import get_objects_for_user
 
 logger = logging.getLogger(__name__)
 
 
 class GuardianAuthorization(DjangoAuthorization):
-    """
 
-    GuardianAuthorization
+    """ GuardianAuthorization.
 
-        Object level permission checking with django-guardian for django models exposed via tastypie.
+        Object level permission checking with django-guardian for django
+        models exposed via tastypie.
 
     :create_permission_code:
-        the permission code that signifies the user can create one of these objects
+        the permission code that signifies the user can create one of
+        these objects
     :view_permission_code:
         the permission code that signifies the user can view the detail
     :update_permission_code:
-        the permission code that signifies the user can update one of these objects
+        the permission code that signifies the user can update one of
+        these objects
     :remove_permission_code:
-        the permission code that signifies the user can remove one of these objects
+        the permission code that signifies the user can remove one of
+        these objects
 
     :kwargs:
         other permission codes
 
     :return values:
-        Empty list : When user requests a list of resources for which they have no
-                     permissions for any of the items
-        HttpForbidden : When user does not have nessecary permissions for an item
-        HttpApplicationError : When resource being requested isn't a valid django model.
+        Empty list : When user requests a list of resources for which
+            they have no permissions for any of the items.
+        HttpForbidden : When user does not have nessecary permissions
+            for an item.
+        HttpApplicationError : When resource being requested isn't a
+            valid django model.
 
 
 
@@ -50,10 +57,14 @@ class GuardianAuthorization(DjangoAuthorization):
     """
 
     def __init__(self, *args, **kwargs):
-        self.view_permission_code = kwargs.pop("view_permission_code", 'can_view')
-        self.create_permission_code = kwargs.pop("create_permission_code", 'can_create')
-        self.update_permission_code = kwargs.pop("update_permission_code", 'can_update')
-        self.delete_permission_code = kwargs.pop("delete_permission_code", 'can_delete')
+        self.view_permission_code = kwargs.pop("view_permission_code",
+                                               'can_view')
+        self.create_permission_code = kwargs.pop("create_permission_code",
+                                                 'can_create')
+        self.update_permission_code = kwargs.pop("update_permission_code",
+                                                 'can_update')
+        self.delete_permission_code = kwargs.pop("delete_permission_code",
+                                                 'can_delete')
         super(GuardianAuthorization, self).__init__(*args, **kwargs)
 
     def generic_base_check(self, object_list, bundle):
@@ -79,7 +90,7 @@ class GuardianAuthorization(DjangoAuthorization):
 
     def generic_list_check(self, object_list, bundle, permission):
         """
-            Multiple item check, returns queryset of resource items the user 
+            Multiple item check, returns queryset of resource items the user
             can access.
 
             TODO: debating whether to return an empty list or HttpNoContent
