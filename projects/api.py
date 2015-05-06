@@ -1,3 +1,5 @@
+""" Project-related API resources. """
+
 from tastypie.resources import ModelResource
 from tastypie import fields
 
@@ -14,6 +16,9 @@ from tastypie.constants import ALL_WITH_RELATIONS
 
 
 class ProjectProgressRangeResource(ModelResource):
+
+    """ Project progress range API resource. """
+
     class Meta:
         queryset = ProjectProgressRange.objects.all()
         allowed_methods = ['get']
@@ -24,6 +29,9 @@ class ProjectProgressRangeResource(ModelResource):
 
 
 class ProjectProgressResource(ModelResource):
+
+    """ Project progress API resource. """
+
     range = fields.ToOneField(ProjectProgressRangeResource, "progress_range")
 
     class Meta:
@@ -38,20 +46,23 @@ class ProjectProgressResource(ModelResource):
 
 class ProjectHistoryResource(ModelResource):
 
+    """ Project History API resource. """
+
     class Meta:
         queryset = Project.history.all()
         filtering = {'id': ALL_WITH_RELATIONS}
 
 
 class ProjectResource(HistorizedModelResource):
+
+    """ Project API resource. """
+
     location = fields.ToOneField(PlaceResource, 'location',
                                  null=True, blank=True, full=True)
     progress = fields.ToOneField(ProjectProgressResource, 'progress',
                                  null=True, blank=True, full=True)
-    tags = fields.ToManyField(TaggedItemResource, 'tagged_items', full=True, null=True)
-    # TODO: 20150302 keep ?
-    # tags = fields.ToManyField('graffiti.api.TagResource', 'tags',
-    #                           full=True, null=True)
+    tags = fields.ToManyField(TaggedItemResource, 'tagged_items',
+                              full=True, null=True)
 
     class Meta:
         queryset = Project.objects.all()

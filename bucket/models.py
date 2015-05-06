@@ -14,6 +14,7 @@ from guardian.shortcuts import assign_perm
 
 from taggit.managers import TaggableManager
 
+
 class Bucket(models.Model):
     """
     A bucket is a collection of files
