@@ -8,8 +8,11 @@ from .models import Project, ProjectProgressRange, ProjectProgress
 from base.api import HistorizedModelResource
 from graffiti.api import TaggedItemResource
 from scout.api import PlaceResource
+from tastypie.authentication import (
+    MultiAuthentication, BasicAuthentication,
+)
+from dataserver.authorization import AdminOrDjangoAuthorization
 from dataserver.authentication import AnonymousApiKeyAuthentication
-from tastypie.authorization import DjangoAuthorization
 from tastypie.constants import ALL_WITH_RELATIONS
 
 # from accounts.api import ProfileResource
@@ -20,6 +23,10 @@ class ProjectProgressRangeResource(ModelResource):
     """ Project progress range API resource. """
 
     class Meta:
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
+
         queryset = ProjectProgressRange.objects.all()
         allowed_methods = ['get']
 
@@ -36,7 +43,11 @@ class ProjectProgressResource(ModelResource):
 
     class Meta:
         queryset = ProjectProgress.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get', 'post']
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
+
         always_return_data = True
 
         filtering = {
@@ -73,8 +84,9 @@ class ProjectResource(HistorizedModelResource):
         allowed_methods = ['get', 'post', 'put', 'patch']
         resource_name = 'project/project'
         always_return_data = True
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         history_resource_class = ProjectHistoryResource
         filtering = {
             'slug': ('exact',),

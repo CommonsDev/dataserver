@@ -11,14 +11,18 @@ from accounts.api import UserResource
 from haystack.query import SearchQuerySet
 from guardian.shortcuts import assign_perm
 from taggit.models import Tag
-# from tastypie.authentication import ApiKeyAuthentication
-from tastypie.authorization import DjangoAuthorization
+from tastypie.authentication import (
+    MultiAuthentication, BasicAuthentication,
+)
+from dataserver.authorization import (
+    AdminOrDjangoAuthorization,
+    GuardianAuthorization,
+)
+from dataserver.authentication import AnonymousApiKeyAuthentication
+
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie import fields
-
-from dataserver.authorization import GuardianAuthorization
-from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from .models import Bucket, BucketFile, BucketFileComment
 
@@ -28,7 +32,9 @@ class BucketResource(ModelResource):
     """ Bucket API resource. """
 
     class Meta:
-        authentication = AnonymousApiKeyAuthentication()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        # authorization = AdminOrDjangoAuthorization()
         authorization = GuardianAuthorization(
             create_permission_code="add_bucket",
             view_permission_code="view_bucket",
@@ -94,8 +100,9 @@ class BucketTagResource(ModelResource):
             "name": "exact",
         }
         allowed_methods = ['get', 'post', 'patch']
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
     def hydrate(self, bundle, request=None):
         """ Hydrate dumb names to proper objects.
@@ -125,8 +132,9 @@ class BucketFileResource(ModelResource):
             "bucket": 'exact',
         }
 
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
     comments = fields.ToManyField('bucket.api.BucketFileCommentResource',
                                   'comments', full=True)
@@ -220,8 +228,9 @@ class BucketFileCommentResource(ModelResource):
         queryset = BucketFileComment.objects.all()
         always_return_data = True
         resource_name = 'bucket/filecomment'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         filtering = {
             "bucket_file": 'exact',
         }

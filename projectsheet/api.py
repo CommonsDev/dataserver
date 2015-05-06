@@ -5,13 +5,17 @@ from django.conf.urls import url  # , patterns, include
 
 from haystack.query import SearchQuerySet
 from tastypie.resources import ModelResource
-from tastypie.authorization import DjangoAuthorization  # , Authorization,
+from tastypie.authentication import (
+    MultiAuthentication, BasicAuthentication,
+)
+from dataserver.authorization import AdminOrDjangoAuthorization
+from dataserver.authentication import AnonymousApiKeyAuthentication
+
 from tastypie import fields
 from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie.paginator import Paginator
 from tastypie.utils import trailing_slash
 
-from dataserver.authentication import AnonymousApiKeyAuthentication
 from base.api import HistorizedModelResource
 from bucket.api import BucketResource, BucketFileResource
 from projects.api import ProjectResource
@@ -34,8 +38,9 @@ class QuestionChoiceResource(ModelResource):
         queryset = QuestionChoice.objects.all()
         allowed_methods = ['get']
         resource_name = 'project/sheet/question_choice'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         always_return_data = True
 
 
@@ -50,8 +55,9 @@ class ProjectSheetQuestionResource(ModelResource):
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
         resource_name = 'project/sheet/question'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
     def hydrate(self, bundle):
         """ Hydrate template on the fly. """
@@ -72,8 +78,9 @@ class ProjectSheetTemplateResource(ModelResource):
         queryset = ProjectSheetTemplate.objects.all()
         allowed_methods = ['get', 'post']
         resource_name = 'project/sheet/template'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         always_return_data = True
         filtering = {
             'slug': ('exact', )
@@ -96,8 +103,9 @@ class ProjectSheetQuestionAnswerResource(ModelResource):
         queryset = ProjectSheetQuestionAnswer.objects.all()
         allowed_methods = ['get', 'patch', 'post']
         resource_name = 'project/sheet/question_answer'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         always_return_data = True
 
 
@@ -130,8 +138,9 @@ class ProjectSheetResource(HistorizedModelResource):
         default_format = "application/json"
         resource_name = 'project/sheet/projectsheet'
         history_resource_class = ProjectSheetHistoryResource
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         always_return_data = True
         filtering = {
             'project': ALL_WITH_RELATIONS,
