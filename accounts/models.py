@@ -11,23 +11,45 @@ from django.db import models
 from django.utils.translation import ugettext as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from jsonfield import JSONField
 
 from guardian.shortcuts import assign_perm
 
-from userena.models import UserenaBaseProfile
+from userena.models import UserenaLanguageBaseProfile
 from userena.utils import get_profile_model
+
+from scout.models import Place
 
 LOGGER = logging.getLogger(__name__)
 
 
-class Profile(UserenaBaseProfile):
+class Profile(UserenaLanguageBaseProfile):
 
-    """ Link Profile to user with a O2O. """
+    """ Link Profile to user with a One2One. """
 
     user = models.OneToOneField(User,
                                 unique=True,
                                 verbose_name=_('user'),
                                 related_name='profile')
+
+    # Store any data that's profile-related but not in PLP.
+    data = JSONField(null=True, blank=True)
+
+    motto = models.TextField(verbose_name=_('motto'), null=True, blank=True)
+    description = models.TextField(_('description'), null=True, blank=True)
+    website = models.URLField(verbose_name=_('website'), max_length=384,
+                              null=True, blank=True)
+    location = models.ForeignKey(Place, null=True, blank=True)
+
+    # privacy is in Userena.
+    # language is in Userena.
+
+    linkedin = models.URLField(verbose_name=_('linkedin'),  max_length=384,
+                               null=True, blank=True)
+    twitter = models.URLField(verbose_name=_('twitter'), max_length=384,
+                              null=True, blank=True)
+    facebook = models.URLField(verbose_name=_('facebook'), max_length=384,
+                               null=True, blank=True)
 
     @property
     def username(self):
