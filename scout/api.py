@@ -122,7 +122,7 @@ class PostalAddressResource(ModelResource):
         resource_name = 'scout/postaladdress'
         always_return_data = True
         authentication = AnonymousApiKeyAuthentication()
-        authorization =  Authorization()
+        authorization =  DjangoAuthorization()
 
 
 class PlaceResource(GeoModelResource):
@@ -130,11 +130,11 @@ class PlaceResource(GeoModelResource):
         queryset = Place.objects.all()
         resource_name = 'scout/place'
         authentication = AnonymousApiKeyAuthentication()
-        authorization = Authorization()
+        authorization = DjangoAuthorization()
         always_return_data = True
 
         filtering = {
             "geo": ALL
         }
 
-    address = fields.ToOneField(PostalAddressResource, 'address')
+    address = fields.ToOneField(PostalAddressResource, 'address', null=True)
