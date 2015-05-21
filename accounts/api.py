@@ -199,9 +199,14 @@ class GroupResource(ModelResource):
 
     class Meta:
         queryset = Group.objects.all()
+        allowed_methods = ['get', 'post']
         resource_name = 'account/group'
         authentication = Authentication()
         authorization = Authorization()
+        filtering = {
+            "id": ['exact'],
+            "name": ALL_WITH_RELATIONS,
+        }
 
     users = fields.ToManyField(UserResource, 'user_set', full=True)
 
