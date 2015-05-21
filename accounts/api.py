@@ -17,14 +17,18 @@ from tastypie import fields
 from tastypie import http
 from tastypie.exceptions import BadRequest
 from tastypie.http import HttpUnauthorized, HttpForbidden
-from tastypie.authentication import Authentication
 from tastypie.authorization import DjangoAuthorization, Authorization
+from tastypie.authentication import (
+    MultiAuthentication, BasicAuthentication, Authentication,
+)
+from dataserver.authorization import AdminOrDjangoAuthorization
+from dataserver.authentication import AnonymousApiKeyAuthentication
+
 from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
-from dataserver.authentication import AnonymousApiKeyAuthentication
 from .models import Profile, ObjectProfileLink
 
 
@@ -38,8 +42,9 @@ class UserResource(ModelResource):
         detail_uri_name = 'username'
         allowed_methods = ['get', 'post']
         resource_name = 'account/user'
-        authentication = Authentication()
-        authorization = Authorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         fields = [
             'id', 'username',
             'first_name', 'last_name',
@@ -201,8 +206,9 @@ class GroupResource(ModelResource):
         queryset = Group.objects.all()
         allowed_methods = ['get', 'post']
         resource_name = 'account/group'
-        authentication = Authentication()
-        authorization = Authorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         filtering = {
             "id": ['exact'],
             "name": ALL_WITH_RELATIONS,
