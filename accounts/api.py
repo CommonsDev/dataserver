@@ -27,8 +27,6 @@ from tastypie.utils import trailing_slash
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from .models import Profile, ObjectProfileLink
 
-from scout.api import PlaceResource
-
 
 class UserResource(ModelResource):
 
@@ -218,7 +216,7 @@ class ProfileResource(ModelResource):
 
     user = fields.OneToOneField(UserResource, 'user', full=True)
 
-    location = fields.ToOneField(PlaceResource, 'location',
+    location = fields.ToOneField('scout.api.PlaceResource', 'location',
                                  null=True, blank=True, full=True)
 
     class Meta:
