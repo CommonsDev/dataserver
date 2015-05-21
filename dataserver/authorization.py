@@ -138,14 +138,14 @@ class AdminOrDjangoAuthorization(DjangoAuthorization):
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).read_list(self, object_list, bundle)
+                     self).read_list(object_list, bundle)
 
     def read_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).read_detail(self, object_list, bundle)
+                     self).read_detail(object_list, bundle)
 
     def create_list(self, object_list, bundle):
         """ Howdy, pep257. """
@@ -156,7 +156,7 @@ class AdminOrDjangoAuthorization(DjangoAuthorization):
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).create_list(self, object_list, bundle)
+                     self).create_list(object_list, bundle)
 
     def create_detail(self, object_list, bundle):
         """ Howdy, pep257. """
@@ -167,32 +167,32 @@ class AdminOrDjangoAuthorization(DjangoAuthorization):
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).create_detail(self, object_list, bundle)
+                     self).create_detail(object_list, bundle)
 
     def update_list(self, object_list, bundle):
         """ Howdy, pep257. """
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).update_list(self, object_list, bundle)
+                     self).update_list(object_list, bundle)
 
     def update_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).update_detail(self, object_list, bundle)
+                     self).update_detail(object_list, bundle)
 
     def delete_list(self, object_list, bundle):
         """ Howdy, pep257. """
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).delete_list(self, object_list, bundle)
+                     self).delete_list(object_list, bundle)
 
     def delete_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
         return bundle.request.user.is_superuser \
             or super(AdminOrDjangoAuthorization,
-                     self).delete_detail(self, object_list, bundle)
+                     self).delete_detail(object_list, bundle)
