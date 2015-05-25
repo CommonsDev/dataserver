@@ -14,6 +14,7 @@ django-guardian==1.2.5
 django-simple-history==1.5.4
 django-tastypie==0.12.1
 django-userena==1.4.0
+django-mptt==0.7.3
 
 psycopg2==2.5.4
 python-dateutil==2.1
