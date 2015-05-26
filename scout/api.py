@@ -137,4 +137,4 @@ class PlaceResource(GeoModelResource):
             "geo": ALL
         }
 
-    address = fields.ToOneField(PostalAddressResource, 'address', null=True)
+    address = fields.ToOneField(PostalAddressResource, 'address', null=True, full=True)
