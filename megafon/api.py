@@ -33,7 +33,9 @@ class PostResource(ModelResource):
         filtering = {
             "slug": ('exact',),
             "level" : ('exact', ),
+            "answers_count" : ('exact', ),
         }
+        ordering = ['updated_on', 'answers_count']
 
     def prepend_urls(self):
         return [
@@ -41,10 +43,6 @@ class PostResource(ModelResource):
             url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/answers%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_answers'), name="api_get_answers"),
             url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/contributors%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_contributors'), name="api_get_contributors"),
         ]
-
-    def dehydrate(self, bundle):
-        bundle.data['answers_count'] = bundle.obj.get_descendant_count()
-        return bundle
 
     def get_questions(self, request, **kwargs):
         kwargs['level'] = 0
@@ -81,3 +79,6 @@ class PostResource(ModelResource):
             bundles.append(contributor_resource.full_dehydrate(bundle, for_list=True))
 
         return self.create_response(request, {'objects' : bundles})
+
+    # def get_best_contributors(self, request, **kwargs):
+        # Profile.objects.filter(id__gt=1).annotate(num_post=Count('post')).order_by('-num_post')
