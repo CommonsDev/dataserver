@@ -21,6 +21,8 @@ class PostResource(ModelResource):
 
     author = fields.OneToOneField(ProfileResource, 'author', full=True)
     tags = fields.ToManyField(TaggedItemResource, 'tagged_items', full=True, null=True)
+    parent = fields.OneToOneField("megafon.api.PostResource", 'parent', null=True)
+
 
     class Meta:
         queryset = Post.objects.all()
@@ -55,7 +57,7 @@ class PostResource(ModelResource):
         self.throttle_check(request)
 
         post = self.get_object_list(request).get(id=kwargs['pk'])
-        answers = post.get_children()
+        answers = post.get_children().order_by('-updated_on')
         bundles = []
 
         for obj in answers:
