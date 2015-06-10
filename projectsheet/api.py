@@ -134,6 +134,7 @@ class ProjectSheetResource(HistorizedModelResource):
 
         # Query params
         query = request.GET.get('q', '')
+        autocomplete = request.GET.get('auto', None)
         selected_facets = request.GET.getlist('facet', None)
 
         sqs = SearchQuerySet().models(self.Meta.object_class).facet('tags')
@@ -142,25 +143,38 @@ class ProjectSheetResource(HistorizedModelResource):
         if selected_facets:
             for facet in selected_facets:
                 sqs = sqs.narrow('tags:%s' % (facet))
-        # launch query
-        if query != "":
-            sqs = sqs.auto_query(query)
 
-        uri = reverse('api_projectsheet_search',
-                      kwargs={'api_name': self.api_name,
-                              'resource_name': self._meta.resource_name})
-        paginator = Paginator(request.GET, sqs, resource_uri=uri)
+        # A: if autocomplete, we return only a list of tags starting with "auto" along with their count
+        if autocomplete != None:
+            tags = sqs.facet_counts()
+            tags = tags['fields']['tags']
+            if len(autocomplete) > 0:
+                tags = [ t for t in tags if t[0].startswith(autocomplete) ]
+            tags = [ {'name':t[0], 'count':t[1]} for t in tags ]
+            object_list = {
+                'objects': tags,
+            }
+        # B: else, we return a list of projectsheets
+        else:
+            # launch query
+            if query != "":
+                sqs = sqs.auto_query(query)
 
-        objects = []
-        for result in paginator.page()['objects']:
-            if result:
-                bundle = self.build_bundle(obj=result.object, request=request)
-                bundle = self.full_dehydrate(bundle)
-                objects.append(bundle)
-        object_list = {
-            'meta': paginator.page()['meta'],
-            'objects': objects,
-        }
+            uri = reverse('api_projectsheet_search',
+                          kwargs={'api_name': self.api_name,
+                                  'resource_name': self._meta.resource_name})
+            paginator = Paginator(request.GET, sqs, resource_uri=uri)
+
+            objects = []
+            for result in paginator.page()['objects']:
+                if result:
+                    bundle = self.build_bundle(obj=result.object, request=request)
+                    bundle = self.full_dehydrate(bundle)
+                    objects.append(bundle)
+            object_list = {
+                'meta': paginator.page()['meta'],
+                'objects': objects,
+            }
 
         self.log_throttled_access(request)
         return self.create_response(request, object_list)
