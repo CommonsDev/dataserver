@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 import json
 
+from django.db.models import Count
 from django.conf.urls import url
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
@@ -211,6 +212,7 @@ class ObjectProfileLinkResource(ModelResource):
         filtering = {
             "object_id" : ['exact', ],
             "content_type" : ['exact', ],
+            "level" : ['exact', ],
             "profile" : ALL_WITH_RELATIONS,
 
         }
@@ -221,6 +223,9 @@ class ObjectProfileLinkResource(ModelResource):
            url(r"^(?P<resource_name>%s)/(?P<content_type>\w+?)/(?P<object_id>\d+?)%s$" % (self._meta.resource_name, trailing_slash()),
                self.wrap_view('dispatch_list'),
                name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/(?P<content_type>\w+?)/best%s$" % (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('get_best_linked_profiles'),
+                name="api_best_linked_profiles"),
             ]
 
     def dispatch_list(self, request, **kwargs):
@@ -248,5 +253,29 @@ class ObjectProfileLinkResource(ModelResource):
                                         bundle,
                                         response_class=http.HttpCreated,
                                         location=self.get_resource_uri(bundle))
+
+        return ModelResource.dispatch_list(self, request, **kwargs)
+
+    def get_best_linked_profiles(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        if 'content_type' in kwargs:
+            levels = []
+            if 'level' in request.GET:
+                levels = [int(lvl) for lvl in request.GET.getlist('level')]
+
+            profiles = Profile.objects.filter(id__gt=1,
+                        objectprofilelink__content_type__model=kwargs["content_type"],
+                        objectprofilelink__level__in=levels).annotate(num_post=Count('objectprofilelink')).order_by('-num_post')
+
+            bundles = []
+            for obj in profiles:
+                profile_resource = ProfileResource()
+                bundle = profile_resource.build_bundle(obj=obj, request=request)
+                bundles.append(profile_resource.full_dehydrate(bundle, for_list=True))
+
+            return self.create_response(request, {'objects' : bundles})
 
         return ModelResource.dispatch_list(self, request, **kwargs)
