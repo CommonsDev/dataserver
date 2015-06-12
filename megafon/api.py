@@ -19,7 +19,6 @@ class PostResource(ModelResource):
 
     """ A post resource """
 
-    author = fields.OneToOneField(ProfileResource, 'author', full=True)
     tags = fields.ToManyField(TaggedItemResource, 'tagged_items', full=True, null=True)
     parent = fields.OneToOneField("megafon.api.PostResource", 'parent', null=True)
 

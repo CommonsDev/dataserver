@@ -9,7 +9,10 @@ import random, string
 
 class Post(MPTTModel):
 
-    """ A post """
+    """
+    A post
+    Author is defined with accounts.ObjectProfileLink
+    """
 
     def populate_slug(instance):
         if instance.title:
@@ -20,7 +23,6 @@ class Post(MPTTModel):
     title = models.CharField(max_length="200", blank=True, null=False)
     posted_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now_add=True, auto_now=True)
-    author = models.ForeignKey(Profile)
     text = models.TextField()
     slug = AutoSlugField(populate_from=populate_slug, unique_with='id')
     tags = TaggableManager(blank=True)
