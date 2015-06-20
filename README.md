@@ -175,7 +175,7 @@ Now, run the server:
 ## Other Dependencies
 
 ### Thumbnail Generation
-We use Sorl-Thumbnail to generate image thumbnails for uploaded files (with bucket application) at a desired size. By default, the engine used to do this is GraphicsMagick (see in dataserver.settings.py: THUMBNAIL_CONVERT = 'gm convert'). This requires you to install GraphicksMagick package, but you can use other engines as explained in [Sorl-Thumbnail docs](http://sorl-thumbnail.readthedocs.org/en/latest/requirements.html#image-library)
+We use Sorl-Thumbnail to generate image thumbnails for uploaded files (with bucket application) at a desired size. By default, the engine used to do this is GraphicsMagick (see in dataserver.settings.py: THUMBNAIL_CONVERT = 'gm convert'). This requires you to install GraphicsMagick package, but you can use other engines as explained in [Sorl-Thumbnail docs](http://sorl-thumbnail.readthedocs.org/en/latest/requirements.html#image-library)
 
 
 ## Licenses
