@@ -33,6 +33,7 @@ class PostResource(ModelResource):
 
         filtering = {
             "slug": ('exact',),
+            "id": ('exact',),
             "level" : ('exact', ),
             "answers_count" : ('exact', ),
         }
