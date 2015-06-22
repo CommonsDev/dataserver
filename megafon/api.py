@@ -43,6 +43,7 @@ class PostResource(ModelResource):
         return [
             url(r"^(?P<resource_name>%s)/questions%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_questions'), name="api_get_questions"),
             url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/answers%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_answers'), name="api_get_answers"),
+            url(r"^(?P<resource_name>%s)/(?P<pk>\w[\w/-]*)/root%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_root'), name="api_get_root"),
         ]
 
     def get_questions(self, request, **kwargs):
@@ -64,3 +65,17 @@ class PostResource(ModelResource):
             bundles.append(self.full_dehydrate(bundle, for_list=True))
 
         return self.create_response(request, {'objects' : bundles})
+
+    def get_root(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        try :
+            post = self.get_object_list(request).get(id=kwargs['pk']).get_root()
+            bundle = self.build_bundle(obj=post, request=request)
+            return self.create_response(request, self.full_dehydrate(bundle))
+        except:
+            pass
+
+        return self.create_response(request, {})
