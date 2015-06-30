@@ -28,7 +28,7 @@ class Bucket(models.Model):
     name = models.CharField(max_length=200, verbose_name=_("name"))
 
     def __unicode__(self):
-        return u"Bucket with %d objects" % len(self.files.all())
+        return u"Bucket %s with %d objects" % (self.name, len(self.files.all()))
 
 
 class BucketFile(models.Model):
@@ -46,6 +46,9 @@ class BucketFile(models.Model):
                                         related_name='editor_of')
     license = models.CharField(max_length=128, null=True, blank=True)
     author = models.CharField(max_length=256, null=True, blank=True)
+
+    def __unicode__(self):
+        return u"File  %s from bucket %s" % (self.filename, self.bucket.name)
 
     def _upload_to(instance, filename):
         upload_path = getattr(settings, 'BUCKET_FILES_FOLDER')

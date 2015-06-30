@@ -193,3 +193,5 @@ class PlaceResource(GeoModelResource):
         filtering = {
             "geo": ALL,
         }
+
+    address = fields.ToOneField(PostalAddressResource, 'address', null=True, full=True)

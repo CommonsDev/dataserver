@@ -43,8 +43,8 @@ class Place(models.Model):
     A place, from
     http://schema.org/Place
     """
-    address = models.ForeignKey(PostalAddress, related_name='place')
-    geo = models.PointField()
+    address = models.ForeignKey(PostalAddress, related_name='place', null=True, blank=True)
+    geo = models.PointField(null=True, blank=True)
     objects = models.GeoManager()
 
     def __unicode__(self):

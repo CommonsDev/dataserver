@@ -36,7 +36,7 @@ class QuestionChoice(models.Model):
     question = models.ForeignKey(ProjectSheetQuestion, related_name='choices')
     text = models.CharField(max_length=255, verbose_name="Choice text")
     value = models.PositiveIntegerField(default=0)
-    
+
     def save(self, *args, **kwargs):
         if self.question.choices.all().count() == 0:
             self.value = 1
@@ -46,15 +46,15 @@ class QuestionChoice(models.Model):
                 if choice.value > max_val:
                     max_val = choice.value
             self.value = max_val + 1
-            
+
         super(QuestionChoice, self).save(*args, **kwargs)
 
 
 class ProjectSheet(models.Model):
     project = models.OneToOneField(Project)
     template = models.ForeignKey(ProjectSheetTemplate)
-    bucket = models.ForeignKey(Bucket, null=True, blank=True)
-    cover = models.ForeignKey(BucketFile, null=True, blank=True)
+    bucket = models.ForeignKey(Bucket, null=True, blank=True, on_delete=models.SET_NULL)
+    cover = models.ForeignKey(BucketFile, null=True, blank=True, related_name="project_sheets_covered", on_delete=models.SET_NULL)
     videos = JSONField(default=None, blank=True, null=True)
 
     history = HistoricalRecords()
@@ -72,7 +72,6 @@ def createProjectSheetBucket(sender, instance, **kwargs):
         created_by=bucket_owner, name=bucket_name)
     instance.bucket = projectsheet_bucket
 
-
 class ProjectSheetQuestionAnswer(models.Model):
 
     """ Answer to a question for a given project. """
@@ -83,7 +82,7 @@ class ProjectSheetQuestionAnswer(models.Model):
     projectsheet = models.ForeignKey(ProjectSheet, related_name='question_answers')
     question = models.ForeignKey(ProjectSheetQuestion, related_name='answers')
     answer = models.TextField(blank=True)
-    selected_choices_id = JSONField(default=None, blank=True, null=True) 
+    selected_choices_id = JSONField(default=None, blank=True, null=True)
 
     # history = HistoricalRecords()
 

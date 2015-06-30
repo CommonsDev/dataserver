@@ -19,7 +19,6 @@ from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource
 from projecttool.api import ProjectToolResource
 from scout.api import (MapResource, TileLayerResource, DataLayerResource,
                        MarkerResource, MarkerCategoryResource, PostalAddressResource, PlaceResource)
-from transport_vlille.api import VlilleResource
 from ucomment.api import CommentResource
 from unisson.api import IngredientResource, EvaluationIngredientResource
 
@@ -58,9 +57,6 @@ api.register(BucketResource())
 api.register(BucketTagResource())
 api.register(BucketFileResource())
 api.register(BucketFileCommentResource())
-
-# Vlille
-api.register(VlilleResource())
 
 # Projects
 api.register(ProjectResource())

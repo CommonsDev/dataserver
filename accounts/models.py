@@ -109,6 +109,5 @@ def assign_to_authenticated_users_group(sender, instance, created,
 
     for permission in permissions:
         assign_perm(permission, group)
-
     # assign user to group
     instance.groups.add(group)
