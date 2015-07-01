@@ -23,6 +23,7 @@ simplejson==3.6.5
 django-sendfile==0.3.6
 django-haystack==2.3.1
 elasticsearch==1.4.0
+pyelasticsearch==0.7.1
 jsonfield==1.0.0
 
 django-reversion==1.8.5

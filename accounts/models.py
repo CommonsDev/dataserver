@@ -49,15 +49,14 @@ def create_profile_on_user_signup(sender, created, instance, **kwargs):
 def assign_to_authenticated_users_group(sender, instance, created, *args, **kwargs):
     """
     Here we assign all newly created users to the group 'authenticated_users'
-    If this group does not exists we create it and give permissions from settings 
+    If this group does not exists we create it and give permissions from settings
     variable AUTHENTICATED_USERS_PERMISSIONS
     """
     # Check if authenticated_user group exists, if not create it and add following perms
     group, created = Group.objects.get_or_create(name='authenticated_users')
-    
+
     # assign perms to group
     permissions = getattr(settings, 'AUTHENTICATED_USERS_PERMISSIONS')
-    print "assigning permisions %s" % (permissions.__str__())
     for permission in permissions:
         assign_perm(permission, group)
     # assign user to group

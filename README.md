@@ -51,26 +51,29 @@ Then, enters the environment:
 
     cd dataserver-env
     source bin/activate
-  
+
 Your prompt should update to something like (note the prefix):
 
     (dataserver-env)glibersat@carpe:~/Source/dataserver-env
 
 .. warning:: For all next steps, you need to be in an activated environment.
 
+Also make sur you have the "python-dev" library since it is required for compiling some packages. On Ubuntu its:
+
+     $ sudo apt-get install python-dev
 
 
 ## Getting the code
- 
+
 Once you're in your virtualenv directory, use::
 
     git clone https://github.com/UnissonCo/dataserver/
     cd dataserver
-  
+
 fetch the dependencies using::
 
     pip install -r requirements.txt
-  
+
 *It may be the right time to fetch a cup of coffee! :-)*
 
 .. note::
@@ -94,19 +97,19 @@ You need to generate the postgis template before syncing your database. As `post
 
     sudo -i -u postgres
     createdb -E UTF8 template_postgis
-    
-    # Tune this to your version's setup 
+
+    # Tune this to your version's setup
     POSTGIS_PATH="/usr/share/postgresql/contrib/postgis-2.1"
-    
+
     psql -d template_postgis -f ${POSTGIS_PATH}/postgis.sql
     psql -d template_postgis -f ${POSTGIS_PATH}/spatial_ref_sys.sql
-    
+
     cat << EOF | psql -d template_postgis
     GRANT ALL ON geometry_columns TO PUBLIC;
     GRANT ALL ON spatial_ref_sys TO PUBLIC;
     GRANT ALL ON geography_columns TO PUBLIC;
     EOF
-    
+
     createuser dataserver -P
     createdb -E utf8 -O dataserver dataserver -T template_postgis
 
@@ -117,11 +120,11 @@ Also don't forget to edit your `/etc/postgresql/*/main/pg_hba.conf` file if you 
 then:
 
     sudo service postgresql restart
-  
-  
-  
+
+
+
 ###  SQlite
- 
+
 Install spatialite:
 
     sudo apt-get install libspatialite5
@@ -135,7 +138,7 @@ Change settings.py:
 
 ### (Optional) Elastic Search
 
-The `bucket` module requires elastic search. If you plan to use it, you should install `ES` and configure it (alongside `haystack`) in `site_settings` (see below). 
+The `bucket` module requires elastic search. If you plan to use it, you should install `ES` and configure it (alongside `haystack`) in `site_settings` (see below).
 
 
 
@@ -153,7 +156,10 @@ You can tune the database configuration URL with the `UNISSON_DATA_SERVER_DATABA
 
 Then you need to initialize your database with these commands:
 
-    python manage.py syncdb
+    python manage.py syncdb --all
+
+ The `--all` option is required to create all permissions bound to the models
+
     python manage.py migrate --all
     python manage.py check_permissions
 
@@ -169,7 +175,7 @@ Now, run the server:
 ## Other Dependencies
 
 ### Thumbnail Generation
-We use Sorl-Thumbnail to generate image thumbnails for uploaded files (with bucket application) at a desired size. By default, the engine used to do this is GraphicsMagick (see in dataserver.settings.py: THUMBNAIL_CONVERT = 'gm convert'). This requires you to install GraphicksMagick package, but you can use other engines as explained in [Sorl-Thumbnail docs](http://sorl-thumbnail.readthedocs.org/en/latest/requirements.html#image-library)
+We use Sorl-Thumbnail to generate image thumbnails for uploaded files (with bucket application) at a desired size. By default, the engine used to do this is GraphicsMagick (see in dataserver.settings.py: THUMBNAIL_CONVERT = 'gm convert'). This requires you to install GraphicsMagick package, but you can use other engines as explained in [Sorl-Thumbnail docs](http://sorl-thumbnail.readthedocs.org/en/latest/requirements.html#image-library)
 
 
 ## Licenses
