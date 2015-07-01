@@ -41,7 +41,7 @@ class ObjectProfileLink(models.Model):
 
 @receiver(post_save, sender=User)
 def create_profile_on_user_signup(sender, created, instance, **kwargs):
-    if created:
+    if created and not instance.is_superuser:
         profile_model = get_profile_model()
         profile_model.objects.create(user=instance)
 
