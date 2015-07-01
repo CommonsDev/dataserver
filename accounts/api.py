@@ -31,7 +31,7 @@ class UserResource(ModelResource):
         resource_name = 'account/user'
         authentication = Authentication()
         authorization = Authorization()
-        fields = ['id', 'username', 'first_name', 'last_name', 'groups', 'email']
+        fields = ['id', 'username', 'first_name', 'last_name', 'groups', 'email', 'date_joined']
         filtering = {
             "id" : ['exact',],
             "username": ALL_WITH_RELATIONS,
