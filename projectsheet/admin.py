@@ -8,16 +8,6 @@ from django.core.urlresolvers import reverse
 from .models import ProjectSheet, ProjectSheetTemplate, ProjectSheetQuestion, ProjectSheetQuestionAnswer, QuestionChoice
 
 
-class EditLinkToInlineObject(object):
-    def edit_link(self, instance):
-        url = reverse('admin:%s_%s_change' % (
-            instance._meta.app_label,  instance._meta.module_name),  args=[instance.pk] )
-        if instance.pk:
-            return mark_safe(u'<a href="{u}">edit</a>'.format(u=url))
-        else:
-            return ''
-
-
 # HEADS UP: currently not possible to inherit from
 #           StackedInline with SimpleHistoryAdmin.
 class ProjectSheetQuestionAnswerInline(StackedInline):
@@ -34,32 +24,47 @@ class QuestionChoiceInline(StackedInline):
     readonly_fields = ('value',)
 
 
-class ProjectSheetQuestionInline(EditLinkToInlineObject, StackedInline):
-    model = ProjectSheetQuestion
+class ProjectSheetQuestionInline(StackedInline):
+    model = ProjectSheetQuestion.template.through
     extra = 0
     min_num = 1
-    readonly_fields = ('get_choices', 'edit_link' )
+    readonly_fields = ('get_choices', 'edit_questions_link', )
 
     def get_choices(self, obj):
         choices_string = ""
-        for choice in obj.choices.all():
-            choices_string += choice.text+', '
-        return choices_string
+        try:
+            question_object = ProjectSheetQuestion.objects.get(pk=obj.projectsheetquestion_id)
+            for choice in question_object.choices.all():
+                choices_string += choice.text+', '
+            return choices_string
+        except Exception as e:
+            return choices_string
+
+    def edit_questions_link(self, instance):
+        url = reverse('admin:%s_%s_change' % (
+            instance._meta.app_label,  'projectsheetquestion'),  args=[instance.projectsheetquestion_id] )
+        if instance.projectsheetquestion_id:
+            return mark_safe(u'<a href="{u}">edit</a>'.format(u=url))
+        else:
+            return ''
 
     get_choices.short_description = 'Choix'
 
 
 class ProjectSheetQuestionAdmin(admin.ModelAdmin):
+    exclude = ('template', )
     inlines = [QuestionChoiceInline]
-    list_display = [ 'id', 'related_template', '__unicode__']
+    list_display = [ 'id', '__unicode__']
 
+    # FIXME : adapt to M2M
     def related_template(self, obj):
         return '%s'%(obj.template.name)
     related_template.short_description = 'Template'
 
 
 class ProjectSheetTemplateAdmin(admin.ModelAdmin):
-    inlines = [ProjectSheetQuestionInline]
+    # pass
+   inlines = [ProjectSheetQuestionInline]
 
 
 class ProjectSheetAdmin(SimpleHistoryAdmin):

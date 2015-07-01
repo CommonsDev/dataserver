@@ -15,13 +15,14 @@ class ProjectSheetTemplate(models.Model):
     name = models.CharField(max_length=100)
     slug = AutoSlugField(unique=True, populate_from="name", always_update=True)
     shortdesc = models.CharField(max_length=255, null=True, blank=True)
+    #questions = models.ManyToManyField("projectsheet.models.ProjectSheetQuestion", related_name='template')
 
     def __unicode__(self):
         return self.name
 
 
 class ProjectSheetQuestion(models.Model):
-    template = models.ForeignKey(ProjectSheetTemplate, related_name='questions')
+    template = models.ManyToManyField(ProjectSheetTemplate, related_name='questions', null=True, blank=True)
     order = models.PositiveIntegerField(default=0)
     text = models.CharField(max_length=255)
 

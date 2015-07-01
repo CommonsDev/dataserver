@@ -28,7 +28,7 @@ class QuestionChoiceResource(ModelResource):
         always_return_data = True
 
 class ProjectSheetQuestionResource(ModelResource):
-    choices = fields.ToManyField(QuestionChoiceResource, 'choices', full=True, null=True)
+    choices = fields.ForeignKey(QuestionChoiceResource, 'choices', full=True, null=True)
     class Meta:
         queryset = ProjectSheetQuestion.objects.all()
         allowed_methods = ['post', 'get']
