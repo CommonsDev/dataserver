@@ -177,6 +177,11 @@ class PostalAddressResource(ModelResource):
                                              AnonymousApiKeyAuthentication())
         authorization = AdminOrDjangoAuthorization()
 
+        filtering = {
+            "country": ALL,
+            "street_address": ALL,
+        }
+
 
 class PlaceResource(GeoModelResource):
 
