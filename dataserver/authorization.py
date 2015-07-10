@@ -74,8 +74,10 @@ class GuardianAuthorization(DjangoAuthorization):
                 a) if the `object_list.model` doesn't have a `_meta` attribute
                 b) the `bundle.request` object doesn have a `user` attribute
         """
+
         if not self.base_checks(bundle.request, object_list.model):
             return HttpApplicationError("Invalid resource.")
+
         return True
 
     def generic_item_check(self, object_list, bundle, permission):
@@ -84,6 +86,7 @@ class GuardianAuthorization(DjangoAuthorization):
             can access the item resource.
         """
         self.generic_base_check(object_list, bundle)
+
         if not bundle.request.user.has_perm(permission, bundle.obj):
             return HttpForbidden("You are not allowed to access that resource.")
 
@@ -96,7 +99,9 @@ class GuardianAuthorization(DjangoAuthorization):
 
             TODO: debating whether to return an empty list or HttpNoContent
         """
+
         self.generic_base_check(object_list, bundle)
+
         return get_objects_for_user(bundle.request.user, permission, object_list)
 
     # List Checks
@@ -136,63 +141,71 @@ class AdminOrDjangoAuthorization(DjangoAuthorization):
     def read_list(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
                      self).read_list(object_list, bundle)
 
     def read_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
                      self).read_detail(object_list, bundle)
 
     def create_list(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        if settings.DEBUG:
-            logger.debug('%s: %s', bundle.request.user,
-                         bundle.request.user.is_superuser)
+        if bundle.request.user.is_superuser:
+            return object_list
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        return super(AdminOrDjangoAuthorization,
                      self).create_list(object_list, bundle)
 
     def create_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        if settings.DEBUG:
-            logger.debug('%s: %s', bundle.request.user,
-                         bundle.request.user.is_superuser)
+        if bundle.request.user.is_superuser:
+            return True
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        return super(AdminOrDjangoAuthorization,
                      self).create_detail(object_list, bundle)
 
     def update_list(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
                      self).update_list(object_list, bundle)
 
     def update_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
                      self).update_detail(object_list, bundle)
 
     def delete_list(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
                      self).delete_list(object_list, bundle)
 
     def delete_detail(self, object_list, bundle):
         """ Howdy, pep257. """
 
-        return bundle.request.user.is_superuser \
-            or super(AdminOrDjangoAuthorization,
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
                      self).delete_detail(object_list, bundle)
