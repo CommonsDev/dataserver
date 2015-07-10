@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     'tastypie',
     'haystack',
     # 'cacheops',
+    'raven.contrib.django.raven_compat',
 
     # Dataserver
     # WARNING: order matters:
@@ -189,14 +190,43 @@ LOGGING = {
             '()': 'django.utils.log.RequireDebugFalse'
         }
     },
+
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console'],
+    },
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+
     'handlers': {
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.handlers.SentryHandler',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         }
     },
     'loggers': {
+        'django.db.backends': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
