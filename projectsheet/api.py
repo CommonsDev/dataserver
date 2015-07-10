@@ -12,7 +12,7 @@ from dataserver.authorization import AdminOrDjangoAuthorization
 from dataserver.authentication import AnonymousApiKeyAuthentication
 
 from tastypie import fields
-from tastypie.constants import ALL_WITH_RELATIONS
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.paginator import Paginator
 from tastypie.utils import trailing_slash
 
@@ -83,7 +83,7 @@ class ProjectSheetTemplateResource(ModelResource):
         authorization = AdminOrDjangoAuthorization()
         always_return_data = True
         filtering = {
-            'slug': ('exact', )
+            'slug': ('exact', ),
 
         }
 
@@ -191,13 +191,14 @@ class ProjectSheetResource(HistorizedModelResource):
             for facet in selected_facets:
                 sqs = sqs.narrow('tags:%s' % (facet))
 
-        # A: if autocomplete, we return only a list of tags starting with "auto" along with their count
-        if autocomplete != None:
+        # A: if autocomplete, we return only a list of tags
+        # starting with "auto" along with their count.
+        if autocomplete is not None:
             tags = sqs.facet_counts()
             tags = tags['fields']['tags']
             if len(autocomplete) > 0:
-                tags = [ t for t in tags if t[0].startswith(autocomplete) ]
-            tags = [ {'name':t[0], 'count':t[1]} for t in tags ]
+                tags = [t for t in tags if t[0].startswith(autocomplete)]
+            tags = [{'name': t[0], 'count': t[1]} for t in tags]
             object_list = {
                 'objects': tags,
             }
@@ -215,7 +216,8 @@ class ProjectSheetResource(HistorizedModelResource):
             objects = []
             for result in paginator.page()['objects']:
                 if result:
-                    bundle = self.build_bundle(obj=result.object, request=request)
+                    bundle = self.build_bundle(obj=result.object,
+                                               request=request)
                     bundle = self.full_dehydrate(bundle)
                     objects.append(bundle)
             object_list = {
