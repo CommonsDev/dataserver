@@ -28,7 +28,8 @@ class ProjectProgressRangeResource(ModelResource):
         authorization = AdminOrDjangoAuthorization()
 
         queryset = ProjectProgressRange.objects.all()
-        allowed_methods = ['get']
+        allowed_methods = ['get', 'post', ]
+        resource_name = 'project/progress/range'
 
         filtering = {
             "slug": ('exact',),
@@ -43,10 +44,11 @@ class ProjectProgressResource(ModelResource):
 
     class Meta:
         queryset = ProjectProgress.objects.all()
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post', ]
         authentication = MultiAuthentication(BasicAuthentication(),
                                              AnonymousApiKeyAuthentication())
         authorization = AdminOrDjangoAuthorization()
+        resource_name = 'project/progress'
 
         always_return_data = True
 

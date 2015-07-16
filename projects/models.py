@@ -1,9 +1,9 @@
 """ Projects and related models. """
 
 from django.db import models
-# from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group
 from simple_history.models import HistoricalRecords
-
+from jsonfield import JSONField
 from autoslug.fields import AutoSlugField
 from taggit.managers import TaggableManager
 from scout.models import Place
@@ -29,9 +29,9 @@ class ProjectProgress(models.Model):
 
     progress_range = models.ForeignKey(ProjectProgressRange)
     order = models.PositiveIntegerField(default=0)
-    label = models.CharField(max_length=30)
-    description = models.CharField(max_length=500)
-    icon = models.ImageField(upload_to='progress_icons')
+    label = models.CharField(max_length=30, null=True, blank=True)
+    description = models.CharField(max_length=500, null=True, blank=True)
+    icon = models.ImageField(upload_to='progress_icons', null=True, blank=True)
 
     class Meta:
         ordering  = ['order', ]
@@ -58,8 +58,17 @@ class Project(models.Model):
     progress = models.ForeignKey(ProjectProgress, null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     related_projects = models.ManyToManyField('Project', null=True, blank=True)
+    groups = models.ManyToManyField(Group, null=True, blank=True)
+    data = JSONField(default=dict, blank=True)
 
-    # groups = models.ManyToManyField(Group, null=True, blank=True)
+    language_code = models.CharField(
+        max_length=5, null=True, blank=True,
+        help_text=u'This field can be deleted when '
+        u'projects translations are merged back together.')
+    transient_project_original_id = models.IntegerField(
+        null=True, blank=True,
+        help_text=u'This field can be deleted when '
+        u'projects translations are merged back together.')
 
     history = HistoricalRecords()
 
