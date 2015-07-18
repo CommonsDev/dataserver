@@ -1,7 +1,9 @@
 # -*- encoding: utf-8 -*-
 import json
+import requests
 
 from django.conf.urls import url
+from django.conf import settings
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
 from django.contrib.contenttypes.models import ContentType
@@ -21,6 +23,11 @@ from tastypie.utils import trailing_slash
 
 from dataserver.authentication import AnonymousApiKeyAuthentication
 from .models import Profile, ObjectProfileLink
+
+from requests_oauthlib import OAuth1
+from urlparse import parse_qs, parse_qsl
+from urllib import urlencode
+from django.http import HttpResponse,HttpResponseRedirect
 
 class UserResource(ModelResource):
     class Meta:
@@ -63,6 +70,12 @@ class UserResource(ModelResource):
             url(r"^(?P<resource_name>%s)/login/google%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('login_google'), name="api_login_google"),
+            url(r"^(?P<resource_name>%s)/login/facebook%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('login_facebook'), name="api_login_facebook"),
+            url(r"^(?P<resource_name>%s)/login/twitter%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('login_twitter'), name="api_login_twitter"),
             url(r'^(?P<resource_name>%s)/logout%s$' %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('logout'), name='api_logout'),
@@ -73,27 +86,115 @@ class UserResource(ModelResource):
         Given an oauth2 google token, check it and if ok, return or
         create a user.
         """
-        import httplib, urllib
-        import simplejson
-
         self.method_check(request, allowed=['post'])
         data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
 
-        oauth_token = data.get('access_token', '')
-        conn = httplib.HTTPSConnection("www.googleapis.com")
-        conn.request("GET", "/oauth2/v1/userinfo?access_token=%s" % oauth_token)
-        response = conn.getresponse()
+        access_token_url = 'https://accounts.google.com/o/oauth2/token'
+        people_api_url = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect'
+
+        payload = dict(client_id=data['clientId'],
+                       redirect_uri=data['redirectUri'],
+                       client_secret=settings.GOOGLE_CLIENT_SECRET,
+                       code=data['code'],
+                       grant_type='authorization_code')
+
+        # Step 1. Exchange authorization code for access token.
+        r = requests.post(access_token_url, data=payload)
+        token = json.loads(r.text)
+        headers = {'Authorization': 'Bearer {0}'.format(token['access_token'])}
+
+        # Step 2. Retrieve information about the current user.
+        r = requests.get(people_api_url, headers=headers)
 
         user = None
-        if response.reason == "OK":
-            data = simplejson.loads(response.read())
-            if data['verified_email']:
+        if r.status_code == 200:
+            data = json.loads(r.text)
+            if data['email_verified']:
                 user, created = User.objects.get_or_create(username=data['email'],
                                                            email=data['email'],
                                                            first_name=data['given_name'],
                                                            last_name=data['family_name'])
 
         return self.login_to_apikey(request, user)
+
+    def login_facebook(self, request, **kwargs):
+        """
+        Given an oauth2 facebook token, check it and if ok, return or
+        create a user.
+        """
+
+        self.method_check(request, allowed=['post'])
+        data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+
+        access_token_url = 'https://graph.facebook.com/v2.4/oauth/access_token'
+        graph_api_url = 'https://graph.facebook.com/v2.4/me'
+
+        params = {
+            'client_id': data['clientId'],
+            'redirect_uri': data['redirectUri'],
+            'client_secret': settings.FACEBOOK_CLIENT_SECRET,
+            'code': data['code']
+        }
+
+        # Step 1. Exchange authorization code for access token.
+        r = requests.get(access_token_url, params=params)
+        access_token = json.loads(r.text)
+        access_token["fields"]="email,first_name,last_name"
+        # Step 2. Retrieve information about the current user.
+        r = requests.get(graph_api_url, params=access_token)
+        profile = json.loads(r.text)
+
+        user = None
+        if r.status_code == 200:
+            data = json.loads(r.text)
+            user, created = User.objects.get_or_create(username=data['email'],
+                                                       email=data['email'],
+                                                       first_name=data['first_name'],
+                                                       last_name=data['last_name'])
+
+        return self.login_to_apikey(request, user)
+
+    def login_twitter(self, request, **kwargs):
+        """
+        Given an oauth2 twitter token, check it and if ok, return or
+        create a user.
+        """
+
+        self.method_check(request, allowed=['post'])
+        data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+
+        request_token_url = 'https://api.twitter.com/oauth/request_token'
+        access_token_url = 'https://api.twitter.com/oauth/access_token'
+        authenticate_url = 'https://api.twitter.com/oauth/authenticate'
+
+        # if request.args.get('oauth_token') and request.args.get('oauth_verifier'):
+        #     auth = OAuth1(app.config['TWITTER_CONSUMER_KEY'],
+        #                   client_secret=app.config['TWITTER_CONSUMER_SECRET'],
+        #                   resource_owner_key=request.args.get('oauth_token'),
+        #                   verifier=request.args.get('oauth_verifier'))
+        #     r = requests.post(access_token_url, auth=auth)
+        #     profile = dict(parse_qsl(r.text))
+        #
+        #     user = User.query.filter_by(twitter=profile['user_id']).first()
+        #     if user:
+        #         token = create_token(user)
+        #         return jsonify(token=token)
+        #     u = User(twitter=profile['user_id'],
+        #              display_name=profile['screen_name'])
+        #     db.session.add(u)
+        #     db.session.commit()
+        #     token = create_token(u)
+        #     return jsonify(token=token)
+        # else:
+        oauth = OAuth1(settings.TWITTER_CLIENT_ID,
+                       client_secret=settings.TWITTER_CLIENT_SECRET,
+                       callback_uri=data["redirectUri"])
+        r = requests.post(request_token_url, auth=oauth)
+        oauth_token = dict(parse_qsl(r.text))
+        qs = urlencode(dict(oauth_token=oauth_token['oauth_token']))
+        return HttpResponseRedirect(authenticate_url + '?' + qs)
+
+
 
     def login(self, request, **kwargs):
         """
@@ -127,30 +228,13 @@ class UserResource(ModelResource):
                         HttpForbidden,
                     )
 
-                ret = self.create_response(request, {
-                    'success': True,
-                    'username': user.username,
-                    'key': key.key,
-                })
-
+                ret = self.create_response(request, {'success': True, 'username': user.username, 'token': key.key,})
                 return ret
             else:
-                return self.create_response(
-                    request, {
-                        'success': False,
-                        'reason': 'disabled',
-                    },
-                    HttpForbidden,
-                )
+                return self.create_response({'success': False, 'reason': 'disabled',}, HttpForbidden)
         else:
             return self.create_response(
-                request, {
-                    'success': False,
-                    'reason': 'invalid login',
-                    'skip_login_redir': True,
-                },
-                HttpUnauthorized,
-            )
+                request, {'success': False, 'reason': 'invalid login', 'skip_login_redir': True, }, HttpUnauthorized)
 
     def logout(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
