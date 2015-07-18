@@ -57,9 +57,7 @@ def assign_to_authenticated_users_group(sender, instance, created, *args, **kwar
 
     # assign perms to group
     permissions = getattr(settings, 'AUTHENTICATED_USERS_PERMISSIONS')
-    print "assigning permisions %s" % (permissions.__str__())
     for permission in permissions:
-        print " Assigning currently : %s" % (permission)
         assign_perm(permission, group)
     # assign user to group
     instance.groups.add(group)
