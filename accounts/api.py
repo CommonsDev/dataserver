@@ -160,41 +160,52 @@ class UserResource(ModelResource):
         create a user.
         """
 
-        self.method_check(request, allowed=['post'])
-        data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        self.method_check(request, allowed=['get', 'post'])
+        if request.method == 'GET':
+            data = request.GET
+        else:
+            data = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
 
         request_token_url = 'https://api.twitter.com/oauth/request_token'
         access_token_url = 'https://api.twitter.com/oauth/access_token'
         authenticate_url = 'https://api.twitter.com/oauth/authenticate'
 
-        # if request.args.get('oauth_token') and request.args.get('oauth_verifier'):
-        #     auth = OAuth1(app.config['TWITTER_CONSUMER_KEY'],
-        #                   client_secret=app.config['TWITTER_CONSUMER_SECRET'],
-        #                   resource_owner_key=request.args.get('oauth_token'),
-        #                   verifier=request.args.get('oauth_verifier'))
-        #     r = requests.post(access_token_url, auth=auth)
-        #     profile = dict(parse_qsl(r.text))
-        #
-        #     user = User.query.filter_by(twitter=profile['user_id']).first()
-        #     if user:
-        #         token = create_token(user)
-        #         return jsonify(token=token)
-        #     u = User(twitter=profile['user_id'],
-        #              display_name=profile['screen_name'])
-        #     db.session.add(u)
-        #     db.session.commit()
-        #     token = create_token(u)
-        #     return jsonify(token=token)
-        # else:
-        oauth = OAuth1(settings.TWITTER_CLIENT_ID,
-                       client_secret=settings.TWITTER_CLIENT_SECRET,
-                       callback_uri=data["redirectUri"])
-        r = requests.post(request_token_url, auth=oauth)
-        oauth_token = dict(parse_qsl(r.text))
-        qs = urlencode(dict(oauth_token=oauth_token['oauth_token']))
-        return HttpResponseRedirect(authenticate_url + '?' + qs)
+        if request.GET.get('oauth_token') and request.GET.get('oauth_verifier'):
+            auth = OAuth1(settings.TWITTER_CLIENT_ID,
+                           client_secret=settings.TWITTER_CLIENT_SECRET,
+                           resource_owner_key=request.GET.get('oauth_token'),
+                           verifier=request.GET.get('oauth_verifier'))
+            r = requests.post(access_token_url, auth=auth)
+            cred = dict(parse_qsl(r.text))
 
+            auth = OAuth1(settings.TWITTER_CLIENT_ID,
+                          settings.TWITTER_CLIENT_SECRET,
+                          cred["oauth_token"],
+                          cred["oauth_token_secret"])
 
+            r = requests.get("https://api.twitter.com/1.1/account/verify_credentials.json",
+                              headers={'include_entities' : 'false',
+                                       'skip_status' : 'true',
+                                       'include_email':"true"},
+                              auth=auth)
+            data = json.loads(r.text)
+            user, created = User.objects.get_or_create(username=data['screen_name'],
+                                                       email='',
+                                                       first_name=data['name'].split(' ')[0],
+                                                       last_name=data['name'].split(' ')[1])
+
+            return self.login_to_apikey(request, user)
+        else:
+            # POST
+            post_data = json.loads(request.body)
+            oauth = OAuth1(post_data['clientId'],
+                           client_secret=settings.TWITTER_CLIENT_SECRET,
+                           callback_uri=post_data['redirectUri'])
+            r = requests.post(request_token_url, auth=oauth)
+            oauth_token = dict(parse_qsl(r.text))
+            qs = urlencode(dict(oauth_token=oauth_token['oauth_token']))
+            response = HttpResponseRedirect(authenticate_url + '?' + qs)
+            return response
 
     def login(self, request, **kwargs):
         """
