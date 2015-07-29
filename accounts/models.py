@@ -37,6 +37,7 @@ class ObjectProfileLink(models.Model):
     level = models.IntegerField(_("Implication level of the link"))
     detail = models.CharField(max_length=200, blank=True)
     isValidated = models.BooleanField(default=False)
+    created_on = models.DateTimeField(auto_now_add=True)
 
 
 @receiver(post_save, sender=User)
