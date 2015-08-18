@@ -14,6 +14,7 @@ from guardian.shortcuts import assign_perm
 
 from taggit.managers import TaggableManager
 
+
 class Bucket(models.Model):
     """
     A bucket is a collection of files
@@ -43,6 +44,8 @@ class BucketFile(models.Model):
     uploaded_by = models.ForeignKey(User, related_name='uploader_of')
     being_edited_by = models.ForeignKey(User, null=True,
                                         related_name='editor_of')
+    license = models.CharField(max_length=128, null=True, blank=True)
+    author = models.CharField(max_length=256, null=True, blank=True)
 
     def __unicode__(self):
         return u"File  %s from bucket %s" % (self.filename, self.bucket.name)

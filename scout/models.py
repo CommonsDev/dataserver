@@ -1,3 +1,5 @@
+""" Scout / Map models. """
+
 import os
 
 from django.dispatch import receiver
@@ -13,7 +15,8 @@ from jsonfield import JSONField
 
 from bucket.models import Bucket
 
-## Transitional schema for a postal address
+
+# Transitional schema for a postal address
 class PostalAddress(models.Model):
     """
     The mailing address
@@ -34,6 +37,7 @@ class PostalAddress(models.Model):
                                      self.address_locality,
                                      self.country)
 
+
 class Place(models.Model):
     """
     A place, from
@@ -45,6 +49,7 @@ class Place(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.address
+
 
 class TileLayer(models.Model):
     """
@@ -158,6 +163,7 @@ class MarkerCategory(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class Marker(models.Model):
     """
