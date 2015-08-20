@@ -42,7 +42,7 @@ API_URL = os.getenv('IP2IS_DESTINATION_URL',
                     'http://127.0.0.1:8002/api/v0')
 API_USERNAME = os.getenv('IP2IS_API_USERNAME', 'admin')
 API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'admin')
-API_KEY = os.getenv('IP2IS_API_KEY', None)
+API_KEY = os.getenv('IP2IS_API_KEY', '93a932dd3037378d11a50ba583009a30c0dc8603')
 # '5d0eccabb50b76c08d83f112f9f003f2b50b629a'
 
 if API_PASSWORD:
@@ -81,7 +81,6 @@ def has_result(obj):
 
 def object_id(obj):
     """ Wrap the slumber/tastypie API result to get the object ID. """
-
     try:
         try:
             return obj['objects'][0]['id']
@@ -150,19 +149,23 @@ def place_from_location(location_object):
                     'country': location_object.country.code,
                 },
             )
+            LOGGER.warning('postal address = %s', postal_address)
 
         else:
             postal_address = api_get_or_create(
                 api.scout.postaladdress,
                 {'street_address': location_object.address},
             )
+            LOGGER.warning('postal address = %s', postal_address)
 
     elif location_object.country:
         postal_address = api_get_or_create(
             api.scout.postaladdress,
             {'country': location_object.country.code},
         )
-
+        LOGGER.warning('postal address = %s', postal_address)
+        
+    LOGGER.warning('postal address = %s', postal_address)
     if postal_address:
         return object_id(api_get_or_create(
             api.scout.place,
@@ -280,8 +283,8 @@ def populate_progress_ranges():
 
     for progress_range_name in PROGRESS_RANGES:
         PROGRESS[progress_range_name] = api_get_or_create(
-            api.project.progress.range,
-            {'slug': progress_range_name},
+            api.project.progressrange,
+            {'name': progress_range_name},
         )
 
 
@@ -336,12 +339,13 @@ def migrate_projects():
     for project_untranslated in projects:
         pivot_project = None
         for project in project_untranslated.translations.all():
+            LOGGER.warning(' migrating project %s', (project.pk))
             if pivot_project is None:
                 pivot_project = project.id
 
             try:
                 place_id = place_from_location(
-                    project.locations.all().order_by('id')[0])
+                    project.master.locations.all().order_by('id')[0])
 
                 project_id = api_get_or_create(
                     api.project.project,
@@ -451,11 +455,11 @@ def migrate():
     os.chdir(I4P_PATH)
 
     try:
-        migrate_users()
-        migrate_groups()
-        migrate_profiles()
-        populate_progress_ranges()
-        populate_questions()
+        #migrate_users()
+        #migrate_groups()
+        # migrate_profiles()
+        # populate_progress_ranges()
+        # populate_questions()
         migrate_projects()
 
     finally:
@@ -475,6 +479,6 @@ class Command(BaseCommand):
             'django',
             'keyedcache',
         ):
-            logging.getLogger(module).setLevel(logging.CRITICAL)
+            logging.getLogger(module).setLevel(logging.INFO)
 
         migrate()

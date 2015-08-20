@@ -15,20 +15,19 @@ django-simple-history==1.5.4
 django-tastypie==0.12.1
 django-userena==1.4.0
 
-psycopg2==2.5.4
-python-dateutil==2.1
-django-taggit==0.12.2
-django-multiuploader==0.2.9
-simplejson==3.6.5
-django-sendfile==0.3.6
 django-haystack==2.3.1
-elasticsearch==1.4.0
-pyelasticsearch==0.7.1
-jsonfield==1.0.0
-
+django-multiuploader==0.2.9
 django-reversion==1.8.5
+django-sendfile==0.3.6
+django-taggit==0.12.2
+elasticsearch==1.4.0
+jsonfield==1.0.0
+psycopg2==2.5.4
+pyelasticsearch==0.7.1
 pygeocoder==1.2.5
-
+python-dateutil==2.1
+raven
+simplejson==3.6.5
 sorl-thumbnail==12.2
 
 # vlille

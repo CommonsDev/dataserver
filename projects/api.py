@@ -23,16 +23,17 @@ class ProjectProgressRangeResource(ModelResource):
     """ Project progress range API resource. """
 
     class Meta:
+        queryset = ProjectProgressRange.objects.all()
+        allowed_methods = ['get', 'post', ]
+        resource_name = 'project/progressrange'
         authentication = MultiAuthentication(BasicAuthentication(),
                                              AnonymousApiKeyAuthentication())
         authorization = AdminOrDjangoAuthorization()
 
-        queryset = ProjectProgressRange.objects.all()
-        allowed_methods = ['get', 'post', ]
-        resource_name = 'project/progress/range'
 
         filtering = {
             "slug": ('exact',),
+            "name": ('exact',),
         }
 
 
