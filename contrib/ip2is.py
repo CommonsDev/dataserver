@@ -81,6 +81,8 @@ def has_result(obj):
 
 def object_id(obj):
     """ Wrap the slumber/tastypie API result to get the object ID. """
+    #LOGGER.warning('Getting object id for = %s', obj)
+
     try:
         try:
             return obj['objects'][0]['id']
@@ -92,13 +94,57 @@ def object_id(obj):
         LOGGER.warning('obj: %s', obj)
         raise
 
+def api_get(api_object_path, natural_key, **kwargs):
+    """ Get an object on the remote API, pivoting on natural_key. """
+
+    LOGGER.warning('API get : %s %s %s',
+                   api_object_path, natural_key,
+                   kwargs)
+
+    obj = api_object_path.get(**natural_key)
+
+    # LOGGER.warning('GET: %s', obj)
+
+    if has_result(obj):
+        return object_id(obj)
+
+    else:
+        return None
+
+def api_create_only(api_object_path, natural_key, **kwargs):
+    """ create an object on the remote API, pivoting on natural_key. """
+
+    LOGGER.warning('API create ONLY: %s %s %s',
+                   api_object_path, natural_key,
+                   kwargs)
+
+    kwargs.update(natural_key)
+
+    res = api_object_path.post(data=kwargs)
+
+    if res:
+        return object_id(res)
+
+    try:
+        return kwargs['id']
+
+    except:
+        obj = api_object_path.get(**natural_key)
+
+        if has_result(obj):
+            return object_id(obj)
+
+    raise RuntimeError('Could not create {} on {} with {}'.format(
+                       natural_key, api_object_path, kwargs))
+
+
 
 def api_get_or_create(api_object_path, natural_key, **kwargs):
     """ Get or create an object on the remote API, pivoting on natural_key. """
 
-    # LOGGER.debug('API get or create: %s %s %s',
-    #                api_object_path, natural_key,
-    #                kwargs)
+    LOGGER.warning('API get or create: %s %s %s',
+                   api_object_path, natural_key,
+                   kwargs)
 
     obj = api_object_path.get(**natural_key)
 
@@ -149,28 +195,38 @@ def place_from_location(location_object):
                     'country': location_object.country.code,
                 },
             )
-            LOGGER.warning('postal address = %s', postal_address)
 
         else:
             postal_address = api_get_or_create(
                 api.scout.postaladdress,
                 {'street_address': location_object.address},
             )
-            LOGGER.warning('postal address = %s', postal_address)
 
     elif location_object.country:
         postal_address = api_get_or_create(
             api.scout.postaladdress,
             {'country': location_object.country.code},
         )
-        LOGGER.warning('postal address = %s', postal_address)
-        
+
     LOGGER.warning('postal address = %s', postal_address)
+    # FIXME : ugly solution, but problem is Tastypie does not by default does not accept
+    # to create an object that contains another one (here PostalAddress) with id only
+    # we have to give resource_uri BUT fecthing a Place object by filtering resource_uri does not work
+    # hence the splitting in 2 steps: 1) check existence with mere id 2) create by giving ressource_uri
     if postal_address:
-        return object_id(api_get_or_create(
+        place = api_get(
             api.scout.place,
-            {'address': object_id(postal_address)}
-        ))
+            {'address': postal_address}
+            )
+        if place:
+            return place
+        else:
+            return api_create_only(
+            # return object_id(api_get_or_create(
+                api.scout.place,
+                {'address': ('api/v0/scout/postaladdress/%s' % (postal_address))},
+                # {'address': object_id(postal_address)}
+            )
 
     return None
 
@@ -344,8 +400,13 @@ def migrate_projects():
                 pivot_project = project.id
 
             try:
-                place_id = place_from_location(
-                    project.master.locations.all().order_by('id')[0])
+                if project.master.locations.all().count() > 0:
+                    place_id = place_from_location(
+                        project.master.locations.all().order_by('id')[0])
+                else:
+                    place_id = None
+
+                # LOGGER.warning('progress ? = %s', project.master.completion_progress)
 
                 project_id = api_get_or_create(
                     api.project.project,
@@ -354,20 +415,20 @@ def migrate_projects():
                     data={
                         'topics': [
                             u'{0}: {1}'.format(t.site.name, t.topic)
-                            for t in project.topics.all()
+                            for t in project.master.topics.all()
                         ],
 
                     },
                     location=place_id,
                     title=project.title,
                     baseline=project.baseline,
-                    created_on=project.created,
+                    created_on=project.master.created,
                     description=project.about_section,
-                    progress={'range': PROGRESS[project.completion_progress]},
+                    progress={'range': PROGRESS_RANGES[project.master.status]},
                     language_code=project.language_code,
                     transient_project_original_id=pivot_project,
-                    website=project.website,
-                    groups=[GROUPS[s.name] for s in project.site.all()],
+                    website=project.master.website,
+                    groups=[GROUPS[s.name] for s in project.site.master.all()],
                 )
 
                 for tag in [x.strip() for x in project.themes.split(',')]:

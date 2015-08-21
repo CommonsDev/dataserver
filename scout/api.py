@@ -7,6 +7,7 @@ from pygeocoder import Geocoder
 
 from tastypie import fields
 from tastypie.constants import ALL
+from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie.contrib.gis.resources import ModelResource as GeoModelResource
 # from tastypie.fields import DictField
 from tastypie.resources import ModelResource
@@ -197,6 +198,15 @@ class PlaceResource(GeoModelResource):
 
         filtering = {
             "geo": ALL,
+            "address": ALL_WITH_RELATIONS,
         }
 
     address = fields.ToOneField(PostalAddressResource, 'address', null=True, full=True)
+
+    # def dehydrate(self, bundle):
+    #     bundle.data['address_id'] = bundle.obj.address.id
+    #     return bundle
+    #
+    # def hydrate(self, bundle):
+    #     bundle.data['address'] = PostalAddress.objects.get(id=bundle.data['address'])
+    #     return bundle
