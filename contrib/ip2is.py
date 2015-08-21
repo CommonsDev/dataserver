@@ -419,16 +419,17 @@ def migrate_projects():
                         ],
 
                     },
-                    location=place_id,
+                    location=('api/v0/scout/place/%s' % (place_id)),
                     title=project.title,
                     baseline=project.baseline,
-                    created_on=project.master.created,
+                    created_on=project.master.created.isoformat(),
                     description=project.about_section,
-                    progress={'range': PROGRESS_RANGES[project.master.status]},
+                    # FIXME : need to dig out more
+                    #progress={'range': PROGRESS[project.master.status]},
                     language_code=project.language_code,
                     transient_project_original_id=pivot_project,
                     website=project.master.website,
-                    groups=[GROUPS[s.name] for s in project.site.master.all()],
+                    groups=[GROUPS[s.name] for s in project.master.site.all()],
                 )
 
                 for tag in [x.strip() for x in project.themes.split(',')]:
@@ -517,10 +518,10 @@ def migrate():
 
     try:
         #migrate_users()
-        #migrate_groups()
+        migrate_groups()
         # migrate_profiles()
-        # populate_progress_ranges()
-        # populate_questions()
+        populate_progress_ranges()
+        populate_questions()
         migrate_projects()
 
     finally:
