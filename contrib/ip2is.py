@@ -84,11 +84,21 @@ def object_id(obj):
     #LOGGER.warning('Getting object id for = %s', obj)
 
     try:
+        if obj['objects']:
+            pass
+        else:
+            return obj['id']
+    except KeyError:
+        return None
+
+    try:
         try:
             return obj['objects'][0]['id']
 
+        except IndexError:
+            return None
         except KeyError:
-                return obj['id']
+            return None
 
     except:
         LOGGER.warning('obj: %s', obj)
@@ -338,11 +348,25 @@ def populate_progress_ranges():
     # NOTE: weight/order is to be migrated by hand.
 
     for progress_range_name in PROGRESS_RANGES:
-        PROGRESS[progress_range_name] = api_get_or_create(
-            api.project.progressrange,
-            {'name': progress_range_name},
-        )
+        try:
+            obj_id = object_id(api.project.progress.get(range__name=progress_range_name))
+            if obj_id:
+                PROGRESS[progress_range_name] = api_get_or_create(
+                    api.project.progress,
+                    {'id':obj_id},
+                )
+                pass
+            else:
+                PROGRESS[progress_range_name] = api_create_only(
+                    api.project.progress,
+                    {'range':{'name': progress_range_name}, "label":progress_range_name},
+                )
 
+        except:
+            LOGGER.warning("error getting progress")
+            pass
+    progress_string = str(PROGRESS)
+    LOGGER.warning('Finished populate Progress %s', progress_string)
 
 def populate_questions():
     """ populate questions to migrate projects & references. """
@@ -424,8 +448,7 @@ def migrate_projects():
                     baseline=project.baseline,
                     created_on=project.master.created.isoformat(),
                     description=project.about_section,
-                    # FIXME : need to dig out more
-                    #progress={'range': PROGRESS[project.master.status]},
+                    progress=('api/v0/project/progress/%s' % (PROGRESS[project.master.status])),
                     language_code=project.language_code,
                     transient_project_original_id=pivot_project,
                     website=project.master.website,
@@ -435,7 +458,7 @@ def migrate_projects():
                 for tag in [x.strip() for x in project.themes.split(',')]:
                     api_get_or_create(
                         api.taggeditem.project(project.id),
-                        tag=tag.name
+                        {'tag':tag}
                     )
 
                 project_sheet_id = api_get_or_create(
@@ -519,7 +542,7 @@ def migrate():
     try:
         #migrate_users()
         migrate_groups()
-        # migrate_profiles()
+        #migrate_profiles()
         populate_progress_ranges()
         populate_questions()
         migrate_projects()

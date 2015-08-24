@@ -55,6 +55,7 @@ class ProjectProgressResource(ModelResource):
 
         filtering = {
             "range": ALL_WITH_RELATIONS,
+            "id": ('exact',),
         }
 
 
