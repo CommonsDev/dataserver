@@ -46,15 +46,15 @@ API_KEY = os.getenv('IP2IS_API_KEY', '93a932dd3037378d11a50ba583009a30c0dc8603')
 # '5d0eccabb50b76c08d83f112f9f003f2b50b629a'
 
 if API_PASSWORD:
-    LOGGER.info(u'Using API_USERNAME %s.', API_USERNAME)
+    LOGGER.warning(u'Using API_USERNAME %s.', API_USERNAME)
     api = slumber.API(API_URL, auth=(API_USERNAME, API_PASSWORD))
 
 elif API_KEY:
-    LOGGER.info(u'Using API_KEY %s.', API_KEY)
+    LOGGER.warning(u'Using API_KEY %s.', API_KEY)
     api = slumber.API(API_URL, api_key=API_KEY)
 
 else:
-    LOGGER.info(u'Connecting anonymously.')
+    LOGGER.warning(u'Connecting anonymously.')
     api = slumber.API(API_URL)
 
 # get all projecs. JSON translated to res.attrs
@@ -152,9 +152,9 @@ def api_create_only(api_object_path, natural_key, **kwargs):
 def api_get_or_create(api_object_path, natural_key, **kwargs):
     """ Get or create an object on the remote API, pivoting on natural_key. """
 
-    LOGGER.warning('API get or create: %s %s %s',
-                   api_object_path, natural_key,
-                   kwargs)
+    # LOGGER.warning('API get or create: %s %s %s',
+    #                api_object_path, natural_key,
+    #                kwargs)
 
     obj = api_object_path.get(**natural_key)
 
@@ -380,6 +380,7 @@ def populate_questions():
         TEMPLATES[template_slug] = api_get_or_create(
             api.project.sheet.template,
             {'slug': template_slug},
+            name=template_slug,
         )
 
     QUESTIONS_SLUGS = (
@@ -400,6 +401,7 @@ def populate_questions():
             template_id=TEMPLATES[template_slug]
         )
 
+    LOGGER.warning('Finished populate question %s', QUESTIONS)
 
 def migrate_projects():
     """ Migrate projects. """
@@ -427,10 +429,11 @@ def migrate_projects():
                 if project.master.locations.all().count() > 0:
                     place_id = place_from_location(
                         project.master.locations.all().order_by('id')[0])
+                    location = ('api/v0/scout/place/%s' % (place_id))
                 else:
-                    place_id = None
+                    location = 'null'
 
-                # LOGGER.warning('progress ? = %s', project.master.completion_progress)
+                LOGGER.warning('title ? = %s, str(%s)', project.title, project.title)
 
                 project_id = api_get_or_create(
                     api.project.project,
@@ -443,7 +446,7 @@ def migrate_projects():
                         ],
 
                     },
-                    location=('api/v0/scout/place/%s' % (place_id)),
+                    location=location,
                     title=project.title,
                     baseline=project.baseline,
                     created_on=project.master.created.isoformat(),
@@ -456,35 +459,47 @@ def migrate_projects():
                 )
 
                 for tag in [x.strip() for x in project.themes.split(',')]:
-                    api_get_or_create(
+                    taggeditem_tag = api_get(
                         api.taggeditem.project(project.id),
-                        {'tag':tag}
+                        {'taggeditem__tag':tag}
                     )
+                    if not taggeditem_tag:
+                        api_create_only(
+                            api.taggeditem.project(project.id),
+                            {'tag':tag}
+                        )
 
-                project_sheet_id = api_get_or_create(
-                    project=project_id,
-                    template=TEMPLATES['is'],
+                project_sheet_id = api_get(
+                    api.project.sheet.projectsheet,
+                    {'project':project_id},
                 )
-
-                picture = project.cover_picture._imgfield
-
-                with picture.open() as fp:
-
-                    project_sheet = api.project.sheet(project_sheet_id)
-
-                    res = requests.post(
-                        API_URL.rsplit('/', 2)[0],
-                        data={
-                            'bucket': project_sheet.get()['bucket']['id']
-                        },
-                        files={
-                            'file': fp
-                        }
+                if not project_sheet_id:
+                    project_sheet_id = api_create_only(
+                        api.project.sheet.projectsheet,
+                        {'project':('api/v0/project/project/%s' % (project_id)), 'template':('/api/v0/project/sheet/template/%s' % (TEMPLATES['is'],))},
                     )
 
-                    file_resource_uri = res.json()['resource_uri']
+                picture = None
+                if project.master.cover_picture:
+                    picture = project.master.cover_picture._imgfield
+                if picture != None:
+                    with picture.open() as fp:
 
-                    project_sheet.patch({'cover': file_resource_uri})
+                        project_sheet = api.project.sheet(project_sheet_id)
+
+                        res = requests.post(
+                            API_URL.rsplit('/', 2)[0],
+                            data={
+                                'bucket': project_sheet.get()['bucket']['id']
+                            },
+                            files={
+                                'file': fp
+                            }
+                        )
+
+                        file_resource_uri = res.json()['resource_uri']
+
+                        project_sheet.patch({'cover': file_resource_uri})
 
                 for member in project.members.values_list('username',
                                                           flat=True):
