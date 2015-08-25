@@ -31,6 +31,8 @@ import requests
 
 from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
+from django.db.models.base import ObjectDoesNotExist
+
 
 LOGGER = logging.getLogger(__name__)
 
@@ -526,7 +528,8 @@ def migrate_projects():
                                 no_update=True,
                             )
                         )
-                    except DoesNotExist:
+                    except:
+                        LOGGER.warning('no content for question %s', (answer.question_id))
                         pass
                 # Add references as question-anwser
                 api_get_or_create(

@@ -58,6 +58,9 @@ class ProjectSheetQuestionResource(ModelResource):
         authentication = MultiAuthentication(BasicAuthentication(),
                                              AnonymousApiKeyAuthentication())
         authorization = AdminOrDjangoAuthorization()
+        filtering = {
+            "slug": ('exact',),
+        }
 
     def hydrate(self, bundle):
         """ Hydrate template on the fly. """
