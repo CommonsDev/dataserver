@@ -149,7 +149,7 @@ def api_create_only(api_object_path, natural_key, **kwargs):
 
 
 
-def api_get_or_create(api_object_path, natural_key, **kwargs):
+def api_get_or_create(api_object_path, natural_key, no_update=None, **kwargs):
     """ Get or create an object on the remote API, pivoting on natural_key. """
 
     # LOGGER.warning('API get or create: %s %s %s',
@@ -164,7 +164,11 @@ def api_get_or_create(api_object_path, natural_key, **kwargs):
         return object_id(obj)
 
     else:
-        kwargs.update(natural_key)
+        LOGGER.warning('## POsting (before): %s', kwargs)
+        LOGGER.warning('>>>>> Update ?: %s', no_update)
+        if not no_update:
+            kwargs.update(natural_key)
+        LOGGER.warning('## POsting (after): %s', kwargs)
 
         res = api_object_path.post(data=kwargs)
 
@@ -429,9 +433,13 @@ def migrate_projects():
                 if project.master.locations.all().count() > 0:
                     place_id = place_from_location(
                         project.master.locations.all().order_by('id')[0])
-                    location = ('api/v0/scout/place/%s' % (place_id))
+                    if place_id:
+                        location = ('api/v0/scout/place/%s' % (place_id))
+                    else:
+                        location = None
+
                 else:
-                    location = 'null'
+                    location = None
 
                 LOGGER.warning('title ? = %s, str(%s)', project.title, project.title)
 
@@ -469,19 +477,19 @@ def migrate_projects():
                             {'tag':tag}
                         )
 
-                project_sheet_id = api_get(
+                project_sheet_id = api_get_or_create(
                     api.project.sheet.projectsheet,
                     {'project':project_id},
-                )
-                if not project_sheet_id:
-                    project_sheet_id = api_create_only(
-                        api.project.sheet.projectsheet,
-                        {'project':('api/v0/project/project/%s' % (project_id)), 'template':('/api/v0/project/sheet/template/%s' % (TEMPLATES['is'],))},
+                    project=('api/v0/project/project/%s' % (project_id)),
+                    template=('/api/v0/project/sheet/template/%s' % (TEMPLATES['is'],)),
+                    no_update=True
                     )
 
                 picture = None
                 if project.master.cover_picture:
                     picture = project.master.cover_picture._imgfield
+
+                LOGGER.warning(' />/>/>/>/>/>/ got picture ? %s', (picture))
                 if picture != None:
                     with picture.open() as fp:
 
@@ -501,35 +509,26 @@ def migrate_projects():
 
                         project_sheet.patch({'cover': file_resource_uri})
 
-                for member in project.members.values_list('username',
-                                                          flat=True):
-                    api.objectprofilelink.project(project_id).post({
-                        'detail': 'member',
-                        'level': 0,
-                        'profile_id': PROFILES[member.username]
-                    })
-
-                for fan in project.fans.values_list('username', flat=True):
-                    api.objectprofilelink.project(project_id).post({
-                        'detail': 'member',
-                        'level': 2,
-                        'profile_id': PROFILES[member.username]
-                    })
-
                 answers = []
 
-                for answer in projects.answers.all():
-                    answers.append(
-                        api_get_or_create(
-                            api.project.sheet.question_answer,
-                            {
-                                'question': QUESTIONS[answer.id],
-                                'projectsheet': project_sheet_id,
-                            },
-                            answer=answer.content,
+                for answer in project.master.answers.all():
+                    try:
+                        answers.append(
+                            api_get_or_create(
+                                api.project.sheet.question_answer,
+                                {
+                                    'question': QUESTIONS[answer.question_id],
+                                    'projectsheet': project_sheet_id,
+                                },
+                                answer=answer.content,
+                                question=('/api/v0/project/sheet/question/%s' % (QUESTIONS[answer.question_id])),
+                                projectsheet=('api/v0/project/sheet/projectsheet/%s' % (project_sheet_id)),
+                                no_update=True,
+                            )
                         )
-                    )
-
+                    except DoesNotExist:
+                        pass
+                # Add references as question-anwser
                 api_get_or_create(
                     api.project.sheet.question_answer,
                     {
@@ -538,9 +537,26 @@ def migrate_projects():
                     },
                     answer=u'\n'.join(
                         ref.desc
-                        for ref in project.references.all()),
+                        for ref in project.master.references.all()),
+                    question=('/api/v0/project/sheet/question/%s' % (QUESTIONS[99])),
+                    projectsheet=('api/v0/project/sheet/projectsheet/%s' % (project_sheet_id)),
+                    no_update=True,
                 )
 
+                for member in project.master.members.values_list('username',
+                                                          flat=True):
+                    api.objectprofilelink.project(project_id).post({
+                        'detail': 'member',
+                        'level': 0,
+                        'profile_id': PROFILES[member]
+                    })
+
+                for fan in project.master.fans.values_list('username', flat=True):
+                    api.objectprofilelink.project(project_id).post({
+                        'detail': 'member',
+                        'level': 2,
+                        'profile_id': PROFILES[fan]
+                    })
             except:
                 LOGGER.exception('Could not migrate %s', project)
 

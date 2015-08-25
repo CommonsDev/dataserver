@@ -23,7 +23,6 @@ from tastypie.authentication import (
 )
 from dataserver.authorization import AdminOrDjangoAuthorization
 from dataserver.authentication import AnonymousApiKeyAuthentication
-
 from tastypie.constants import ALL_WITH_RELATIONS
 from tastypie.models import ApiKey, create_api_key
 from tastypie.resources import ModelResource
@@ -261,8 +260,9 @@ class ObjectProfileLinkResource(ModelResource):
     class Meta:
         queryset = ObjectProfileLink.objects.all()
         resource_name = 'objectprofilelink'
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         default_format = "application/json"
         filtering = {
             "object_id": ['exact', ],

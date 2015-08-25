@@ -107,6 +107,11 @@ class ProjectSheetQuestionAnswerResource(ModelResource):
                                              AnonymousApiKeyAuthentication())
         authorization = AdminOrDjangoAuthorization()
         always_return_data = True
+        filtering = {
+            'id': ALL_WITH_RELATIONS,
+            'projectsheet': ALL_WITH_RELATIONS,
+            'question': ALL_WITH_RELATIONS,
+        }
 
 
 class ProjectSheetHistoryResource(ModelResource):
