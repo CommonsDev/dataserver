@@ -6,7 +6,11 @@ from django.conf.urls import url
 from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 from django.contrib.contenttypes.models import ContentType
 from tastypie.constants import ALL_WITH_RELATIONS
+from tastypie.authentication import (
+    MultiAuthentication, BasicAuthentication,
+)
 from dataserver.authentication import AnonymousApiKeyAuthentication
+from dataserver.authorization import AdminOrDjangoAuthorization
 from django.http.response import HttpResponse
 from tastypie import http
 from django.utils.text import slugify
@@ -27,8 +31,9 @@ class TagResource(ModelResource):
         }
         allowed_methods = ['get']
         always_return_data = True
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
 
     def dehydrate(self, bundle):
         try:
@@ -47,8 +52,9 @@ class TaggedItemResource(ModelResource):
         queryset = TaggedItem.objects.all()
         resource_name = 'taggeditem'
         allowed_methods = ['get', 'post', 'patch', 'delete']
-        authentication = AnonymousApiKeyAuthentication()
-        authorization = DjangoAuthorization()
+        authentication = MultiAuthentication(BasicAuthentication(),
+                                             AnonymousApiKeyAuthentication())
+        authorization = AdminOrDjangoAuthorization()
         default_format = "application/json"
         filtering = {
             "tag" : ALL_WITH_RELATIONS,
