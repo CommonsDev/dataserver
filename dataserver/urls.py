@@ -13,7 +13,7 @@ from commons.api.prestation import PrestationResource, PrestationModuleResource,
 # from deal.api import DealResource
 from flipflop.api import BoardResource, ListResource, CardResource, TaskResource, LabelResource, CardCommentResource
 from graffiti.api import TagResource, TaggedItemResource
-from projects.api import ProjectResource
+from projects.api import ProjectResource, ProjectProgressRangeResource, ProjectProgressResource
 from projectsheet.api import (ProjectSheetResource, ProjectSheetTemplateResource,
                               ProjectSheetQuestionAnswerResource, ProjectSheetQuestionResource, QuestionChoiceResource)
 from projecttool.api import ProjectToolResource
@@ -60,6 +60,8 @@ api.register(BucketFileCommentResource())
 
 # Projects
 api.register(ProjectResource())
+api.register(ProjectProgressResource())
+api.register(ProjectProgressRangeResource())
 
 # Project Sheets
 api.register(ProjectSheetResource())

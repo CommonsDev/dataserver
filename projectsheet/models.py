@@ -24,6 +24,7 @@ class ProjectSheetQuestion(models.Model):
     template = models.ForeignKey(ProjectSheetTemplate, related_name='questions')
     order = models.PositiveIntegerField(default=0)
     text = models.CharField(max_length=255)
+    slug = AutoSlugField(null=True, blank=True)
 
     def __unicode__(self):
         return u"%s - %s" % (self.order, self.text)

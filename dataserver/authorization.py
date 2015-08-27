@@ -1,36 +1,44 @@
+""" Dataserver authorization classes. """
+
 import logging
 
+from django.conf import settings
 from tastypie.authorization import DjangoAuthorization
-from tastypie.http import HttpGone, HttpForbidden, HttpNoContent, HttpMultipleChoices, HttpApplicationError, HttpNotImplemented
+from tastypie.http import HttpForbidden, HttpApplicationError
 from guardian.shortcuts import get_objects_for_user
 
 logger = logging.getLogger(__name__)
 
 
 class GuardianAuthorization(DjangoAuthorization):
-    """
 
-    GuardianAuthorization
+    """ GuardianAuthorization.
 
-        Object level permission checking with django-guardian for django models exposed via tastypie.
+        Object level permission checking with django-guardian for django
+        models exposed via tastypie.
 
     :create_permission_code:
-        the permission code that signifies the user can create one of these objects
+        the permission code that signifies the user can create one of
+        these objects
     :view_permission_code:
         the permission code that signifies the user can view the detail
     :update_permission_code:
-        the permission code that signifies the user can update one of these objects
+        the permission code that signifies the user can update one of
+        these objects
     :remove_permission_code:
-        the permission code that signifies the user can remove one of these objects
+        the permission code that signifies the user can remove one of
+        these objects
 
     :kwargs:
         other permission codes
 
     :return values:
-        Empty list : When user requests a list of resources for which they have no
-                     permissions for any of the items
-        HttpForbidden : When user does not have nessecary permissions for an item
-        HttpApplicationError : When resource being requested isn't a valid django model.
+        Empty list : When user requests a list of resources for which
+            they have no permissions for any of the items.
+        HttpForbidden : When user does not have nessecary permissions
+            for an item.
+        HttpApplicationError : When resource being requested isn't a
+            valid django model.
 
 
 
@@ -50,10 +58,14 @@ class GuardianAuthorization(DjangoAuthorization):
     """
 
     def __init__(self, *args, **kwargs):
-        self.view_permission_code = kwargs.pop("view_permission_code", 'can_view')
-        self.create_permission_code = kwargs.pop("create_permission_code", 'can_create')
-        self.update_permission_code = kwargs.pop("update_permission_code", 'can_update')
-        self.delete_permission_code = kwargs.pop("delete_permission_code", 'can_delete')
+        self.view_permission_code = kwargs.pop("view_permission_code",
+                                               'can_view')
+        self.create_permission_code = kwargs.pop("create_permission_code",
+                                                 'can_create')
+        self.update_permission_code = kwargs.pop("update_permission_code",
+                                                 'can_update')
+        self.delete_permission_code = kwargs.pop("delete_permission_code",
+                                                 'can_delete')
         super(GuardianAuthorization, self).__init__(*args, **kwargs)
 
     def generic_base_check(self, object_list, bundle):
@@ -62,8 +74,10 @@ class GuardianAuthorization(DjangoAuthorization):
                 a) if the `object_list.model` doesn't have a `_meta` attribute
                 b) the `bundle.request` object doesn have a `user` attribute
         """
+
         if not self.base_checks(bundle.request, object_list.model):
             return HttpApplicationError("Invalid resource.")
+
         return True
 
     def generic_item_check(self, object_list, bundle, permission):
@@ -72,6 +86,7 @@ class GuardianAuthorization(DjangoAuthorization):
             can access the item resource.
         """
         self.generic_base_check(object_list, bundle)
+
         if not bundle.request.user.has_perm(permission, bundle.obj):
             return HttpForbidden("You are not allowed to access that resource.")
 
@@ -79,12 +94,14 @@ class GuardianAuthorization(DjangoAuthorization):
 
     def generic_list_check(self, object_list, bundle, permission):
         """
-            Multiple item check, returns queryset of resource items the user 
+            Multiple item check, returns queryset of resource items the user
             can access.
 
             TODO: debating whether to return an empty list or HttpNoContent
         """
+
         self.generic_base_check(object_list, bundle)
+
         return get_objects_for_user(bundle.request.user, permission, object_list)
 
     # List Checks
@@ -112,3 +129,83 @@ class GuardianAuthorization(DjangoAuthorization):
 
     def delete_detail(self, object_list, bundle):
         return self.generic_item_check(object_list, bundle, self.delete_permission_code)
+
+
+class AdminOrDjangoAuthorization(DjangoAuthorization):
+
+    """ Always return ``True`` if request user is superuser.
+
+    Else, use :class:`DjangoAuthorization` to get the user authorization.
+    """
+
+    def read_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
+                     self).read_list(object_list, bundle)
+
+    def read_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
+                     self).read_detail(object_list, bundle)
+
+    def create_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
+                     self).create_list(object_list, bundle)
+
+    def create_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
+                     self).create_detail(object_list, bundle)
+
+    def update_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
+                     self).update_list(object_list, bundle)
+
+    def update_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
+                     self).update_detail(object_list, bundle)
+
+    def delete_list(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return object_list
+
+        return super(AdminOrDjangoAuthorization,
+                     self).delete_list(object_list, bundle)
+
+    def delete_detail(self, object_list, bundle):
+        """ Howdy, pep257. """
+
+        if bundle.request.user.is_superuser:
+            return True
+
+        return super(AdminOrDjangoAuthorization,
+                     self).delete_detail(object_list, bundle)
