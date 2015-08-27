@@ -487,25 +487,26 @@ def migrate_projects():
                     no_update=True
                     )
 
-                picture = None
-                if project.master.cover_picture:
-                    picture = project.master.cover_picture._imgfield
+                pic = project.master.get_primary_picture()
+                if pic:
+                    picture = pic._imgfield
+                    LOGGER.warning(' />/>/>/>/>/>/ got picture ? %s', (picture))
+                    with picture.file as fp:
 
-                LOGGER.warning(' />/>/>/>/>/>/ got picture ? %s', (picture))
-                if picture != None:
-                    with picture.open() as fp:
-
-                        project_sheet = api.project.sheet(project_sheet_id)
+                        project_sheet = api.project.sheet.projectsheet(project_sheet_id)
+                        LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, project_sheet.get()['bucket']['id'])
+                        bucket_id = project_sheet.get()['bucket']['id']
+                        post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
+                        headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
 
                         res = requests.post(
-                            API_URL.rsplit('/', 2)[0],
-                            data={
-                                'bucket': project_sheet.get()['bucket']['id']
-                            },
-                            files={
-                                'file': fp
-                            }
+                            post_url,
+                            headers=headers,
+                            data=[('bucket', bucket_id)],
+                            files={'file': fp}
                         )
+
+                        LOGGER.warning('// POSTED FILE // : res = %s ', res)
 
                         file_resource_uri = res.json()['resource_uri']
 
@@ -551,14 +552,16 @@ def migrate_projects():
                     api.objectprofilelink.project(project_id).post({
                         'detail': 'member',
                         'level': 0,
-                        'profile_id': PROFILES[member]
+                        'profile_id': PROFILES[member],
+                        'isValidated':True
                     })
 
                 for fan in project.master.fans.values_list('username', flat=True):
                     api.objectprofilelink.project(project_id).post({
                         'detail': 'member',
                         'level': 2,
-                        'profile_id': PROFILES[fan]
+                        'profile_id': PROFILES[fan],
+                        'isValidated':True
                     })
             except:
                 LOGGER.exception('Could not migrate %s', project)

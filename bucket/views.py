@@ -48,7 +48,7 @@ class ThumbnailView(View):
     FIXME: THIS VIEW IS TERRIBLE: NO CACHE AND NOTHING!
     """
     preprocess_uno = ('application/vnd.oasis.opendocument.text', 'application/msword', 'application/vnd.ms-excel', 'application/vnd.ms-powerpoint')
-    
+
     def get(self, request, *args, **kwargs):
         file_id = self.kwargs['pk']
         preview_width = self.request.GET.get('width', "150")
@@ -64,7 +64,7 @@ class ThumbnailView(View):
         mimetype, encoding = mimetypes.guess_type(bfile.file.url)
 
         # Convert document to PDF first, if needed
-        # FIXME2: bug when several files are loaded => clashes 
+        # FIXME2: bug when several files are loaded => clashes
         if mimetype in ThumbnailView.preprocess_uno:
             target = '%s.pdf' % bfile.file.name
             if  os.path.isfile(os.path.join(settings.MEDIA_ROOT, target)):
@@ -86,11 +86,11 @@ class ThumbnailView(View):
         else:
             fp = os.path.join(settings.STATIC_ROOT, 'images/defaultfilepreview.jpg')
         return sendfile(request, fp)
-                
+
 class UploadView(JSONResponseMixin, FormMixin, View):
     """
     A generic HTML5 Upload view
-    
+
     FIXME : deal with permissions !!
     """
     form_class = BucketUploadForm
@@ -99,7 +99,7 @@ class UploadView(JSONResponseMixin, FormMixin, View):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super(UploadView, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
         self.api_res = BucketFileResource()
         try:
@@ -116,16 +116,16 @@ class UploadView(JSONResponseMixin, FormMixin, View):
         if form.is_valid():
             file = request.FILES[u'file']
             wrapped_file = UploadedFile(file)
-            
+
             # writing file manually into model
             # because we don't need form of any type.
-            # 
-            # check if we update a file by giving an 'id' param 
+            #
+            # check if we update a file by giving an 'id' param
             if 'id' in request.POST:
                 file_id = qdict['id']
                 self.bf = get_object_or_404(BucketFile, pk=file_id)
                 self.bf.file = file
-                self.bf.being_edited_by = None 
+                self.bf.being_edited_by = None
                 self.bf.uploaded_by = form.cleaned_data['uploaded_by'] # FIXME : security hole !! should
                 self.bf.save()
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
@@ -142,17 +142,15 @@ class UploadView(JSONResponseMixin, FormMixin, View):
                 self.bf.thumbnail_url = reverse('bucket-thumbnail', args=[self.bf.pk])
                 self.bf.save()
 
-            return self.form_valid(form)            
+            return self.form_valid(form)
         else:
             return self.form_invalid(form)
 
     def form_invalid(self, form):
         return self.render_to_json_response({'error': 'error not implemented'})
-            
+
     def form_valid(self, form):
         """
         Once saved, return the object as if we were reading the API (json, ...)
         """
         return self.api_res.get_detail(self.request, pk=self.bf.pk)
-
-
