@@ -166,11 +166,11 @@ def api_get_or_create(api_object_path, natural_key, no_update=None, **kwargs):
         return object_id(obj)
 
     else:
-        LOGGER.warning('## POsting (before): %s', kwargs)
-        LOGGER.warning('>>>>> Update ?: %s', no_update)
+        #LOGGER.warning('## POsting (before): %s', kwargs)
+        #LOGGER.warning('>>>>> Update ?: %s', no_update)
         if not no_update:
             kwargs.update(natural_key)
-        LOGGER.warning('## POsting (after): %s', kwargs)
+        #LOGGER.warning('## POsting (after): %s', kwargs)
 
         res = api_object_path.post(data=kwargs)
 
@@ -492,25 +492,32 @@ def migrate_projects():
                     picture = pic._imgfield
                     LOGGER.warning(' />/>/>/>/>/>/ got picture ? %s', (picture))
                     with picture.file as fp:
+                        try:
+                            project_sheet = api.project.sheet.projectsheet(project_sheet_id)
+                            LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, project_sheet.get()['bucket']['id'])
+                            bucket_id = project_sheet.get()['bucket']['id']
+                            files_length = len(project_sheet.get()['bucket']['files'])
+                            LOGGER.warning(' files length? %s', (files_length))
+                            if files_length <= 0:
+                                LOGGER.warning(' NO FILES YET')
+                                post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
+                                headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
 
-                        project_sheet = api.project.sheet.projectsheet(project_sheet_id)
-                        LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, project_sheet.get()['bucket']['id'])
-                        bucket_id = project_sheet.get()['bucket']['id']
-                        post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
-                        headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
+                                res = requests.post(
+                                    post_url,
+                                    headers=headers,
+                                    data=[('bucket', bucket_id)],
+                                    files={'file': fp}
+                                )
 
-                        res = requests.post(
-                            post_url,
-                            headers=headers,
-                            data=[('bucket', bucket_id)],
-                            files={'file': fp}
-                        )
+                                LOGGER.warning('// POSTED FILE // : res = %s ', res)
 
-                        LOGGER.warning('// POSTED FILE // : res = %s ', res)
+                                file_resource_uri = res.json()['resource_uri']
 
-                        file_resource_uri = res.json()['resource_uri']
-
-                        project_sheet.patch({'cover': file_resource_uri})
+                                project_sheet.patch({'cover': file_resource_uri})
+                        except:
+                            LOGGER.warning('/>/>/>/>/>/>/ Error posting cover picture')
+                            pass
 
                 answers = []
 
