@@ -32,6 +32,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.contrib.sites.models import Site
 from django.db.models.base import ObjectDoesNotExist
+from slugify import slugify
 
 
 LOGGER = logging.getLogger(__name__)
@@ -40,12 +41,13 @@ I4P_PATH = os.getenv('I4P_PROJECT_SOURCE_PATH',
                      os.path.expanduser('~/sources/imaginationforpeople'))
 
 API_URL = os.getenv('IP2IS_DESTINATION_URL',
-                    # 'http://data.patapouf.org/api/v0')
+                     #'http://data.patapouf.org/api/v0')
                     'http://127.0.0.1:8002/api/v0')
 API_USERNAME = os.getenv('IP2IS_API_USERNAME', 'admin')
+#API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'Xdelfino06') # patapouf
 API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'admin')
+#API_KEY = os.getenv('IP2IS_API_KEY', '9ea94d6723509fd21fc1518e00c541743e33b154') # patapouf
 API_KEY = os.getenv('IP2IS_API_KEY', '93a932dd3037378d11a50ba583009a30c0dc8603')
-# '5d0eccabb50b76c08d83f112f9f003f2b50b629a'
 
 if API_PASSWORD:
     LOGGER.warning(u'Using API_USERNAME %s.', API_USERNAME)
@@ -86,32 +88,24 @@ def object_id(obj):
     #LOGGER.warning('Getting object id for = %s', obj)
 
     try:
-        if obj['objects']:
-            pass
-        else:
-            return obj['id']
-    except KeyError:
-        return None
-
-    try:
         try:
             return obj['objects'][0]['id']
 
-        except IndexError:
-            return None
         except KeyError:
-            return None
+            #LOGGER.warning('OBJECT_ID id = %s', obj['id'])
+            return obj['id']
 
     except:
-        LOGGER.warning('obj: %s', obj)
-        raise
+        #LOGGER.warning('DID NOT FOUND ID for obj: %s', obj)
+        return None
+
 
 def api_get(api_object_path, natural_key, **kwargs):
     """ Get an object on the remote API, pivoting on natural_key. """
 
-    LOGGER.warning('API get : %s %s %s',
-                   api_object_path, natural_key,
-                   kwargs)
+    # LOGGER.warning('API get : %s %s %s',
+    #                api_object_path, natural_key,
+    #                kwargs)
 
     obj = api_object_path.get(**natural_key)
 
@@ -126,9 +120,9 @@ def api_get(api_object_path, natural_key, **kwargs):
 def api_create_only(api_object_path, natural_key, **kwargs):
     """ create an object on the remote API, pivoting on natural_key. """
 
-    LOGGER.warning('API create ONLY: %s %s %s',
-                   api_object_path, natural_key,
-                   kwargs)
+    # LOGGER.warning('API create ONLY: %s %s %s',
+    #                api_object_path, natural_key,
+    #                kwargs)
 
     kwargs.update(natural_key)
 
@@ -166,11 +160,11 @@ def api_get_or_create(api_object_path, natural_key, no_update=None, **kwargs):
         return object_id(obj)
 
     else:
-        LOGGER.warning('## POsting (before): %s', kwargs)
-        LOGGER.warning('>>>>> Update ?: %s', no_update)
+        #LOGGER.warning('## POsting (before): %s', kwargs)
+        #LOGGER.warning('>>>>> Update ?: %s', no_update)
         if not no_update:
             kwargs.update(natural_key)
-        LOGGER.warning('## POsting (after): %s', kwargs)
+        #R.warning('## POsting (after): %s', kwargs)
 
         res = api_object_path.post(data=kwargs)
 
@@ -435,7 +429,7 @@ def migrate_projects():
                 if project.master.locations.all().count() > 0:
                     place_id = place_from_location(
                         project.master.locations.all().order_by('id')[0])
-                    if place_id:
+                    if place_id != None:
                         location = ('api/v0/scout/place/%s' % (place_id))
                     else:
                         location = None
@@ -444,73 +438,102 @@ def migrate_projects():
                     location = None
 
                 LOGGER.warning('title ? = %s, str(%s)', project.title, project.title)
-
+                if project.master.status:
+                    progress_value = PROGRESS[project.master.status]
+                else:
+                    progress_value = None
                 project_id = api_get_or_create(
                     api.project.project,
-                    {'slug': project.slug},
-                    # …
+                    {'slug': project.slug,
+                     'language_code' : project.language_code,
+                    },
+                    no_update=True,
+                    slug=project.slug+'_'+project.language_code,
+                    language_code=project.language_code,
                     data={
                         'topics': [
                             u'{0}: {1}'.format(t.site.name, t.topic)
                             for t in project.master.topics.all()
                         ],
-
                     },
                     location=location,
                     title=project.title,
                     baseline=project.baseline,
                     created_on=project.master.created.isoformat(),
                     description=project.about_section,
-                    progress=('api/v0/project/progress/%s' % (PROGRESS[project.master.status])),
-                    language_code=project.language_code,
+                    progress=('api/v0/project/progress/%s' % (progress_value)),
                     transient_project_original_id=pivot_project,
                     website=project.master.website,
                     groups=[GROUPS[s.name] for s in project.master.site.all()],
                 )
 
                 for tag in [x.strip() for x in project.themes.split(',')]:
+                    # FIXME : tags "déforestation" and "deforestation" get the same slug
+                    # so we should check before that no other tag with same slug do not already exist
                     taggeditem_tag = api_get(
                         api.taggeditem.project(project.id),
                         {'taggeditem__tag':tag}
                     )
+                    LOGGER.warning(' [TAG] Tagging already there %s', taggeditem_tag)
                     if not taggeditem_tag:
-                        api_create_only(
-                            api.taggeditem.project(project.id),
-                            {'tag':tag}
-                        )
+                        # check if tag object with same slug exists
+                        tag_object = api.tag.get(slug=slugify(tag))
+                        LOGGER.warning(' [TAG] Tag object %s', tag_object)
+                        try:
+                            api_create_only(
+                                api.taggeditem.project(project.id),
+                                {'tag':tag_object['objects'][0]['name']}
+                            )
+                        except:
+                            api_create_only(
+                                api.taggeditem.project(project.id),
+                                {'tag':tag}
+                            )
 
-                project_sheet_id = api_get_or_create(
-                    api.project.sheet.projectsheet,
-                    {'project':project_id},
-                    project=('api/v0/project/project/%s' % (project_id)),
-                    template=('/api/v0/project/sheet/template/%s' % (TEMPLATES['is'],)),
-                    no_update=True
-                    )
+                if project_id != None:
+                    LOGGER.warning(' PROJECT ID = %s', project_id)
+                    project_sheet_id = api_get_or_create(
+                        api.project.sheet.projectsheet,
+                        {'project':project_id},
+                        project=('api/v0/project/project/%s' % (project_id)),
+                        template=('/api/v0/project/sheet/template/%s' % (TEMPLATES['is'],)),
+                        no_update=True
+                        )
+                else:
+                    LOGGER.warning(' NO PROJECT ID !!')
+                    pass
 
                 pic = project.master.get_primary_picture()
                 if pic:
                     picture = pic._imgfield
                     LOGGER.warning(' />/>/>/>/>/>/ got picture ? %s', (picture))
                     with picture.file as fp:
+                        try:
+                            project_sheet = api.project.sheet.projectsheet(project_sheet_id)
+                            LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, project_sheet.get()['bucket']['id'])
+                            bucket_id = project_sheet.get()['bucket']['id']
+                            files_length = len(project_sheet.get()['bucket']['files'])
+                            LOGGER.warning(' files length? %s', (files_length))
+                            if files_length <= 0:
+                                LOGGER.warning(' NO FILES YET')
+                                post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
+                                headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
 
-                        project_sheet = api.project.sheet.projectsheet(project_sheet_id)
-                        LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, project_sheet.get()['bucket']['id'])
-                        bucket_id = project_sheet.get()['bucket']['id']
-                        post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
-                        headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
+                                res = requests.post(
+                                    post_url,
+                                    headers=headers,
+                                    data=[('bucket', bucket_id)],
+                                    files={'file': fp}
+                                )
 
-                        res = requests.post(
-                            post_url,
-                            headers=headers,
-                            data=[('bucket', bucket_id)],
-                            files={'file': fp}
-                        )
+                                LOGGER.warning('// POSTED FILE // : res = %s ', res)
 
-                        LOGGER.warning('// POSTED FILE // : res = %s ', res)
+                                file_resource_uri = res.json()['resource_uri']
 
-                        file_resource_uri = res.json()['resource_uri']
-
-                        project_sheet.patch({'cover': file_resource_uri})
+                                project_sheet.patch({'cover': file_resource_uri})
+                        except:
+                            LOGGER.warning('/>/>/>/>/>/>/ Error posting cover picture')
+                            pass
 
                 answers = []
 
@@ -547,22 +570,24 @@ def migrate_projects():
                     no_update=True,
                 )
 
-                for member in project.master.members.values_list('username',
-                                                          flat=True):
-                    api.objectprofilelink.project(project_id).post({
-                        'detail': 'member',
-                        'level': 0,
-                        'profile_id': PROFILES[member],
-                        'isValidated':True
-                    })
+                # TO me, for migrating users we need an official aggreement.
 
-                for fan in project.master.fans.values_list('username', flat=True):
-                    api.objectprofilelink.project(project_id).post({
-                        'detail': 'member',
-                        'level': 2,
-                        'profile_id': PROFILES[fan],
-                        'isValidated':True
-                    })
+                # for member in project.master.members.values_list('username',
+                #                                           flat=True):
+                #     api.objectprofilelink.project(project_id).post({
+                #         'detail': 'member',
+                #         'level': 0,
+                #         'profile_id': PROFILES[member],
+                #         'isValidated':True
+                #     })
+                #
+                # for fan in project.master.fans.values_list('username', flat=True):
+                #     api.objectprofilelink.project(project_id).post({
+                #         'detail': 'member',
+                #         'level': 2,
+                #         'profile_id': PROFILES[fan],
+                #         'isValidated':True
+                #     })
             except:
                 LOGGER.exception('Could not migrate %s', project)
 

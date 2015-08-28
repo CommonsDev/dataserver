@@ -96,4 +96,5 @@ class ProjectResource(HistorizedModelResource):
             'slug': ('exact',),
             'id': ('exact', ),
             'location': ALL_WITH_RELATIONS,
+            'language_code': ('exact', ),
         }
