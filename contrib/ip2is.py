@@ -471,14 +471,16 @@ def migrate_projects():
                     # FIXME : tags "déforestation" and "deforestation" get the same slug
                     # so we should check before that no other tag with same slug do not already exist
                     taggeditem_tag = api_get(
-                        api.taggeditem.project(project.id),
-                        {'taggeditem__tag':tag}
+                        api.taggeditem,
+                        {'object_type_name':'project',
+                        'object_id':project_id,
+                        'tag__name':tag}
                     )
-                    LOGGER.warning(' [TAG] Tagging already there %s', taggeditem_tag)
+                    LOGGER.warning(' [TAG] Tagging (for %s)already there %s', tag, taggeditem_tag)
                     if not taggeditem_tag:
                         # check if tag object with same slug exists
                         tag_object = api.tag.get(slug=slugify(tag))
-                        LOGGER.warning(' [TAG] Tag object %s', tag_object)
+                        LOGGER.warning(' [TAG] Tag object %s equal to %s', tag_object, tag)
                         try:
                             api_create_only(
                                 api.taggeditem.project(project.id),

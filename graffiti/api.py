@@ -58,7 +58,8 @@ class TaggedItemResource(ModelResource):
         default_format = "application/json"
         filtering = {
             "tag" : ALL_WITH_RELATIONS,
-            "object_id" : ['exact', ]
+            "object_id" : ['exact', ],
+            "object_type_name" : ['exact', ],
         }
         always_return_data = True
 
