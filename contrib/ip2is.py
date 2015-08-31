@@ -42,7 +42,7 @@ I4P_PATH = os.getenv('I4P_PROJECT_SOURCE_PATH',
 
 API_URL = os.getenv('IP2IS_DESTINATION_URL',
                      #'http://data.patapouf.org/api/v0')
-                    'http://127.0.0.1:8002/api/v0')
+                      'http://127.0.0.1:8002/api/v0')
 API_USERNAME = os.getenv('IP2IS_API_USERNAME', 'admin')
 #API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'Xdelfino06') # patapouf
 API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'admin')
@@ -505,18 +505,28 @@ def migrate_projects():
                     LOGGER.warning(' NO PROJECT ID !!')
                     pass
 
-                pic = project.master.get_primary_picture()
-                if pic:
+                # migrating project pictures
+                pictures = project.master.pictures.all()
+                LOGGER.warning(' />/>/>/>/>/>/ got pictures ? %s', (pictures))
+                project_sheet = api.project.sheet.projectsheet(project_sheet_id)
+                remote_files = project_sheet.get()['bucket']['files']
+                files_length = len(project_sheet.get()['bucket']['files'])
+                LOGGER.warning(' files_length = %s', files_length)
+                remote_files_name = []
+                for file in remote_files:
+                    remote_files_name.append(file.filename)
+                bucket_id = project_sheet.get()['bucket']['id']
+                LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, bucket_id)
+                LOGGER.warning(' remote_files_name = %s', remote_files_name)
+                for idx, pic in enumerate(pictures):
                     picture = pic._imgfield
-                    LOGGER.warning(' />/>/>/>/>/>/ got picture ? %s', (picture))
                     with picture.file as fp:
                         try:
-                            project_sheet = api.project.sheet.projectsheet(project_sheet_id)
-                            LOGGER.warning(' bucket for project sheet id %s ? %s', project_sheet_id, project_sheet.get()['bucket']['id'])
-                            bucket_id = project_sheet.get()['bucket']['id']
-                            files_length = len(project_sheet.get()['bucket']['files'])
-                            LOGGER.warning(' files length? %s', (files_length))
-                            if files_length <= 0:
+
+                            # check file does not already exist
+                            local_filename = pic._imgfield.file.name.rsplit('/',2)[2]
+                            LOGGER.warning(' FILES ::: local_filename = %s', local_filename)
+                            if local_filename not in remote_files_name:
                                 LOGGER.warning(' NO FILES YET')
                                 post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
                                 headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
@@ -529,12 +539,13 @@ def migrate_projects():
                                 )
 
                                 LOGGER.warning('// POSTED FILE // : res = %s ', res)
+                                if idx == 0:
+                                    # set as cover picture if first in the list
+                                    file_resource_uri = res.json()['resource_uri']
 
-                                file_resource_uri = res.json()['resource_uri']
-
-                                project_sheet.patch({'cover': file_resource_uri})
+                                    project_sheet.patch({'cover': file_resource_uri})
                         except:
-                            LOGGER.warning('/>/>/>/>/>/>/ Error posting cover picture')
+                            LOGGER.warning('/>/>/>/>/>/>/ Error posting picture n° %s', idx)
                             pass
 
                 answers = []

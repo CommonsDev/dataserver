@@ -126,18 +126,18 @@ class ProjectSheetHistoryResource(ModelResource):
         filtering = {'id': ALL_WITH_RELATIONS}
 
 
-class ProjectSheetResource(HistorizedModelResource):
+class ProjectSheetResource(ModelResource):
 
     """ Project Sheet API resource. """
 
-    project = fields.ToOneField(ProjectResource, 'project', full=True)
-    template = fields.ToOneField(ProjectSheetTemplateResource, 'template')
-    bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True)
-    cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True)
+    project = fields.ToOneField(ProjectResource, 'project', full=True, use_in='all')
+    template = fields.ToOneField(ProjectSheetTemplateResource, 'template', use_in='detail')
+    bucket = fields.ToOneField(BucketResource, 'bucket', null=True, full=True, use_in='detail')
+    cover = fields.ToOneField(BucketFileResource, 'cover', null=True, full=True, use_in='all')
     question_answers = fields.ToManyField(ProjectSheetQuestionAnswerResource,
                                           'question_answers', null=True,
-                                          full=True)
-    videos = fields.DictField(attribute='videos', null=True)
+                                          full=True, use_in='detail')
+    videos = fields.DictField(attribute='videos', null=True, use_in='detail')
 
     class Meta:
         object_class = ProjectSheet
@@ -191,7 +191,7 @@ class ProjectSheetResource(HistorizedModelResource):
         query = request.GET.get('q', '')
         autocomplete = request.GET.get('auto', None)
         selected_facets = request.GET.getlist('facet', None)
-
+        order = request.GET.getlist('order', None)
         sqs = SearchQuerySet().models(self.Meta.object_class).facet('tags')
 
         # narrow down QS with facets
@@ -226,8 +226,10 @@ class ProjectSheetResource(HistorizedModelResource):
                 if result:
                     bundle = self.build_bundle(obj=result.object,
                                                request=request)
-                    bundle = self.full_dehydrate(bundle)
+                    bundle = self.full_dehydrate(bundle, for_list=True)
+
                     objects.append(bundle)
+
             object_list = {
                 'meta': paginator.page()['meta'],
                 'objects': objects,
