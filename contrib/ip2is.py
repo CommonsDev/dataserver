@@ -41,13 +41,13 @@ I4P_PATH = os.getenv('I4P_PROJECT_SOURCE_PATH',
                      os.path.expanduser('~/sources/imaginationforpeople'))
 
 API_URL = os.getenv('IP2IS_DESTINATION_URL',
-                     #'http://data.patapouf.org/api/v0')
-                      'http://127.0.0.1:8002/api/v0')
+                     'http://data.patapouf.org/api/v0')
+                     # 'http://127.0.0.1:8002/api/v0')
 API_USERNAME = os.getenv('IP2IS_API_USERNAME', 'admin')
-#API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'Xdelfino06') # patapouf
-API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'admin')
-#API_KEY = os.getenv('IP2IS_API_KEY', '9ea94d6723509fd21fc1518e00c541743e33b154') # patapouf
-API_KEY = os.getenv('IP2IS_API_KEY', '93a932dd3037378d11a50ba583009a30c0dc8603')
+API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'Xdelfino06') # patapouf
+#API_PASSWORD = os.getenv('IP2IS_API_PASSWORD', 'admin')
+API_KEY = os.getenv('IP2IS_API_KEY', '9ea94d6723509fd21fc1518e00c541743e33b154') # patapouf
+#API_KEY = os.getenv('IP2IS_API_KEY', '93a932dd3037378d11a50ba583009a30c0dc8603')
 
 if API_PASSWORD:
     LOGGER.warning(u'Using API_USERNAME %s.', API_USERNAME)
@@ -531,7 +531,7 @@ def migrate_projects():
                                 post_url = API_URL.rsplit('/', 2)[0]+'/bucket/upload/'
                                 headers = {'Authorization' : ('apikey %s:%s' % (API_USERNAME, API_KEY))}
 
-                                res = requests.post(
+                    i                       res = requests.post(
                                     post_url,
                                     headers=headers,
                                     data=[('bucket', bucket_id)],
@@ -552,6 +552,8 @@ def migrate_projects():
 
                 for answer in project.master.answers.all():
                     try:
+                        # Answers have translations as well!! fixed by giving language code, else english is allways given
+                        answer = answer.translations.all().filter(language_code=project.language_code)[0]
                         answers.append(
                             api_get_or_create(
                                 api.project.sheet.question_answer,
@@ -561,7 +563,7 @@ def migrate_projects():
                                 },
                                 answer=answer.content,
                                 question=('/api/v0/project/sheet/question/%s' % (QUESTIONS[answer.question_id])),
-                                projectsheet=('api/v0/project/sheet/projectsheet/%s' % (project_sheet_id)),
+                                projectsheet=('api/v0/project/sheet/projectshn  eet/%s' % (project_sheet_id)),
                                 no_update=True,
                             )
                         )
